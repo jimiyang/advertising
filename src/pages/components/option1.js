@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Input, Button} from 'antd';
+import {Button} from 'antd';
 class Options1 extends Component {
     constructor(props) {
         super(props);
@@ -15,7 +15,7 @@ class Options1 extends Component {
         };
     }
     componentWillMount() {
-		const arr=['react', 'vue', 'anglar'];
+		//const arr=['react', 'vue', 'anglar'];
 		//console.log(arr.includes('3333'));
     }
     render() {

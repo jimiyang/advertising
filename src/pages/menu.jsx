@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {Menu, Icon} from 'antd';
-import {Link} from  'react-router';
 const SubMenu = Menu.SubMenu;
 class MenuApp extends Component {
     constructor(props) {
@@ -36,10 +35,10 @@ class MenuApp extends Component {
     }  
     render() {
         return (
-            <div>
+            <div className="menu-blocks">
                 <Menu
                     defaultSelectedKeys={['1']}
-                    defaultOpenKeys={['sub1']}
+                    defaultOpenKeys={['0']}
                     mode="inline"
                     theme="dark"
                     inlineCollapsed={this.state.collapsed}

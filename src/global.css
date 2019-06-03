@@ -4,5 +4,24 @@ html, body, #root {
 }
 
 body {
-  margin: 0;
+  margin: 0; 
+}
+.sider{
+  width: 220px;
+  min-height: 100vh;
+  color: '#fff';
+}
+.menu-blocks{
+
+}
+.header-blocks{
+  padding: 30px 0;
+  background: #fff;
+  text-align: center;
+}
+.content-blocks{
+  margin: 24px 16px 0;
+  padding: 24px;
+  background: #fff;
+  min-height: 360px;
 }

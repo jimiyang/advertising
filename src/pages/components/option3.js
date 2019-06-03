@@ -36,7 +36,6 @@ class Option3 extends Component {
         circle.beginPath();//开始一个新的路径 
         circle.arc(x0, y0, r, 0, 2 * Math.PI, false);
         circle.stroke();
-        let _this = this;
         let index = 1;
         //setInterval(function() {
             index++;
