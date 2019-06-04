@@ -4,7 +4,7 @@ import router from 'umi/router';
 class Header extends Component{
   loginout = () => {
     window.localStorage.removeItem('checkLogin');
-    router.push('/login');
+    router.push('/');
   }
   render() {
     return(

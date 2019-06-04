@@ -5,7 +5,8 @@ import {Layout} from 'antd';
 import Menu from  '../pages/menu'; //左侧菜单
 import Header from '../pages/header'; //头部
 import Main from '../pages/main'; //主页面
-import Login from '../login';
+import Login from '../pages/login'; //登录页
+import Register from '../pages/register'; //注册页
 const {Sider, Content} = Layout;
 class BasicLayout extends Component {
   constructor(props) {
@@ -15,11 +16,11 @@ class BasicLayout extends Component {
     }
   }
   componentWillMount() {
-    //router.push('/components/option1');
+    console.log(this.props.location.pathname);
   }
   handleClick = (pane) => {
     router.push(pane.url);
-  } 
+  }
   render() {
     return (
       <div className="section">
@@ -27,12 +28,12 @@ class BasicLayout extends Component {
           <Login /> :
           <Layout>
             <Sider className="sider">
-              <Menu handleClick={this.handleClick}/>
+              <Menu handleClick={this.handleClick.bind(this)}/>
             </Sider>
             <Layout>
               <Header />
               <Content className="content-blocks">
-                {this.props.location.pathname === '/' ? <Main /> : this.props.children}
+                {this.props.location.pathname === '/main' ? <Main /> : this.props.children}
               </Content>
             </Layout>
           </Layout>

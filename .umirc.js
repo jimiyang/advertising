@@ -30,4 +30,18 @@ export default {
       locale: {}
     }],
   ],
+  routes: [
+    {path: '/', component: './login.jsx'},
+    {path: '/register', component: './register.jsx'},
+    {path: '/enter', component: './enter.jsx'},
+    {
+      path: '/main',
+      component: '../layouts/index.js',
+      routes: [
+        {path: '/main/option1', component: './components/option1'},
+        {path: '/main/option3', component: './components/option3'},
+        {path: '/main/help', component: './components/help'},
+      ]
+    },
+  ]
 }

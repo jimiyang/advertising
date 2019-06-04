@@ -1,3 +1,16 @@
 {
-  "extends": "eslint-config-umi"
+  "extends": "airbnb",
+  "parser": "babel-eslint",
+  "env": {
+    "es6": true,
+    "browser": true
+  },
+  "globals": {
+    "store": false,
+    "axios": false,
+    "$": false,
+    "__DEVTOOLS__": false,
+    "__DMTEST__": false,
+    "__DEVELOPMENT__": false
+  }
 }
