@@ -21,19 +21,55 @@ class Register extends Component{
         <div className="register-blocks">
           <Form onSubmit={this.RegisterEvent} className="form" name="form" id="form">
             <Form.Item>
-              <Input className="ipttxt ipt-ico-1" placeholder="流量主名称" />
+              <Input
+                className="ipttxt"
+                placeholder="流量主名称"
+                prefix={<Icon component={() => (
+                  <img  src={require('../assets/ico-1.png')} />
+                  )} />
+                }
+                allowClear={true}
+              />
             </Form.Item>
             <Form.Item>
-              <Input className="ipttxt ipt-ico-2" placeholder="联系人" />
+              <Input
+                className="ipttxt"
+                placeholder="联系人"
+                prefix={<Icon component={() => (
+                  <img  src={require('../assets/ico-2.png')} />
+                  )} />
+                }
+              />
             </Form.Item>
             <Form.Item>
-              <Input className="ipttxt ipt-ico-3" placeholder="联系人电话" />
+              <Input
+                className="ipttxt"
+                placeholder="联系人电话"
+                prefix={<Icon component={() => (
+                  <img  src={require('../assets/ico-3.png')} />
+                  )} />
+                }
+              />
             </Form.Item>
             <Form.Item>
-              <Input className="ipttxt ipt-ico-4" placeholder="登录名" />
+              <Input
+                className="ipttxt"
+                placeholder="登录名"
+                prefix={<Icon component={() => (
+                  <img  src={require('../assets/ico-4.png')} />
+                  )} />
+                }
+              />
             </Form.Item>
             <Form.Item>
-              <Input className="ipttxt ipt-ico-5" placeholder="密码" />
+              <Input
+                className="ipttxt"
+                placeholder="密码"
+                prefix={<Icon component={() => (
+                  <img  src={require('../assets/ico-5.png')} />
+                  )} />
+                }
+              />
             </Form.Item>
             <Form.Item>
               <div className="g-tc">

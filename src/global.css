@@ -1,16 +1,16 @@
 
-html, body, #root {
-  height: 100%;
-}
-
-body,div,span,a,ul,li,dl,dd,dt,h1,h2,h3{
-  margin: 0; 
-  padding:0;
-  list-style: none;
-}
+html, body, #root {height: 100%;}
+body,div,span,a,ul,li,dl,dd,dt,h1,h2,h3,p{margin: 0;padding:0;list-style: none;}
 h1,h2{font-size: 12px; font-weight: normal;}
+input{border-radius: 2px;}
+.g-tl{text-align: left;}
 .g-tc{text-align: center;}
 .ml10{margin-left: 10px;}
+.mr20{margin-right: 20px;}
+.mt40{margin-top: 40px;}
+.w150{width: 150px;}
+.w180{width: 180px;}
+.radius2{border-radius: 2px;}
 .login-blocks{
   width: 390px;
   height: 300px;
@@ -59,22 +59,16 @@ h1,h2{font-size: 12px; font-weight: normal;}
 }
 .register-blocks{
   width:360px;
-  margin: 30px auto;
+  margin: 100px auto;
 }
 .register-blocks .ipttxt{
   width: 360px;
   height: 46px;
   border-radius: 2px;
-  border: 1px solid #E0E0E0;
-  padding-left: 38px;
-  background-position: 16px center;
-  background-repeat: no-repeat;
 }
-.register-blocks .ipt-ico-1{ background-image: url(./assets/ico-1.png);}
-.register-blocks .ipt-ico-2{ background-image: url(./assets/ico-2.png); padding-left: 40px;}
-.register-blocks .ipt-ico-3{ background-image: url(./assets/ico-3.png); padding-left: 40px;}
-.register-blocks .ipt-ico-4{ background-image: url(./assets/ico-4.png); padding-left: 40px}
-.register-blocks .ipt-ico-5{ background-image: url(./assets/ico-5.png); padding-left: 40px}
+.register-blocks .ant-input-affix-wrapper .ant-input:not(:first-child) {
+  padding-left: 40px;
+}
 .register-blocks .btn-blue{
   width: 172px;
   height: 50px;
@@ -134,21 +128,78 @@ h1,h2{font-size: 12px; font-weight: normal;}
   margin-bottom: 29px;
 }
 .sider{
-  width: 220px;
+  width: 212px;
   min-height: 100vh;
   color: '#fff';
+  background: #232E52;
 }
-.menu-blocks{
-
+.sider .logo{
+  text-align: center;
+  padding: 23px 0;
+}
+.menu-blocks>ul, .menu-blocks .ant-menu-inline.ant-menu-sub{
+  background: #232E52;
+  box-shadow: none;
 }
 .header-blocks{
   padding: 30px 0;
   background: #fff;
   text-align: center;
+  border-bottom: 1px solid #D9D9D9;
 }
 .content-blocks{
-  margin: 24px 16px 0;
-  padding: 24px;
-  background: #fff;
+  padding: 31px 78px 0 78px;
   min-height: 360px;
 }
+.ant-layout{
+  background: #fff;
+}
+/***内页导航****/
+.nav-title{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #686E76;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(223, 223, 223, 1);
+}
+.nav-title .button{
+  background: #498DFF;
+  color: #fff;
+  font-size: 14px;
+  text-align: center;
+  padding: 0 13px;
+  border-radius: 2px;
+  height: 36px;
+  line-height: 36px;
+  border-radius: 2px;
+}
+.small-title{
+  color: #686E76;
+  font-size: 18px;
+  font-weight: normal;
+  padding-top: 23px;
+}
+.small-title em{
+  display: inline-block;
+  width: 5px;
+  height: 18px;
+  border-radius: 2px;
+  background-color: rgba(255, 195, 0, 1);
+  vertical-align: middle;
+  margin-right: 10px;
+}
+/****表格样式***/
+.table{
+  margin-top: 20px;
+  color:#686E76;
+  border: 1px solid rgba(230, 238, 244, 1);
+}
+.ant-table-thead > tr{
+  background: #EEF6FD 100%;
+  font-size: 13px;
+  font-weight: normal;
+}
+.ant-table-thead > tr > th{text-align: center;color:#686E76; padding: 14px;font-weight: normal;}
+.ant-table-tbody > tr > td{padding: 10px 0;font-size: 12px;color: #3B4754;text-align: center;font-weight: normal;}
+.table .opeartion-items span{color: #498DFF;margin:0 13px;display: inline-block;cursor: pointer;}

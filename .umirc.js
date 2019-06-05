@@ -31,16 +31,17 @@ export default {
     }],
   ],
   routes: [
-    {path: '/', component: './login.jsx'},
-    {path: '/register', component: './register.jsx'},
-    {path: '/enter', component: './enter.jsx'},
+    {path: '/', component: './login'},
+    {path: '/register', component: './register'},
+    {path: '/enter', component: './enter'},
     {
       path: '/main',
       component: '../layouts/index.js',
-      routes: [
-        {path: '/main/option1', component: './components/option1'},
-        {path: '/main/option3', component: './components/option3'},
-        {path: '/main/help', component: './components/help'},
+      routes: [ //.代表src/pages
+        {path: '/main/createactivity', component: './mypromotion/createactivity'},
+        {path: '/main/myactivity', component: './mypromotion/myactivity'},
+        {path: '/main/materiallist', component: './mypromotion/materiallist'},
+        {path: '/main/selectmateria', component: './mypromotion/selectmateria'}
       ]
     },
   ]

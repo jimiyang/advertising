@@ -4,7 +4,8 @@ import router from 'umi/router';
 class Login extends Component {
   login = () => {
     window.localStorage.setItem('checkLogin', '1000');
-    router.push('/enter');
+    //router.push('/enter');
+    router.push('/main');
   }
   regEvent = () => {
     router.push('/register');
