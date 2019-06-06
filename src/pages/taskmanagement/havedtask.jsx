@@ -118,7 +118,7 @@ class HavedTask extends Component{
               <Option value="">全部</Option>
               {
                 orderStatus.map((item, index) => (
-                  <Option value={index}>{item}</Option>
+                  <Option key={index} value={index}>{item}</Option>
                 ))
               }
             </Select>
@@ -129,7 +129,7 @@ class HavedTask extends Component{
               <Option value="">全部</Option>
               {
                 advertLocal.map((item, index) => (
-                  <Option value={index}>{item}</Option>
+                  <Option key={index} value={index}>{item}</Option>
                 ))
               }
             </Select>

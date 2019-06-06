@@ -33,7 +33,7 @@ export default {
   routes: [
     {path: '/', component: './login'},
     {path: '/register', component: './register'},
-    {path: '/enter', component: './enter'},
+    {path: '/enter', component: './wrap/enter'},
     {
       path: '/main',
       component: '../layouts/index.js',
