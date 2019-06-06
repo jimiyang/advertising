@@ -13,14 +13,22 @@ class Login extends Component {
   render() {
     return(
       <div className="login-blocks">
-        <h1 className="g-tc">联拓推</h1>
+        <h1><img src={require('../assets/logo2.png')} /></h1>
         <ul>
-          <li><label>用户名：</label><Input  placeholder="请输入登录名"/></li>
-          <li><label>密码：</label><Input  type="password" placeholder="请输入密码"/></li>
+          <li><Input  placeholder="请输入登录名"/></li>
+          <li><Input  type="password" placeholder="请输入密码"/></li>
+          <li className="auth-code">
+            <Input />
+            <div className="auth-img">
+              验证码
+            </div>
+          </li>
         </ul>
         <div className="g-tc">
-          <Button type="primary" onClick={this.login.bind(this)} className="ml10">登录</Button>
-          <Button onClick={this.regEvent.bind(this)} className="ml10">注册</Button>
+          <Button type="primary" onClick={this.login.bind(this)} className="button">登录</Button>
+        </div>
+        <div className="bottom-blocks">
+          <img src={require('../assets/logo-bg-1.png')} />
         </div>
       </div>
     );

@@ -3,6 +3,7 @@ import {Input, DatePicker, Form, Radio} from 'antd';
 import style from './style.less';
 import { Button } from 'antd-mobile';
 import router from 'umi/router';
+import Link from 'umi/link';
 class CreateAdvertity extends Component {
   constructor(props) {
     super(props);
@@ -25,8 +26,13 @@ class CreateAdvertity extends Component {
     console.log(e);
   }
   createEvent = (e) => {
-    e.preventDefault();
-    console.log(1);
+    //e.preventDefault();
+    this.props.form.validateFields((err) => {
+      if (!err) {
+        return;
+      }
+      console.log(1);
+    })
     //router.push('/main/selectmateria');
   }
   render() {
@@ -130,7 +136,8 @@ class CreateAdvertity extends Component {
                 </ul>          
                 <div className={style.warning}>推广效果: 预计您的广告将实现次有效阅读10000         阅读次数=活动预算/阅读单价</div>
                 <Form.Item>
-                  <Button type="primary" htmltype="submit" className={style.btn}>下一步</Button>
+                  <Button type="primary" htmlType="submit" className={style.btn}>下一步</Button>
+                  <Link to="/main/selectmateria">下一步</Link>
                 </Form.Item>
             </Form>
         </div>

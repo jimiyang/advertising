@@ -28,7 +28,7 @@ class MenuApp extends Component {
               name: '已结单的任务',
               ico: 'account-book',
               children: [
-                {id: 30, name: '新建推广活动', url: '/main/option3'}
+                {id: 30, name: '已接单任务', url: '/main/havedtask'}
               ]
             },
             {

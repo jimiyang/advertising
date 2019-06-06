@@ -38,10 +38,13 @@ export default {
       path: '/main',
       component: '../layouts/index.js',
       routes: [ //.代表src/pages
-        {path: '/main/createactivity', component: './mypromotion/createactivity'},
-        {path: '/main/myactivity', component: './mypromotion/myactivity'},
-        {path: '/main/materiallist', component: './mypromotion/materiallist'},
-        {path: '/main/selectmateria', component: './mypromotion/selectmateria'}
+        {path: '/main/createactivity', component: './mypromotion/createactivity'}, //创建推广活动
+        {path: '/main/myactivity', component: './mypromotion/myactivity'}, //我的推广活动
+        {path: '/main/materiallist', component: './mypromotion/materiallist'}, //素材管理
+        {path: '/main/selectmateria', component: './mypromotion/selectmateria'}, //选择素材
+        {path: '/main/editmateria', component: './mypromotion/editmateria'}, //编辑素材
+        {path: '/main/havedtask', component: './taskmanagement/havedtask'}, //已接单任务
+        {path: '/main/advertdetail', component: './taskmanagement/advertdetail'}, //查看活动/审核接单
       ]
     },
   ]
