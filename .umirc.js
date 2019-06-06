@@ -45,6 +45,9 @@ export default {
         {path: '/main/editmateria', component: './mypromotion/editmateria'}, //编辑素材
         {path: '/main/havedtask', component: './taskmanagement/havedtask'}, //已接单任务
         {path: '/main/advertdetail', component: './taskmanagement/advertdetail'}, //查看活动/审核接单
+        {path: '/main/depositlist', component: './financialaccount/depositlist'}, //充值记录
+        {path: '/main/withdrawallist', component: './financialaccount/withdrawallist'}, //提现记录
+        {path: '/main/consumelist', component: './financialaccount/consumelist'}, //消费记录
       ]
     },
   ]

@@ -1,0 +1,52 @@
+.financialModel{
+  .accountAmount{
+    display: flex;
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 52px;
+    align-items: center;
+    >div{
+      color: #fff;
+      border-radius: 8px;
+      background: -webkit-linear-gradient(left, #FFAF84, #F9698D);
+      background: -o-linear-gradient(right, #FFAF84, #F9698D);
+      background: -moz-linear-gradient(right, #FFAF84, #F9698D);
+      background: linear-gradient(to right, #FFAF84 , #F9698D);
+      padding: 31px 51px 24px 51px;
+      font-size: 36px;
+      margin-right: 30px;
+      min-width: 260px;
+      h1{font-size: 13px;color: #fff;font-weight: normal;}
+    }
+    .lockAmount{
+      background: #F4F4F4;color: #657280;
+      h1{color: #657280;}
+    }
+    p{
+      padding-left: 240px;
+      span{
+        display: inline-block;width: 120px; height: 36px;line-height: 36px;border-radius: 2px;cursor: pointer;
+        background-color: rgba(253, 145, 136, 1); color: #fff;margin-right: 30px;font-size: 14px;
+      }
+      span:last-child{background-color: rgba(255, 255, 255, 1);border: 1px solid rgba(224, 224, 224, 1);color: #657280;}
+    }
+  }
+  .accountType{
+    border-bottom: 1px solid #DFDFDF;border-left: 1px solid #E0E0E0;
+    display: flex; 
+    li{
+      border-top: 1px solid #E0E0E0;border-right: 1px solid #E0E0E0;
+      padding: 9px 31px; color: #657280;font-size: 12px;cursor: pointer;
+    }
+    li.active{background: #F7F7F7;}
+  }
+  .search{
+    display: flex; align-items: center;white-space: nowrap;margin-top: 40px;
+    color: #3B4754;font-size: 13px;
+    li{
+      margin-right: 30px;
+      input, div{border-radius: 2px;height: 36px; line-height: 36px;}
+      button{border-radius: 2px;padding: 0 25px;}
+    }
+  }
+}

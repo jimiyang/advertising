@@ -147,6 +147,7 @@ class HavedTask extends Component{
         <Table
           dataSource={orderData}
           columns={columns}
+          rowKey={record => record.order_id}
           pagination={pagination}
           className="table"
         />
