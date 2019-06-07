@@ -1,11 +1,15 @@
 import React, {Component} from 'react';
-import {DatePicker, Table, Select, Input, Button} from 'antd';
+import {DatePicker, Table, Select, Input, Button, Modal, Radio} from 'antd';
 import style from './style.less';
+import WithdrawList from './withdrawallist'; //提现记录
+import ConsumeList from './consumelist'; //消费记录
+import RechargeModel from '../components/rechargeModel'; //充值modal
 const {Option} = Select; 
 class DepositList extends Component{
   constructor(props) {
     super(props);
     this.state = {
+      isActive: 0,
       depositData: [
         {
           id: 1,
@@ -21,13 +25,29 @@ class DepositList extends Component{
       ],
       pagination: {
         size: 'small'
-      }
+      },
+      isVisible: true
     }
+  }
+  //切换记录列表
+  accountTypeEvent = (index) => {
+    this.setState({isActive: index});
+  }
+  //充值
+  SaveMoneyEvent = () => {
+    alert(1);
+  }
+  closeEvent = () => {
+    this.setState({
+      isVisible: false
+    });
   }
   render(){
     const {
+      isActive,
       depositData,
-      pagination
+      pagination,
+      isVisible
     } = this.state;
     const columns = [
       {
@@ -73,54 +93,74 @@ class DepositList extends Component{
     ];
     return(
       <div className={style.financialModel}>
+        <Modal
+          visible={isVisible}
+          width={510}
+          onCancel={this.closeEvent}
+          footer={
+            <Button type="primary">确定</Button>
+          }
+        >
+          <RechargeModel />
+        </Modal>
         <h1 className="nav-title">账户详情</h1>
         <div className={style.accountAmount}>
           <div>
-            4
-            <h1>账户可用余额</h1>
-          </div>
-          <div className={style.lockAmount}>
-            4327849
-            <h1>账户可用余额</h1>
+            <div className={style.accountItems}>
+              4
+              <h1>账户可用余额</h1>
+            </div>
+            <div className={style.lockAmount}>
+              4327849
+              <h1>账户可用余额</h1>
+            </div>
           </div>
           <p>
-            <span>充值</span>
+            <span onClick={this.SaveMoneyEvent.bind(this)}>充值</span>
             <span>提现</span>
           </p>
         </div>
         <ul className={style.accountType}>
-          <li className={style.active}>充值记录</li>
-          <li>提现记录</li>
-          <li>消费记录</li>
+          <li className={isActive === 0 ? style.active : null} onClick={this.accountTypeEvent.bind(this, 0)}>充值记录</li>
+          <li className={isActive === 1 ? style.active : null} onClick={this.accountTypeEvent.bind(this, 1)}>提现记录</li>
+          <li className={isActive === 2 ? style.active : null} onClick={this.accountTypeEvent.bind(this, 2)}>消费记录</li>
         </ul>
-        <ul className={style.search}>
-          <li>
-            创建时间
-            <DatePicker className="w150 ml10" />
-            <DatePicker className="ml10 w150" />
-          </li>
-          <li>
-            充值单号
-            <Input className="w180 ml10" />
-          </li>
-          <li>
-            创建时间
-            <Select defaultValue="" className="w180 ml10">
-              <Option value="">全部</Option>
-              <Option value={0}>线上充值</Option>
-            </Select>
-          </li>
-          <li>
-            <Button type="primary">查询</Button>
-          </li>
-        </ul>
-        <Table
-          dataSource={depositData}
-          columns={columns}
-          rowKey={record => record.id}
-          pagination={pagination}
-          className="table"
-        />
+        <div className={isActive === 1 ? null : 'hide'}>
+          <WithdrawList />
+        </div>
+        <div className={isActive === 2 ? null : 'hide'}>
+          <ConsumeList />
+        </div>
+        <div className={isActive === 0 ? null : 'hide'}>
+          <ul className={style.search}>
+            <li>
+              创建时间
+              <DatePicker className="w150 ml10" />
+              <DatePicker className="ml10 w150" />
+            </li>
+            <li>
+              充值单号
+              <Input className="w180 ml10" />
+            </li>
+            <li>
+              创建时间
+              <Select defaultValue="" className="w180 ml10">
+                <Option value="">全部</Option>
+                <Option value={0}>线上充值</Option>
+              </Select>
+            </li>
+            <li>
+              <Button type="primary">查询</Button>
+            </li>
+          </ul>
+          <Table
+            dataSource={depositData}
+            columns={columns}
+            rowKey={record => record.id}
+            pagination={pagination}
+            className="table"
+          />
+        </div>
       </div>
     )
   }

@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
-import {Input, DatePicker, Form, Radio} from 'antd';
+import {Input, DatePicker, Form, Radio, Button} from 'antd';
 import style from './style.less';
-import { Button } from 'antd-mobile';
 import router from 'umi/router';
 import Link from 'umi/link';
 class CreateAdvertity extends Component {
@@ -26,12 +25,11 @@ class CreateAdvertity extends Component {
     console.log(e);
   }
   createEvent = (e) => {
-    //e.preventDefault();
+    e.preventDefault();
     this.props.form.validateFields((err) => {
       if (!err) {
-        return;
+        console.log(err);
       }
-      console.log(1);
     })
     //router.push('/main/selectmateria');
   }

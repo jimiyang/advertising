@@ -11,6 +11,10 @@ input{border-radius: 2px;}
 .w150{width: 150px;}
 .w180{width: 180px;}
 .radius2{border-radius: 2px;}
+.hide{display: none;}
+.ant-modal-content{border-radius: 2px;}
+.ant-modal-footer{text-align: center;background: #F6F6F6;height: 62px;}
+.ant-btn{border-radius: 2px;height: 36px;line-height: 36px;padding:0 25px;}
 .login-blocks{
   width: 440px;
   height: 560px;
