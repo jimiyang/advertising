@@ -41,8 +41,30 @@ class MenuApp extends Component {
                 {id: 42, name: '消费记录', url: '/main/consumelist'}
               ]
             }
+          ],
+          panes: [
+            {
+                id: 6,
+                name: '流量主',
+                ico: 'money-collect',
+                children: [
+                  {id: 60, name: '充值记录', url: '/main/depositlist'},
+                  {id: 61, name: '提现记录', url: '/main/withdrawallist'},
+                  {id: 62, name: '消费记录', url: '/main/consumelist'}
+                ]    
+            }
           ]
         };
+    }
+    componentWillMount() {
+      
+    }
+    componentWillReceiveProps(props) {
+      console.log(props.id);
+      console.log(`切换了${props.id}`);
+      if (props.id === 1) {
+        this.setState({menuPanes: this.state.panes});
+      }
     }
     handleClick(pane){
         this.props.handleClick(pane);

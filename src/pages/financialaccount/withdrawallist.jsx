@@ -22,7 +22,7 @@ class WithdrawList extends Component{
     };
   }
   componentWillMount() {
-    console.log('提现记录');
+    //console.log('提现记录');
   }
   render(){
     const {

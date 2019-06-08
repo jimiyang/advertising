@@ -23,7 +23,7 @@ class ConsumeList extends Component{
     };
   }
   componentWillMount() {
-    console.log('消费记录');
+    //console.log('消费记录');
   }
   render(){
     const {

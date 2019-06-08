@@ -200,10 +200,21 @@ input{border-radius: 2px;}
 .header-blocks{
   height: 70px;
   background: #fff;
-  text-align: center;
+  text-align: right;
   line-height: 70px;
   border-bottom: 1px solid #D9D9D9;
+  display: flex;align-items: center;justify-content: flex-end;
+  padding-right: 78px;
 }
+.header-blocks label{vertical-align: middle; width: 31px;height: 31px;border-radius: 50%;display: inline-block;border: 1px solid #000;overflow: hidden;}
+.header-blocks label img{max-width: 100%; max-height: 100%;vertical-align: top;}
+.header-blocks div{margin-left: 28px;}
+.header-blocks span.username{padding-left: 8px;padding-right: 10px;display: inline-block; width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: middle;}
+.header-blocks .ant-btn{padding: 0 20px;}
 .content-blocks{
   padding: 31px 78px 0 78px;
   min-height: 360px;

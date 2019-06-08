@@ -14,14 +14,21 @@ class BasicLayout extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      redirect: false
+      redirect: false,
+      id: ''
     }
   }
   componentWillMount() {
     //console.log(this.props.location.pathname);
+    console.log(this.props);
   }
   handleClick = (pane) => {
     router.push(pane.url);
+  }
+  changeRolesEvent = () => {
+    alert(2);
+    this.setState({id: 1});
+    //window.localStorage.setItem('change', 111111);
   }
   render() {
     return (
@@ -33,10 +40,10 @@ class BasicLayout extends Component {
               <div className="logo">
                 <img src={require('../assets/logo.png')} />
               </div>
-              <Menu handleClick={this.handleClick.bind(this)}/>
+              <Menu handleClick={this.handleClick.bind(this)} id={this.state.id} />
             </Sider>
             <Layout>
-              <Header />
+              <Header changeRolesEvent={this.changeRolesEvent} />
               <Content className="content-blocks">
                 {this.props.location.pathname === '/main' ? <Main /> : this.props.children}
               </Content>

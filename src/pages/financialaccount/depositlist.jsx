@@ -4,6 +4,7 @@ import style from './style.less';
 import WithdrawList from './withdrawallist'; //提现记录
 import ConsumeList from './consumelist'; //消费记录
 import RechargeModel from '../components/rechargeModel'; //充值modal
+import WidthdrawModel from '../components/withdrawModel'; //提现model
 const {Option} = Select; 
 class DepositList extends Component{
   constructor(props) {
@@ -26,7 +27,8 @@ class DepositList extends Component{
       pagination: {
         size: 'small'
       },
-      isVisible: true
+      isVisible: false, //是否显示充值弹层
+      isDrawVisible: true
     }
   }
   //切换记录列表
@@ -35,11 +37,16 @@ class DepositList extends Component{
   }
   //充值
   SaveMoneyEvent = () => {
-    alert(1);
+    this.setState({isVisible: true});
+  }
+  //提现
+  WidthdrawEvent = () => {
+    this.setState({isDrawVisible: true});
   }
   closeEvent = () => {
     this.setState({
-      isVisible: false
+      isVisible: false,
+      isDrawVisible: false
     });
   }
   render(){
@@ -47,7 +54,8 @@ class DepositList extends Component{
       isActive,
       depositData,
       pagination,
-      isVisible
+      isVisible,
+      isDrawVisible
     } = this.state;
     const columns = [
       {
@@ -103,6 +111,16 @@ class DepositList extends Component{
         >
           <RechargeModel />
         </Modal>
+        <Modal
+          visible={isDrawVisible}
+          width={510}
+          onCancel={this.closeEvent}
+          footer={
+            <Button type="primary">确定</Button>
+          }
+        >
+          <WidthdrawModel />
+        </Modal>
         <h1 className="nav-title">账户详情</h1>
         <div className={style.accountAmount}>
           <div>
@@ -117,7 +135,7 @@ class DepositList extends Component{
           </div>
           <p>
             <span onClick={this.SaveMoneyEvent.bind(this)}>充值</span>
-            <span>提现</span>
+            <span onClick={this.WidthdrawEvent.bind(this)}>提现</span>
           </p>
         </div>
         <ul className={style.accountType}>
