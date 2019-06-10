@@ -20,7 +20,7 @@ class BasicLayout extends Component {
   }
   componentWillMount() {
     //console.log(this.props.location.pathname);
-    console.log(this.props);
+    //console.log(this.props);
   }
   handleClick = (pane) => {
     router.push(pane.url);

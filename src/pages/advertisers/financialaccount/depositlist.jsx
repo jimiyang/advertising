@@ -3,8 +3,8 @@ import {DatePicker, Table, Select, Input, Button, Modal, Radio} from 'antd';
 import style from './style.less';
 import WithdrawList from './withdrawallist'; //提现记录
 import ConsumeList from './consumelist'; //消费记录
-import RechargeModel from '../components/rechargeModel'; //充值modal
-import WidthdrawModel from '../components/withdrawModel'; //提现model
+import RechargeModel from '../../components/rechargeModel'; //充值modal
+import WidthdrawModel from '../../components/withdrawModel'; //提现model
 const {Option} = Select; 
 class DepositList extends Component{
   constructor(props) {
@@ -28,7 +28,7 @@ class DepositList extends Component{
         size: 'small'
       },
       isVisible: false, //是否显示充值弹层
-      isDrawVisible: true
+      isDrawVisible: false
     }
   }
   //切换记录列表

@@ -40,17 +40,70 @@ class MenuApp extends Component {
                 {id: 41, name: '提现记录', url: '/main/withdrawallist'},
                 {id: 42, name: '消费记录', url: '/main/consumelist'}
               ]
+            },
+            {
+              id: 5,
+              name: '我的财务支出',
+              ico: 'money-collect',
+              children: [
+                {id: 40, name: '充值记录', url: '/main/depositlist'},
+                {id: 41, name: '提现记录', url: '/main/withdrawallist'},
+                {id: 42, name: '消费记录', url: '/main/consumelist'}
+              ]
+            },
+            {
+              id: 6,
+              name: '接单赚钱',
+              ico: 'money-collect',
+              children: [
+                {id: 60, name: '我授权的公众号', url: '/main/pubaccount'},
+                {id: 61, name: '我要接单赚钱', url: '/main/myorder'},
+                {id: 62, name: '已接广告任务', url: '/main/adtask'}
+              ]    
+            },
+            {
+              id: 7,
+              name: '员工管理',
+              ico: 'money-collect',
+              children: [
+                {id: 70, name: '添加员工', url: '/main/add'},
+                {id: 71, name: '员工列表', url: '/main/employesslist'}
+              ]    
+            },
+            {
+              id: 8,
+              name: '广告主管理',
+              ico: 'money-collect',
+              children: []    
+            },
+            {
+              id: 9,
+              name: '流量主管理',
+              ico: 'money-collect',
+              children: []    
+            },
+            {
+              id: 10,
+              name: '提现管理',
+              ico: 'money-collect',
+              children: []    
+            },
+            {
+              id: 11,
+              name: '活动管理',
+              ico: 'money-collect',
+              children: []    
             }
           ],
           panes: [
             {
                 id: 6,
-                name: '流量主',
+                name: '接单赚钱',
                 ico: 'money-collect',
                 children: [
-                  {id: 60, name: '充值记录', url: '/main/depositlist'},
-                  {id: 61, name: '提现记录', url: '/main/withdrawallist'},
-                  {id: 62, name: '消费记录', url: '/main/consumelist'}
+                  {id: 60, name: '我授权的公众号', url: '/main/pubaccount'},
+                  {id: 61, name: '我要接单赚钱', url: '/main/myorder'},
+                  {id: 62, name: '已接广告任务', url: '/main/adtask'}
                 ]    
             }
           ]
@@ -60,8 +113,8 @@ class MenuApp extends Component {
       
     }
     componentWillReceiveProps(props) {
-      console.log(props.id);
-      console.log(`切换了${props.id}`);
+      //console.log(props.id);
+      //console.log(`切换了${props.id}`);
       if (props.id === 1) {
         this.setState({menuPanes: this.state.panes});
       }
@@ -74,7 +127,7 @@ class MenuApp extends Component {
             <div className="menu-blocks">
                 <Menu
                     defaultSelectedKeys={['1']}
-                    defaultOpenKeys={['0']}
+                    defaultOpenKeys={['7']}
                     mode="inline"
                     theme="dark"
                 >

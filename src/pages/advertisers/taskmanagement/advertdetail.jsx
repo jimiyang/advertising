@@ -108,7 +108,7 @@ class AdvertDetail extends Component{
             活动素材：
             <div className={style.coverimg}>
               <p>展示封面标题，点击可查看详情</p>
-              <img src={require('../../assets/media-ico.jpg')} />
+              <img src={require('../../../assets/media-ico.jpg')} />
             </div>
           </li>
           <li>

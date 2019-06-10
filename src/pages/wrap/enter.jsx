@@ -27,7 +27,7 @@ class Enter extends Component {
           <li>
             <h1>媒体主</h1>
             <p>广告丰富品相好，价格可观收入多</p>
-            <img src={require('../../assets/media-ico.jpg')} style={{marginTop: '60px'}}/>
+            <img src={require('../../assets/advert-ico.jpg')} style={{marginTop: '60px'}}/>
             <a href="">入住联拓推</a>
           </li>
         </ul>

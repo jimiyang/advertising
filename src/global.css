@@ -2,19 +2,23 @@
 html, body, #root {height: 100%; background: #fff;}
 body,div,span,a,ul,li,dl,dd,dt,h1,h2,h3,p{margin: 0;padding:0;list-style: none;}
 h1,h2{font-size: 12px; font-weight: normal;}
-input{border-radius: 2px;}
+em{list-style-type: none;font-style: normal;}
+input, .radius2, .ant-input, .ant-select-selection{border-radius: 2px;}
 .g-tl{text-align: left;}
 .g-tc{text-align: center;}
 .ml10{margin-left: 10px;}
+.ml40{margin-left: 40px;}
 .mr20{margin-right: 20px;}
 .mt40{margin-top: 40px;}
+.mb10{margin-bottom: 10px;}
 .w150{width: 150px;}
 .w180{width: 180px;}
-.radius2{border-radius: 2px;}
+.w260{width: 260px;}
 .hide{display: none;}
 .ant-modal-content{border-radius: 2px;}
 .ant-modal-footer{text-align: center;background: #F6F6F6;height: 62px;}
 .ant-btn{border-radius: 2px;height: 36px;line-height: 36px;padding:0 25px;}
+.blue-color{color: #498DFF;}
 .login-blocks{
   width: 440px;
   height: 560px;
