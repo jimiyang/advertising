@@ -80,13 +80,18 @@ class MenuApp extends Component {
               id: 9,
               name: '流量主管理',
               ico: 'money-collect',
-              children: []    
+              children: [
+                {id: 91, name: '流量主管理列表', url: '/main/flowlist'},
+                {id: 92, name: '流量主账号信息', url: '/main/accountinfo'}
+              ]    
             },
             {
               id: 10,
               name: '提现管理',
               ico: 'money-collect',
-              children: []    
+              children: [
+                {id: 100, name: '提现管理列表', url: '/main/cashlist'},
+              ]    
             },
             {
               id: 11,
@@ -127,7 +132,7 @@ class MenuApp extends Component {
             <div className="menu-blocks">
                 <Menu
                     defaultSelectedKeys={['1']}
-                    defaultOpenKeys={['7']}
+                    defaultOpenKeys={['9']}
                     mode="inline"
                     theme="dark"
                 >

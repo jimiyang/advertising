@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import {Table, Popconfirm, message, Button, Input, Select} from 'antd';
+import {Table, Popconfirm, message, Button, Input, Select, Modal} from 'antd';
 import style from './style.less';
+import AddEmployess from '../../components/addemployess';
 const Option = Select.Option;
 class EmployessList extends Component{
   constructor(props) {
@@ -14,15 +15,22 @@ class EmployessList extends Component{
           phone: '2312321321321',
           gmt_time: '2019-12-02 12:12:12'
         }
-      ]
+      ],
+      isAddVisible: false
     };
   }
   confirm = () => {
     message.warning('重置成功');
   }
+  closeEvent = () => {
+    this.setState({
+      isAddVisible: false
+    })
+  }
   render() {
     const {
-      employessData
+      employessData,
+      isAddVisible
     } = this.state;
     const columns = [
       {
@@ -74,6 +82,19 @@ class EmployessList extends Component{
     ];
     return(
       <div className={style.employess}>
+        <Modal
+          visible={isAddVisible}
+          onCancel={this.closeEvent.bind(this)}
+          width={510}
+          footer={
+            <div>
+              <Button type="primary">保存</Button>
+              <Button style={{marginLeft: '22px'}} onClick={this.closeEvent.bind(this)}>返回</Button>
+            </div>
+          }
+        >
+          <AddEmployess />
+        </Modal>
         <h1 className="nav-title">员工管理<Button type="primary">添加员工</Button></h1>
         <ul className={style.search}>
           <li>
@@ -94,6 +115,7 @@ class EmployessList extends Component{
           </li>
           <li>
             <Button type="primary">查询</Button>
+            <Button className="ml10">清空</Button>
           </li>
         </ul>
         <Table

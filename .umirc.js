@@ -54,6 +54,9 @@ export default {
         {path: '/main/adtask', component: './flowmain/order_makemoney/adtask'}, //已接广告任务(流量主)
         {path: '/main/add', component: './administrator/employees/add'}, //添加员工(天目管理员)
         {path: '/main/employesslist', component: './administrator/employees/employesslist'}, //员工列表(天目管理员)
+        {path: '/main/flowlist', component: './administrator/flowmainmangement/flowlist'}, //流量主管理列表(天目管理员)
+        {path: '/main/accountinfo', component: './administrator/flowmainmangement/accountinfo'}, //流量主账号信息(天目管理员)
+        {path: '/main/cashlist', component: './administrator/cashmangement/cashlist'}, //提现管理(天目管理员)
       ]
     },
   ]
