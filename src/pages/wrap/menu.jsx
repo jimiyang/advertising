@@ -43,54 +43,44 @@ class MenuApp extends Component {
             },
             {
               id: 5,
-              name: '我的财务支出',
-              ico: 'money-collect',
-              children: [
-                {id: 40, name: '充值记录', url: '/main/depositlist'},
-                {id: 41, name: '提现记录', url: '/main/withdrawallist'},
-                {id: 42, name: '消费记录', url: '/main/consumelist'}
-              ]
-            },
-            {
-              id: 6,
               name: '接单赚钱',
               ico: 'money-collect',
               children: [
-                {id: 60, name: '我授权的公众号', url: '/main/pubaccount'},
-                {id: 61, name: '我要接单赚钱', url: '/main/myorder'},
-                {id: 62, name: '已接广告任务', url: '/main/adtask'}
+                {id: 50, name: '我授权的公众号', url: '/main/pubaccount'},
+                {id: 51, name: '我要接单赚钱', url: '/main/myorder'},
+                {id: 52, name: '已接广告任务', url: '/main/adtask'}
+              ]    
+            },
+            {
+              id: 6,
+              name: '员工管理',
+              ico: 'money-collect',
+              children: [
+                {id: 60, name: '添加员工', url: '/main/add'},
+                {id: 61, name: '员工列表', url: '/main/employesslist'}
               ]    
             },
             {
               id: 7,
-              name: '员工管理',
-              ico: 'money-collect',
-              children: [
-                {id: 70, name: '添加员工', url: '/main/add'},
-                {id: 71, name: '员工列表', url: '/main/employesslist'}
-              ]    
-            },
-            {
-              id: 8,
               name: '广告主管理',
               ico: 'money-collect',
               children: []    
             },
             {
-              id: 9,
+              id: 8,
               name: '流量主管理',
               ico: 'money-collect',
               children: [
-                {id: 91, name: '流量主管理列表', url: '/main/flowlist'},
-                {id: 92, name: '流量主账号信息', url: '/main/accountinfo'}
+                {id: 81, name: '流量主管理列表', url: '/main/flowlist'},
+                {id: 82, name: '流量主账号信息', url: '/main/accountinfo'}
               ]    
             },
             {
-              id: 10,
+              id: 9,
               name: '提现管理',
               ico: 'money-collect',
               children: [
-                {id: 100, name: '提现管理列表', url: '/main/cashlist'},
+                {id: 90, name: '提现管理列表', url: '/main/cashlist'},
               ]    
             },
             {
@@ -132,7 +122,7 @@ class MenuApp extends Component {
             <div className="menu-blocks">
                 <Menu
                     defaultSelectedKeys={['1']}
-                    defaultOpenKeys={['9']}
+                    defaultOpenKeys={['8']}
                     mode="inline"
                     theme="dark"
                 >
