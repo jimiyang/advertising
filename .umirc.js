@@ -57,7 +57,15 @@ export default {
         {path: '/main/flowlist', component: './administrator/flowmainmangement/flowlist'}, //流量主管理列表(天目管理员)
         {path: '/main/accountinfo', component: './administrator/flowmainmangement/accountinfo'}, //流量主账号信息(天目管理员)
         {path: '/main/cashlist', component: './administrator/cashmangement/cashlist'}, //提现管理(天目管理员)
+        {path: '/main/cashdetail', component: './administrator/cashmangement/cashdetail'}, //提现管理详情(天目管理员)
       ]
     },
-  ]
+  ],
+  proxy: {
+    '/base': {
+      target: 'http://192.168.5.27:8000',
+      pathRewrite: { '^/base': '' },
+      changeOrigin: true
+    }
+  }
 }

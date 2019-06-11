@@ -12,6 +12,7 @@ input, .radius2, .ant-input, .ant-select-selection{border-radius: 2px;}
 .mr20{margin-right: 20px;}
 .mt40{margin-top: 40px;}
 .mb10{margin-bottom: 10px;}
+.mt30{margin-top: 30px;}
 .w150{width: 150px;}
 .w180{width: 180px;}
 .w260{width: 260px;}
@@ -20,6 +21,7 @@ input, .radius2, .ant-input, .ant-select-selection{border-radius: 2px;}
 .ant-modal-footer{text-align: center;background: #F6F6F6;height: 62px;}
 .ant-btn{border-radius: 2px;height: 36px;line-height: 36px;padding:0 25px;}
 .blue-color{color: #498DFF;}
+.ant-btn.btn-orange{background: #FD9188;color: #fff;border:1px solid rgba(253, 145, 136, 1)}
 .login-blocks{
   width: 440px;
   height: 560px;
@@ -211,14 +213,10 @@ input, .radius2, .ant-input, .ant-select-selection{border-radius: 2px;}
   display: flex;align-items: center;justify-content: flex-end;
   padding-right: 78px;
 }
-.header-blocks label{vertical-align: middle; width: 31px;height: 31px;border-radius: 50%;display: inline-block;border: 1px solid #000;overflow: hidden;}
+.header-blocks label{vertical-align: middle; width: 31px;height: 31px;border-radius: 50%;display: inline-block;overflow: hidden;}
 .header-blocks label img{max-width: 100%; max-height: 100%;vertical-align: top;}
 .header-blocks div{margin-left: 28px;}
-.header-blocks span.username{padding-left: 8px;padding-right: 10px;display: inline-block; width: 100px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  vertical-align: middle;}
+.header-blocks span.username{padding-left: 8px;padding-right: 10px;display: inline-block;}
 .header-blocks .ant-btn{padding: 0 20px;}
 .content-blocks{
   padding: 31px 78px 0 78px;

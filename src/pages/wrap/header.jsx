@@ -1,13 +1,14 @@
 import React, {Component} from 'react';
 import {Button} from 'antd';
-import Link from 'umi/link';
+import router from 'umi/router';
 class Header extends Component{
-  //loginout = () => {
-    //window.localStorage.removeItem('checkLogin');
-    //router.push('/');
-  //}
   changeRolesEvent = () => {
     this.props.changeRolesEvent();
+  }
+  LoginOutEvent = () => {
+    window.localStorage.removeItem('login_info');
+    window.localStorage.removeItem('login_name');
+    router.push('/');
   }
   render() {
     return(
@@ -15,8 +16,8 @@ class Header extends Component{
         <Button type="primary" onClick={this.changeRolesEvent}>广告主</Button>
         <div>
           <label><img src={require('../../assets/user.jpg')} /></label>
-          <span className="username">哈哈哈发货单煽风点火撒范德萨h复合大师范德萨</span>
-          <Link to="/">[退出]</Link>
+          <span className="username">{window.localStorage.getItem('login_name')}</span>
+          <span className="blue-color" onClick={this.LoginOutEvent.bind(this)}>[退出]</span>
         </div>
       </div>
     );

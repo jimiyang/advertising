@@ -9,7 +9,7 @@ class MenuApp extends Component {
             {
               id: 1,
               name: '首页',
-              url: '',
+              url: '/main',
               ico: 'home',
               children: []
             },

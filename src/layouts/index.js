@@ -7,9 +7,10 @@ import Menu from  '../pages/wrap/menu'; //左侧菜单
 import Header from '../pages/wrap/header'; //头部
 import Main from '../pages/wrap/main'; //主页面
 import Login from '../pages/login'; //登录页
-import Register from '../pages/register'; //注册页
+import api from '../api/api';
 const {Sider, Content} = Layout;
-window.common = common;
+window.common = common; //公共方法
+window.api = api.baseInstance; //公共接口方法
 class BasicLayout extends Component {
   constructor(props) {
     super(props);
@@ -33,7 +34,7 @@ class BasicLayout extends Component {
   render() {
     return (
       <div className="section">
-        { window.localStorage.getItem('checkLogin') === null  ? 
+        { window.localStorage.getItem('login_info') === null  ? 
           <Login /> :
           <Layout>
             <Sider className="sider">
