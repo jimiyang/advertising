@@ -10,17 +10,21 @@ class Login extends Component {
       password: '111qqq'
     }
   }
+  componentWillMount() {
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
+    if (!loginInfo) return false;
+    router.push('/main');
+  }
   login = () => {
-    window.api('/base/login', this.state).then(rs => {
+    window.api.baseInstance('login', this.state).then(rs => {
       if (rs.success === true) {
         message.success(rs.message);
-        window.localStorage.setItem('login_info', rs.success);
-        window.localStorage.setItem('login_name', this.state.loginName);
+        window.localStorage.setItem('login_info', JSON.stringify(rs));
         router.push('/main');
       }
-    }).catch(error => {
-      message.error(error.message);
-    });
+    }).catch(err => {
+      message.error(err.message);
+    })
   }
   ChangeFormEvent = (type, e) => {
     let text = '';
@@ -62,12 +66,6 @@ class Login extends Component {
           <ul>
             <li><Input  placeholder="请输入登录名" onChange={this.ChangeFormEvent.bind(this, 'loginName')} value={loginName} /></li>
             <li><Input  type="password" placeholder="请输入密码" onChange={this.ChangeFormEvent.bind(this, 'password')}  value={password} /></li>
-            <li className="auth-code">
-              <Input />
-              <div className="auth-img">
-                验证码
-              </div>
-            </li>
           </ul>
           <div className="g-tc">
             <Button type="primary" onClick={this.login.bind(this)} className="button">登录</Button>

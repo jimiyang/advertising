@@ -1,29 +1,56 @@
 import React, {Component} from 'react';
-import {DatePicker, Table, Select, Input, Button} from 'antd';
+import {DatePicker, Table, Select, Input, Button, message} from 'antd';
 import style from './style.less';
+import { race } from 'redux-saga/effects';
 const {Option} = Select; 
 class ConsumeList extends Component{
   constructor(props) {
     super(props);
     this.state = {
-      depositData: [
-        {
-          id: 1,
-          deposit_number: 23432143124312,
-          deposit_money: 34231,
-          deposit_type: 0,
-          order_status: 0,
-          gmt_time: '500000000',
-          success_time: '成功'
-        }
-      ],
+      depositData: [],
       pagination: {
-        size: 'small'
+        size: 'small',
+        limit: 10, //每页显示多少条
+        currentPage: 1,
+        total: 0,
+        showQuickJumper: true,
+        showSizeChanger: true,
+        onChange: this.changePage
+      },
+      search: {
+
       }
     };
   }
   componentWillMount() {
-    //console.log('消费记录');
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
+    if (!loginInfo) return false;
+    //因为setState是异步的，他会在render后才生效,加入一个回调函数
+    this.setState({
+      loginName: loginInfo.data.loginName
+    },()=>{
+      this.loadList();
+    });
+  }
+  loadList = () => {
+    const params = {
+      loginName: this.state.loginName
+    };
+    window.api.baseInstance('admin/ad/finance/list', params).then(rs => {
+      this.setState({depositData: rs.data});
+    }).catch(err => {
+      if (err.code === 100000) {
+        this.setState({redirect: true});
+        window.localStorage.removeItem('login_info');
+      }
+      message.error(err.message);
+    });;
+  }
+  changePage = (page) =>  {
+    page = page === 0 ? 1 : page;
+    const pagination = Object.assign(this.state.pagination, {currentPage: page});
+    this.setState({pagination});
+    this.loadList();
   }
   render(){
     const {
@@ -75,7 +102,7 @@ class ConsumeList extends Component{
             <Input className="w180 ml10" />
           </li>
           <li>
-            状态
+            订单状态
             <Select defaultValue="" className="w180 ml10">
               <Option value="">全部</Option>
               <Option value={0}>线上充值</Option>

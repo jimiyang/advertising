@@ -2,21 +2,32 @@ import React, {Component} from 'react';
 import {Button} from 'antd';
 import router from 'umi/router';
 class Header extends Component{
-  changeRolesEvent = () => {
-    this.props.changeRolesEvent();
+  constructor(props) {
+    super(props);
+    this.state = {
+      loginInfo: {},
+      type: ['天目管理员', '广告主', '流量主']
+    }
+  }
+  componentWillMount() {
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
+    if (!loginInfo) return false; 
+    this.setState({loginInfo});
   }
   LoginOutEvent = () => {
     window.localStorage.removeItem('login_info');
-    window.localStorage.removeItem('login_name');
     router.push('/');
   }
   render() {
+    const {
+      type,
+      loginInfo
+    } = this.state;
     return(
       <div className="header-blocks">
-        <Button type="primary" onClick={this.changeRolesEvent}>广告主</Button>
+        <span className="identity-items orange-color">{type[loginInfo.data.merchantType]}</span>
         <div>
-          <label><img src={require('../../assets/user.jpg')} /></label>
-          <span className="username">{window.localStorage.getItem('login_name')}</span>
+          <span className="username">用户名：{loginInfo.data.loginName}</span>
           <span className="blue-color" onClick={this.LoginOutEvent.bind(this)}>[退出]</span>
         </div>
       </div>

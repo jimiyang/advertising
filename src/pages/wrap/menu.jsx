@@ -5,14 +5,16 @@ class MenuApp extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          menuPanes: [
+          defaultMenuData: [
             {
               id: 1,
               name: '首页',
               url: '/main',
               ico: 'home',
               children: []
-            },
+            }
+          ],
+          advertMenuData: [
             {
               id: 2,
               name: '我要推广',
@@ -36,11 +38,11 @@ class MenuApp extends Component {
               name: '我的财务支出',
               ico: 'money-collect',
               children: [
-                {id: 40, name: '充值记录', url: '/main/depositlist'},
-                {id: 41, name: '提现记录', url: '/main/withdrawallist'},
-                {id: 42, name: '消费记录', url: '/main/consumelist'}
+                {id: 40, name: '财务支出记录', url: '/main/depositlist'}
               ]
-            },
+            }
+          ],
+          flowofMainMenu: [
             {
               id: 5,
               name: '接单赚钱',
@@ -50,7 +52,9 @@ class MenuApp extends Component {
                 {id: 51, name: '我要接单赚钱', url: '/main/myorder'},
                 {id: 52, name: '已接广告任务', url: '/main/adtask'}
               ]    
-            },
+            }
+          ],
+          administoraData: [
             {
               id: 6,
               name: '员工管理',
@@ -89,65 +93,67 @@ class MenuApp extends Component {
               ico: 'money-collect',
               children: []    
             }
-          ],
-          panes: [
-            {
-                id: 6,
-                name: '接单赚钱',
-                ico: 'money-collect',
-                children: [
-                  {id: 60, name: '我授权的公众号', url: '/main/pubaccount'},
-                  {id: 61, name: '我要接单赚钱', url: '/main/myorder'},
-                  {id: 62, name: '已接广告任务', url: '/main/adtask'}
-                ]    
-            }
           ]
         };
     }
     componentWillMount() {
-      
-    }
-    componentWillReceiveProps(props) {
-      //console.log(props.id);
-      //console.log(`切换了${props.id}`);
-      if (props.id === 1) {
-        this.setState({menuPanes: this.state.panes});
+      const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
+      if (window.localStorage.getItem('login_info') === null) return false;
+      let data = [];
+      switch(loginInfo.data.merchantType) {
+        case 1:
+          data = this.state.advertMenuData;
+          break;
+        case 2:
+          data = this.state.flowofMainMenu;
+          break;
+        case 3: 
+          data = this.state.administoraData;
+          break;
+        default:
+          data = this.state.advertMenuData;
+          break;
       }
+      data = this.state.defaultMenuData.concat(data);
+      this.setState({defaultmenusData: data});
     }
     handleClick(pane){
-        this.props.handleClick(pane);
+      this.props.handleClick(pane);
     }
     render() {
-        return (
-            <div className="menu-blocks">
-                <Menu
-                    defaultSelectedKeys={['1']}
-                    defaultOpenKeys={['8']}
-                    mode="inline"
-                    theme="dark"
-                >
+      const {
+        defaultmenusData
+      } = this.state;
+      return (
+        <div className="menu-blocks">
+          <Menu
+            defaultSelectedKeys={['1']}
+            defaultOpenKeys={['8']}
+            mode="inline"
+            theme="dark"
+          >
+          {
+            defaultmenusData.map((item, index) => (
+              (item.children.length === 0) ?
+              <Menu.Item key={item.id} onClick={() => this.handleClick(item)}>
+                <Icon type={item.ico} theme="filled" />
+                <span>{item.name}</span>
+              </Menu.Item>
+              :
+              <SubMenu key={item.id} title={<span><Icon type={item.ico} theme="filled" /><span>{item.name}</span></span>}>
                 {
-                    this.state.menuPanes.map((item, index) => (
-                        (item.children.length === 0) ?
-                        <Menu.Item key={item.id} onClick={() => this.handleClick(item)}>
-                            <Icon type={item.ico} theme="filled" />
-                            <span>{item.name}</span>
-                        </Menu.Item>
-                        :
-                        <SubMenu key={item.id} title={<span><Icon type={item.ico} theme="filled" /><span>{item.name}</span></span>}>
-                            {
-                                item.children.map((children) => (
-                                    <Menu.Item  key={children.id} onClick={() => this.handleClick(children)}>
-                                        {children.name}
-                                    </Menu.Item>
-                                ))
-                            }
-                        </SubMenu>
-                    ))
+                  item.children.map((children) => (
+                    <Menu.Item  key={children.id} onClick={() => this.handleClick(children)}>
+                      {children.name}
+                    </Menu.Item>
+                  ))
                 }
-                </Menu>
-            </div>
-        )
+              </SubMenu>
+            ))
+          }
+          </Menu>
+        </div>
+      )
     }
 }
 export default MenuApp;

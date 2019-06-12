@@ -10,7 +10,7 @@ import Login from '../pages/login'; //登录页
 import api from '../api/api';
 const {Sider, Content} = Layout;
 window.common = common; //公共方法
-window.api = api.baseInstance; //公共接口方法
+window.api = api; //公共接口方法
 class BasicLayout extends Component {
   constructor(props) {
     super(props);
@@ -26,11 +26,6 @@ class BasicLayout extends Component {
   handleClick = (pane) => {
     router.push(pane.url);
   }
-  changeRolesEvent = () => {
-    alert(2);
-    this.setState({id: 1});
-    //window.localStorage.setItem('change', 111111);
-  }
   render() {
     return (
       <div className="section">
@@ -44,7 +39,7 @@ class BasicLayout extends Component {
               <Menu handleClick={this.handleClick.bind(this)} id={this.state.id} />
             </Sider>
             <Layout>
-              <Header changeRolesEvent={this.changeRolesEvent} />
+              <Header />
               <Content className="content-blocks">
                 {this.props.location.pathname === '/main' ? <Main /> : this.props.children}
               </Content>

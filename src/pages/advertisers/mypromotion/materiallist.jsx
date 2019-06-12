@@ -88,7 +88,6 @@ class MaterialList extends Component{
           <li>
             <Button type="primary" className="mr20">查询</Button>
             <Button className="mr20">重置</Button>
-            <Button type="primary" className="mr20">添加文章</Button>
           </li>
         </ul>
         <Table

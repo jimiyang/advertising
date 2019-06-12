@@ -1,10 +1,13 @@
 import React, {Component} from 'react';
-import {Form, Input, Icon, Tooltip, Button} from 'antd';
+import {Form, Input, Icon, message, Button} from 'antd';
+import router from 'umi/router';
 import Link from 'umi/link';
+import Redirect from 'umi/redirect';
 class Register extends Component{
   constructor(props) {
     super(props);
     this.state = {
+      redirect: false,
       form: {
         merchantName: '',
         contactName: '',
@@ -23,18 +26,31 @@ class Register extends Component{
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log(values);
+        const form = Object.assign(this.state.form, values);
+        window.api.baseInstance('api/merchant/add', form).then(rs => {
+          message.success(rs.message);
+          router.push('/');
+        }).catch(err => {
+          if (err.code === 100000) {
+            this.setState({redirect: true});
+            window.localStorage.removeItem('login_info');
+          }
+          message.error(err.message);
+        });
       }
     });
   }
   resetEvent = () => {
-    window.history.go(-1);
+    //window.history.go(-1);
+    router.push('/');
   }
   render() {
     const {getFieldDecorator} = this.props.form;
     const {
-      form
+      form,
+      redirect
     } = this.state;
+    if (redirect) return (<Redirect to="/" />);
     return(
       <div className="login-form">
         <div className="header">

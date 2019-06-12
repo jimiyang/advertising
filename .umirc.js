@@ -31,6 +31,7 @@ export default {
     }],
   ],
   routes: [
+    {path: '/relogin', component: './relogin'},
     {path: '/', component: './login'},
     {path: '/register', component: './register'},
     {path: '/enter', component: './wrap/enter'},
@@ -63,7 +64,7 @@ export default {
   ],
   proxy: {
     '/base': {
-      target: 'http://192.168.5.27:8000',
+      target: 'http://192.168.5.204:8000',
       pathRewrite: { '^/base': '' },
       changeOrigin: true
     }

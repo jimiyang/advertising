@@ -10,27 +10,36 @@ class HavedTask extends Component{
     this.state = {
       orderStatus: ['审核中', '审核驳回', '任务执行中', '任务取消', '任务结算中', '任务完成'],
       advertLocal: ['多图文第一条', '多图文第二条', '多图文第三条', '多图文第四条', '多图文第五条', '多图文第六条', '多图文第七条', '多图文第八条'],
-      orderData: [
-        {
-          order_id: 1,
-          order_number: 238903428140312,
-          advert_local: 0,
-          order_status: 1,
-          public_account: '好物指南针',
-          out_amount: 10000.20,
-          reading_price: '23213',
-          reading_number: 9999,
-          real_reading_number: 10100,
-          activity_name: '回复回复华鸿大厦回复的挥洒恢复大师'
-        }
-      ],
+      loginName: '',
+      orderData: [],
       search: {
 
       },
       pagination: {
-        size: 'small'
+        size: 'small',
+        total: 0
       }
     }
+  }
+  componentWillMount() {
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
+    if (!loginInfo) return false;
+    //因为setState是异步的，他会在render后才生效,加入一个回调函数
+    this.setState({
+      loginName: loginInfo.data.loginName
+    },()=>{
+      this.loadList();
+    });
+  }
+  loadList = () => {
+    const params = {
+      loginName: this.state.loginName
+    };
+    window.api.baseInstance('api/ad/mission/list', params).then(rs => {
+      console.log(rs);
+      const pagination = Object.assign(this.state.pagination, {total: rs.total});
+      this.setState({orderData: rs.data, pagination});
+    });
   }
   render() {
     const {
@@ -43,53 +52,53 @@ class HavedTask extends Component{
     const columns = [
       {
         title: '序号',
-        key: 'order_id',
-        dataIndex: 'order_id'
+        key: 'id',
+        dataIndex: 'id'
       },
       {
         title: '订单号',
-        key: 'order_number',
-        dataIndex: 'order_number'
+        key: 'missionId',
+        dataIndex: 'missionId'
       },
       {
         title: '广告位置',
-        key: 'advert_local',
-        dataIndex: 'advert_local'
+        key: 'appArticlePosition',
+        dataIndex: 'appArticlePosition'
       },
       {
         title: '订单状态',
-        key: 'order_status',
-        dataIndex: 'order_status'
+        key: 'missionStatus',
+        dataIndex: 'missionStatus'
       },
       {
         title: '接单公众号',
-        key: 'public_account',
-        dataIndex: 'public_account'
+        key: 'appNickName',
+        dataIndex: 'appNickName'
       },
       {
         title: '预计指出金额',
-        key: 'out_amount',
-        dataIndex: 'out_amount'
+        key: 'adEstimateCost',
+        dataIndex: 'adEstimateCost'
       },
       {
         title: '阅读单价',
-        key: 'reading_price',
-        dataIndex: 'reading_price'
+        key: 'adUnitPrice',
+        dataIndex: 'adUnitPrice'
       },
       {
         title: '接单阅读数',
-        key: 'reading_number',
-        dataIndex: 'reading_number'
+        key: 'missionReadCnt',
+        dataIndex: 'missionReadCnt'
       },
       {
         title: '实际阅读',
-        key: 'real_reading_number',
-        dataIndex: 'real_reading_number'
+        key: 'missionRealReadCnt',
+        dataIndex: 'missionRealReadCnt'
       },
       {
-        title: '实际阅读',
-        key: 'activity_name',
-        dataIndex: 'activity_name'
+        title: '活动名称',
+        key: 'campaignName',
+        dataIndex: 'campaignName'
       },
       {
         title: '操作',
@@ -97,7 +106,7 @@ class HavedTask extends Component{
         dataIndex: '',
         render: (record) => (
           <div className="opeartion-items">
-            <span><Link to={`/main/advertdetail?id=${record.order_id}`}>查看活动</Link></span>
+            <span><Link className="blue-color" to={`/main/advertdetail?id=${record.missionId}`}>查看活动</Link></span>
             <span>审核接单</span>
           </div>
         )
@@ -147,7 +156,7 @@ class HavedTask extends Component{
         <Table
           dataSource={orderData}
           columns={columns}
-          rowKey={record => record.order_id}
+          rowKey={record => record.id}
           pagination={pagination}
           className="table"
         />
