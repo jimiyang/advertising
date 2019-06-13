@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import {DatePicker, Table, Select, Input, Button} from 'antd';
+import {DatePicker, Table, Select, Input, Button, message, Popconfirm} from 'antd';
 import Link from 'umi/link';
+import Redirect from 'umi/redirect';
 import style from './style.less';
 
 const {Option} = Select;
@@ -8,16 +9,26 @@ class HavedTask extends Component{
   constructor(props) {
     super(props);
     this.state = {
-      orderStatus: ['审核中', '审核驳回', '任务执行中', '任务取消', '任务结算中', '任务完成'],
-      advertLocal: ['多图文第一条', '多图文第二条', '多图文第三条', '多图文第四条', '多图文第五条', '多图文第六条', '多图文第七条', '多图文第八条'],
+      redirect: false,
       loginName: '',
       orderData: [],
       search: {
-
+        dateStart: '',
+        dateEnd: '',
+        missionStatus: '', //订单状态
+        campaignName: '', //活动名称
+        missionId: '', //订单号
+        appArticlePosition: '' //广告位置
       },
       pagination: {
         size: 'small',
-        total: 0
+        showQuickJumper: true,
+        showSizeChanger: true,
+        total: 0,
+        currentPage: 1,
+        limit: 10,
+        onChange: this.changePage,
+        onShowSizeChange: this.onShowSizeChange
       }
     }
   }
@@ -32,19 +43,82 @@ class HavedTask extends Component{
     });
   }
   loadList = () => {
+    const {pagination, search} = this.state;
     const params = {
-      loginName: this.state.loginName
+      loginName: this.state.loginName,
+      currentPage: pagination.currentPage,
+      limit: pagination.limit,
+      ...search
     };
     window.api.baseInstance('api/ad/mission/list', params).then(rs => {
-      console.log(rs);
       const pagination = Object.assign(this.state.pagination, {total: rs.total});
       this.setState({orderData: rs.data, pagination});
+    }).catch(err => {
+      if (err.code === 100000) {
+        this.setState({redirect: true});
+        window.localStorage.removeItem('login_info');
+      }
+      message.error(err.message);
+    });
+  }
+  changePage = (page) => {
+    page = page === 0 ? 1 : page;
+    const pagination = Object.assign(this.state.pagination, {currentPage: page});
+    this.setState({pagination});
+    this.loadList();
+  }
+  //改变每页条数事件
+  onShowSizeChange = (current, size) => {
+    let p = this.state.pagination;
+    p = Object.assign(p, {currentPage: current, limit: size});
+    this.setState({pagination: p});
+    this.loadList();
+  }
+  changeFormEvent = (type, e, value2) => {
+    let search = this.state.search;
+    let obj = {};
+    switch(typeof e) {
+      case 'object':
+        if (type === 'dateStart' || type === 'dateEnd') {
+          obj = {[type]: value2};
+        } else{
+          obj = {[type]: e.target.value};
+        }
+        break;
+      case 'number':
+        obj = {[type]: e};
+        break;
+      default:
+        obj = {[type]: e};
+        break;
+    }
+    search = Object.assign(search, obj);
+    this.setState({search});
+  }
+  //搜索
+  searchEvent = () => {
+    this.loadList();
+  }
+  //结算
+  settleEvent = (id) => {
+    const params = {
+      missionId: id,
+      loginName: this.state.loginName
+    };
+    window.api.baseInstance('flow/mission/settle', params).then(rs => {
+      message.success(rs.message);
+      this.loadList();
+    }).catch(err => {
+      if (err.code === 100000) {
+        this.setState({redirect: true});
+        window.localStorage.removeItem('login_info');
+      }
+      message.error(err.message);
     });
   }
   render() {
     const {
-      orderStatus,
-      advertLocal,
+      redirect,
       orderData,
       search,
       pagination
@@ -63,12 +137,18 @@ class HavedTask extends Component{
       {
         title: '广告位置',
         key: 'appArticlePosition',
-        dataIndex: 'appArticlePosition'
+        dataIndex: 'appArticlePosition',
+        render: (record) => (
+          <span>{window.common.advertLocal[record-1]}</span>
+        )
       },
       {
         title: '订单状态',
         key: 'missionStatus',
-        dataIndex: 'missionStatus'
+        dataIndex: 'missionStatus',
+        render: (record) => (
+          <span>{window.common.orderStatus[record - 10]}</span>
+        )
       },
       {
         title: '接单公众号',
@@ -106,51 +186,59 @@ class HavedTask extends Component{
         dataIndex: '',
         render: (record) => (
           <div className="opeartion-items">
-            <span><Link className="blue-color" to={`/main/advertdetail?id=${record.missionId}`}>查看活动</Link></span>
-            <span>审核接单</span>
+            <Link className="blue-color" to={`/main/advertdetail?id=${record.id}&type=${0}`}>查看活动</Link>
+            {record.missionStatus === 11 ? <Link className="blue-color ml10" to={`/main/advertdetail?id=${record.id}&type=${1}`}>审核接单</Link> : null}
+            {
+              record.missionStatus === 13 ?
+                <Popconfirm
+                  title="是否要进行结算?"
+                  onConfirm={this.settleEvent.bind(this, record.id)}
+                  okText="是"
+                  cancelText="否"
+                >
+                <span>结算</span>
+              </Popconfirm> : null
+            }
           </div>
         )
       }
     ];
+    if (redirect) return (<Redirect to="/relogin" />);
     return(
       <div className={style.task}>
         <h1 className="nav-title">账户管理</h1>
         <dl className={style.search}>
           <dt style={{width: '100%'}}>
             订单时间
-            <DatePicker className="ml10" />
-            <DatePicker className="ml10"/>   
+            <DatePicker className="ml10" format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
+            <DatePicker className="ml10" format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />   
           </dt>
           <dd>
             订单选择
-            <Select defaultValue="" className="w180 ml10">
+            <Select defaultValue={search.missionStatus} onChange={this.changeFormEvent.bind(this, 'missionStatus')} className="w180 ml10">
               <Option value="">全部</Option>
               {
-                orderStatus.map((item, index) => (
-                  <Option key={index} value={index}>{item}</Option>
-                ))
+                window.common.orderStatus.map((item, index) => (<Option key={index} value={index + 10}>{item}</Option>))
               }
             </Select>
           </dd>
           <dd>
             广告位置
-            <Select defaultValue="" className="w180 ml10">
+            <Select defaultValue={search.appArticlePosition} onChange={this.changeFormEvent.bind(this, 'appArticlePosition')} className="w180 ml10">
               <Option value="">全部</Option>
               {
-                advertLocal.map((item, index) => (
-                  <Option key={index} value={index}>{item}</Option>
-                ))
+                window.common.advertLocal.map((item, index) => (<Option key={index} value={index + 1}>{item}</Option>))
               }
             </Select>
           </dd>
           <dd>
-            订单号<Input className="w180 ml10" />
+            订单号<Input className="w180 ml10" value={search.missionId} onChange={this.changeFormEvent.bind(this, 'missionId')} />
           </dd>
           <dd>
-            活动名称<Input className="w180 ml10" />
+            活动名称<Input className="w180 ml10" value={search.campaignName} onChange={this.changeFormEvent.bind(this, 'campaignName')} />
           </dd>
           <dd>
-            <Button type="primary">查询</Button>
+            <Button type="primary" onClick={this.searchEvent.bind(this)}>查询</Button>
           </dd>
         </dl>
         <Table

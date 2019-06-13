@@ -10,10 +10,12 @@ input, .radius2, .ant-input, .ant-select-selection{border-radius: 2px;}
 .ml10{margin-left: 10px;}
 .ml30{margin-left: 30px;}
 .ml40{margin-left: 40px;}
+.mr10{margin-right: 10px;}
 .mr20{margin-right: 20px;}
 .mt40{margin-top: 40px;}
 .mb10{margin-bottom: 10px;}
 .mt30{margin-top: 30px;}
+.m5{margin: 0 5px;}
 .w150{width: 150px;}
 .w180{width: 180px;}
 .w260{width: 260px;}
@@ -21,8 +23,10 @@ input, .radius2, .ant-input, .ant-select-selection{border-radius: 2px;}
 .ant-modal-content{border-radius: 2px;}
 .ant-modal-footer{text-align: center;background: #F6F6F6;height: 62px;}
 .ant-btn{border-radius: 2px;height: 36px;line-height: 36px;padding:0 25px;}
+.ant-btn.ant-btn-sm{height: 24px;line-height: 24px;padding: 0 7px;font-size: 12px;}
 .blue-color{color: #498DFF;}
 .orange-color{color: #FD9188;}
+.red-color{color: #f00;}
 .ant-btn.btn-orange{background: #FD9188;color: #fff;border:1px solid rgba(253, 145, 136, 1)}
 .relogin-blocks{text-align: center;font-size: 16px;position: absolute; left: 50%;top: 50%;margin-top: -135px;margin-left: -140px;}
 .relogin-blocks img{width: 280px;height: 250px;}

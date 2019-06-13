@@ -1,88 +1,140 @@
 import React, {Component} from 'react';
-import {DatePicker, Select, Input, Button, Table} from 'antd';
+import {DatePicker, Select, Input, Button, Table, message, Popconfirm} from 'antd';
 import style from './style.less';
+import Redirect from 'umi/redirect';
 
 const {Option} = Select;
 class MyActivity extends Component{
   constructor(props) {
     super(props);
     this.state = {
-      statusData: ['活动草稿', '审核中', '审核驳回', '待接单', '活动过期', '活动取消', '接单中', '执行中', '执行完成', '活动结束'],
-      activityData: [
-        {
-          activity_id: 1,
-          activity_date: '2019/5/10-2019/5/10',
-          activity_name: '哈哈哈哈哈哈哈哈哈',
-          activity_budget: 1000,
-          price: '0.333',
-          number: 10000,
-          activity_consume: 2000,
-          activity_status: 0
-        },
-        {
-          activity_id: 2,
-          activity_date: '2019/5/10-2019/5/10',
-          activity_name: '哈哈哈哈哈哈哈哈哈',
-          activity_budget: 1000,
-          price: '0.333',
-          number: 10000,
-          activity_consume: 2000,
-          activity_status: 3
-        }
-      ],
+      redirect: false,
+      loginName: '',
+      activityData: [],
       pagination: {
-        size: 'small'
-      }
+        size: 'small',
+        showQuickJumper: true,
+        showSizeChanger: true,
+        total: 0,
+        currentPage: 1,
+        limit: 10,
+        onChange: this.changePage,
+        onShowSizeChange: this.onShowSizeChange
+      },
+      search: {
+        campaignName: '',
+        dateStart: '',
+        dateEnd: '',
+        postStatus: ''
+      },
+      draftTotal: 0,
+      total: 0
     }
+  }
+  componentWillMount() {
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
+    if (!loginInfo) return false;
+    //因为setState是异步的，他会在render后才生效,加入一个回调函数
+    this.setState({
+      loginName: loginInfo.data.loginName
+    },()=>{
+      this.loadList();
+      this.getCount(loginInfo.data.loginName);
+    });
+  }
+  loadList = () => {
+    const {pagination, search, loginName} = this.state;
+    const params = {
+      ...search,
+      loginName,
+      currentPage: pagination.currentPage,
+      limit: pagination.limit
+    };
+    window.api.baseInstance('api/ad/campaign/list', params).then(rs => {
+      const p = Object.assign(pagination, {total: rs.total});
+      this.setState({activityData: rs.data, pagination: p});
+    }).catch(err => {
+      if (err.code === 100000) {
+        this.setState({redirect: true});
+        window.localStorage.removeItem('login_info');
+      }
+      message.error(err.message);
+    });
+  }
+  //获取统计总数
+  getCount = (loginName) => {
+    window.api.baseInstance('api/ad/campaign/getAdCampaignCountByPostStatus', {loginName}).then(rs => {
+      this.setState({total: rs.data.total, draftTotal: rs.data.draftTotal});
+    }).catch(err => {
+      if (err.code === 100000) {
+        this.setState({redirect: true});
+        window.localStorage.removeItem('login_info');
+      }
+      message.error(err.message);
+    });
+  }
+  changePage = (page) => {
+
+  }
+  onShowSizeChange = (current, size) => {
+
+  }
+  cancelEvent = (id) => {
+    console.log(id);
   }
   render() {
     const {
-      statusData,
+      redirect,
       activityData,
-      pagination
+      pagination,
+      total,
+      draftTotal
     } = this.state;
     const columns = [
       {
         title: '序号',
-        key: 'activity_id',
-        dataIndex: 'activity_id'
+        key: 'id',
+        dataIndex: 'id'
       },
       {
         title: '活动周期',
-        key: 'activity_date',
-        dataIndex: 'activity_date'
+        render: (record) => (
+          <span>{record.dateStart}-{record.dateStart}</span>
+        )
       },
       {
         title: '活动名称',
-        key: 'activity_name',
-        dataIndex: 'activity_name'
+        key: 'campaignName',
+        dataIndex: 'campaignName'
       },
       {
         title: '活动预算',
-        key: 'activity_budget',
-        dataIndex: 'activity_budget'
+        key: 'postAmtTotal',
+        dataIndex: 'postAmtTotal'
       },
       {
         title: '阅读单价',
-        key: 'price',
-        dataIndex: 'price'
+        key: 'unitPrice',
+        dataIndex: 'unitPrice'
       },
       {
         title: '任务阅读数',
-        key: 'number',
-        dataIndex: 'number'
+        render: (record) => (
+          <span>{Math.round(record.postAmtTotal / record.unitPrice)}</span>
+        )
       },
       {
         title: '已消耗',
-        key: 'activity_consume',
-        dataIndex: 'activity_consume'
+        render: (record) => (
+          <span>{Math.round(record.postAmtTotal / record.unitPrice) - record.availableCnt}</span>
+        )
       },
       {
         title: '活动状态',
-        key: 'activity_status',
-        dataIndex: 'activity_status',
+        key: 'postStatus',
+        dataIndex: 'postStatus',
         render: (record) => (
-          <span>{statusData[record]}</span>
+          <span>{window.common.postStatus[record - 20]}</span>
         )
       },
       {
@@ -93,11 +145,27 @@ class MyActivity extends Component{
           <div className="opeartion-items">
             <span>查看</span>
             <span>编辑</span>
-            <span>取消</span>
+            {
+              [20, 21, 23].map((item, index) => (
+                record.postStatus === item ?
+                <Popconfirm
+                  key={index}
+                  title="是否要取消?"
+                  onConfirm={this.cancelEvent.bind(this, record)}
+                  okText="是"
+                  cancelText="否"
+                >
+                  <span >取消</span>
+                </Popconfirm>
+                :
+                null
+              ))
+            }
           </div>
         )
       }
     ];
+    if (redirect) return (<Redirect to="/relogin" />);
     return(
       <div className={style.mypromotion}>
         <h1 className="nav-title">我的推广活动</h1>
@@ -105,15 +173,13 @@ class MyActivity extends Component{
             <li>
                 <div></div>
                 <div>
-                  <h1>活动总数</h1>
-                  3
+                  <h1>活动总数</h1>{total}
                 </div>
             </li>
             <li>
                 <div></div>
                 <div>
-                  <h1>未投放活动</h1>
-                  （1）
+                  <h1>未投放活动</h1>{draftTotal}
                 </div>
             </li>
         </ul>
@@ -141,7 +207,7 @@ class MyActivity extends Component{
           dataSource={activityData}
           columns={columns}
           pagination={pagination}
-          rowKey={record => record.activity_id}
+          rowKey={record => record.id}
           className="table"
         />
       </div>

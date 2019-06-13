@@ -1,108 +1,202 @@
 import React, {Component} from 'react';
-import {Button, Radio, Input} from 'antd';
+import {Button, Radio, Input, message} from 'antd';
 import style from './style.less';
+import Redirect from 'umi/redirect';
 const {TextArea} = Input;
 class AdvertDetail extends Component{
-  componentWillMount() {
-    console.log(this.props.location.query.id);
+  constructor(props) {
+    super(props);
+    this.state = {
+      redirect: false,
+      form: {
+        adCampaign: {
+          campaignName: '', //活动名称
+          postStatus: '', //活动状态
+          auditRemark: '', //活动审核意见
+          dateStart: '', //活动开始时间
+          dateEnd: '', //活动结束时间
+          targetGender: '', //男女比例
+          targetMediaCategory: '', //行业标签
+          targetArea: '', //地域
+          adType: '', //活动形式
+          unitPrice: '', //活动阅读单价
+        },
+        adMissionOrder: {
+          missionId: '', //订单号
+          createDate: '', //接单时间
+          appArticlePosition: '', //广告位置
+          missionStatus: '', //订单状态
+          auditRemark: '', //订单审核意见
+          appNickName: '', //接单公众号
+          missionReadCnt: '', //接单笔数
+          adUnitPrice: '', //阅读单价
+        },
+      },
+      params: {
+        missionStatus: 16,
+        loginName: '',
+        audit_remark: '',
+        id: ''
+      },
+      mediaTypeLabel: [],
+      provinceTypeType: [],
+      type: '0'//判断是查看活动页面[0]还是审核接单页面[1]
+    };
   }
-  changeFormEvent = () => {
-    console.log(1);
+  componentWillMount() {
+    if (!this.props.location.query.id) return false;
+    this.initForm(this.props.location.query.id);
+    this.getDictByType('mediaType').then(rs => {
+      this.setState({mediaTypeLabel: rs});
+    });
+    this.getDictByType('provinceType').then(rs => {
+      this.setState({provinceTypeType: rs});
+    });
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
+    if (!loginInfo) return false;
+    const params = Object.assign(this.state.params, {loginName: loginInfo.data.loginName, id: this.props.location.query.id});
+    this.setState({params, type: this.props.location.query.type});
+  }
+  //初始化数据详情
+  initForm = (id) => {
+    const params = {
+      id
+    };
+    window.api.baseInstance('api/ad/mission/getById', params).then(rs => {
+      if (!rs.data) return false;
+      const form = Object.assign(this.state.form, rs.data);
+      this.setState({form});
+    }).catch(err => {
+      if (err.code === 100000) {
+        this.setState({redirect: true});
+        window.localStorage.removeItem('login_info');
+      }
+      message.error(err.message);
+    });
+  }
+  changeFormEvent = (e) => {
+    const params = Object.assign(this.state.params, {audit_remark: e.target.value});
+    this.setState({params});
+  }
+  //获取行业
+  getDictByType = (type) => {
+    return new Promise((resolve, reject) => {
+      window.api.baseInstance('admin/system/dict/getDictByType', {type}).then(rs => {
+        resolve(rs.data);
+      }).catch(err => {
+        if (err.code === 100000) {
+          this.setState({redirect: true});
+          window.localStorage.removeItem('login_info');
+        }
+        message.error(err.message);
+      });
+    });
+  }
+  //审核
+  checkEvent = () => {
+    if(!this.state.params.audit_remark) {
+      message.error('请填写审核意见');
+      return false;
+    }
+    window.api.baseInstance('api/ad/mission/checkMissionOrderById', this.state.params).then(rs => {
+      message.success(rs.message);
+      window.history.go(-1);
+    }).catch(err => {
+      if (err.code === 100000) {
+        this.setState({redirect: true});
+        window.localStorage.removeItem('login_info');
+      }
+      message.error(err.message);
+    });
+  }
+  //返回
+  goBackEvent = () => {
+    window.history.go(-1);
   }
   render() {
+    const {
+      redirect,
+      form,
+      mediaTypeLabel,
+      provinceTypeType,
+      type,
+      params
+    } = this.state;
+    if (redirect) return (<Redirect to="/relogin" />);
     return(
       <div className={style.task}>
         <h1 className="nav-title">已接单的任务 > 查看推广活动</h1>
         <ul className={style.detaillist}>
           <li>
-            订单号：
-            <div></div>
+            订单号：<div>{form.adMissionOrder.missionId}</div>
           </li>
           <li>
-            接单时间：
-            <div></div>
+            接单时间：<div>{window.common.getDate(form.adMissionOrder.createDate, true)}</div>
           </li>
           <li>
-            广告位置：
-            <div></div>
+            广告位置：<div>{window.common.advertLocal[form.adMissionOrder.appArticlePosition]}</div>
           </li>
           <li>
-            订单状态：
-            <div></div>
+            订单状态：<div>{window.common.orderStatus[Number(form.adMissionOrder.missionStatus) - 10]}</div>
           </li>
           <li>
-            订单审核意见：
-            <div></div>
+            订单审核意见：<div  className={style.textarea}>{form.adMissionOrder.auditRemark}</div>
           </li>
           <li>
-            接单公众号：
-            <div></div>
+            接单公众号：<div>{form.adMissionOrder.appNickName}</div>
           </li>
           <li>
-            接单笔数：
-            <div></div>
+            接单笔数：<div>{form.adMissionOrder.missionReadCnt}</div>
           </li>
           <li>
-            阅读单价：
-            <div></div>
+            阅读单价：<div>{form.adMissionOrder.adUnitPrice}</div>
           </li>
           <li>
-            活动名称：
-            <div></div>
+            活动名称：<div>{form.adCampaign.campaignName}</div>
           </li>
           <li>
-            活动状态：
-            <div></div>
+            活动状态：<div>{window.common.postStatus[20 - Number(form.adCampaign.postStatus)]}</div>
           </li>
           <li>
-            活动审核意见：
-            <div className={style.textarea}>
-                的撒范德萨发生的
-            </div>
+            活动审核意见：<div className={style.textarea}>{form.adCampaign.auditRemark}</div>
           </li>
           <li>
             活动日期：
-            <div></div>
+            <div>{form.adCampaign.dateStart} 至 {form.adCampaign.dateEnd}</div>
           </li>
           <li>
             条件设置：
             <div>
               <ul>
                 <li>
-                  <span className={style.stitle}>男女比例</span>
-                  <Radio.Group className="ml10" onChange={this.changeFormEvent.bind(this)}>
-                    <Radio value={1}>不限(默认)</Radio>
-                    <Radio value={2}>男粉多</Radio>
-                    <Radio value={3}>女粉多</Radio>
-                  </Radio.Group>
+                  <span className={style.stitle}>男女比例-{window.common.targetGender[Number(form.adCampaign.targetGender)]}</span>
                 </li>
                 <li>
-                  <span className={style.stitle}>选择行业</span>
-                  <Radio.Group className="ml10" onChange={this.changeFormEvent.bind(this)}>
-                    <Radio value={1}>不限(默认)</Radio>
-                    <Radio value={2}>自定义(查询数据字典的29个标签)</Radio>
-                  </Radio.Group>
-                  <div className={style.tags}>
+                  <span className={style.stitle}>选择行业-{form.adCampaign.targetMediaCategory === "" ? '不限(默认)' : '自定义'}</span>
+                  <div className={`${style.tags} ${form.adCampaign.targetMediaCategory === "" ? 'hide' : null}`}>
                     {
-                    window.common.tagsData.map((item, index) => (
-                        <label key={index} className={index === 1 ? style.active : null}>{item}</label>
-                    ))
+                      mediaTypeLabel.map((item, index) => (
+                        <label key={index} className={item.value === form.adCampaign.targetMediaCategory ? style.active : null}>{item.label}</label>
+                      ))
                     } 
                   </div>
                 </li>
                 <li>
-                  <span className={style.stitle}>选择地域</span>
-                  <Radio.Group className="ml10" onChange={this.changeFormEvent.bind(this)}>
-                    <Radio value={1}>不限(默认)</Radio>
-                    <Radio value={2}>自定义(查询数据字典的身份)</Radio>
-                  </Radio.Group>
+                  <span className={style.stitle}>选择地域-{form.adCampaign.targetArea === "" ? '不限(默认)' : '自定义'}</span>
+                  <div className={`${style.tags} ${form.adCampaign.targetArea === "" ? 'hide' : null}`}>
+                    {
+                      provinceTypeType.map((item, index) => (
+                        <label key={index} className={item.value === form.adCampaign.targetArea ? style.active : null}>{item.label}</label>
+                      ))
+                    } 
+                  </div>
                 </li>
               </ul>  
             </div>
           </li>
           <li>
             活动形式：
-            <div>fsdafdsa</div>
+            <div>{window.common.getAdType(form.adCampaign.adType)}</div>
           </li>
           <li>
             活动素材：
@@ -113,36 +207,24 @@ class AdvertDetail extends Component{
           </li>
           <li>
             阅读单价：
-            <div></div>
-          </li>
-          <li>
-            其他需求：
-            <div className={style.textarea}>
-                的撒范德萨发生的
-            </div>
+            <div>{form.adCampaign.unitPrice}元/次阅读</div>
           </li>
           <li>
             活动效果：
-            <div>预计您的广告将实现次有效阅读10000</div>
+            <div>预计您的广告将实现<em className="red-color m5">{form.adCampaign.availableCnt}</em>次有效阅读</div>
           </li>
-          <li>
-            审核状态：
-            <div>
-              <Radio.Group onChange={this.changeFormEvent.bind(this)}>
-                <Radio value={1}>通过</Radio>
-                <Radio value={2}>不通过</Radio>
-              </Radio.Group>
-            </div>
-          </li>
-          <li>
-            活动审核意见：
-            <div>
-              <TextArea rows={4} className={style.textarea} />
-            </div>
-          </li>
-          <li className={style.btnitems}>
-            <Button type="primary">提交</Button>
-          </li>
+          {
+            type === '1' ? <li>审核状态：<div><Radio value={params.missionStatus} defaultChecked={true}>不通过</Radio></div></li> : null
+          }
+          {
+            type === '1' ? <li>活动审核意见：<div><TextArea rows={4} className={style.textarea} value={params.audit_remark} onChange={this.changeFormEvent.bind(this)} /></div></li> : null
+          }  
+          {
+            type === '1' ?
+            <li className={style.btnitems}><Button type="primary" onClick={this.checkEvent.bind(this)}>提交</Button></li>
+            :
+            <li className="mt30"><Button onClick={this.goBackEvent.bind(this)}>返回</Button></li>
+          } 
         </ul>
       </div>
     )

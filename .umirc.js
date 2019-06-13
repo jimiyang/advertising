@@ -64,7 +64,7 @@ export default {
   ],
   proxy: {
     '/base': {
-      target: 'http://192.168.5.204:8000',
+      target: 'http://192.168.19.173:8000',
       pathRewrite: { '^/base': '' },
       changeOrigin: true
     }
