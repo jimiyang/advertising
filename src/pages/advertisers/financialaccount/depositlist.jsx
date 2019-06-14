@@ -81,6 +81,13 @@ class DepositList extends Component{
     this.setState({pagination});
     this.loadList();
   }
+  //改变每页条数事件
+  onShowSizeChange = (current, size) => {
+    let p = this.state.pagination;
+    p = Object.assign(p, {currentPage: current, limit: size});
+    this.setState({pagination: p});
+    this.loadList();
+  }
   //获取可用余额和冻结余额
   getCaQuery = () => {
     window.api.baseInstance('api/merchant/caQuery', {operatorLoginName: this.state.loginName}).then(rs => {
@@ -165,8 +172,9 @@ class DepositList extends Component{
       if (err.code === 100000) {
         this.setState({redirect: true});
         window.localStorage.removeItem('login_info');
+      } else {
+        message.error(err.message);
       }
-      message.error(err.message); 
     });
   }
   //查看订单详情
@@ -181,8 +189,9 @@ class DepositList extends Component{
       if (err.code === 100000) {
         this.setState({redirect: true});
         window.localStorage.removeItem('login_info');
+      } else {
+        message.error(err.message);
       }
-      message.error(err.message); 
     });
   }
   render(){

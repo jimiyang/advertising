@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import {DatePicker, Select, Input, Button, Table, message, Popconfirm} from 'antd';
 import style from './style.less';
 import Redirect from 'umi/redirect';
+import Link from 'umi/link';
+import router from 'umi/router';
 
 const {Option} = Select;
 class MyActivity extends Component{
@@ -57,8 +59,9 @@ class MyActivity extends Component{
       if (err.code === 100000) {
         this.setState({redirect: true});
         window.localStorage.removeItem('login_info');
+      } else {
+        message.error(err.message);
       }
-      message.error(err.message);
     });
   }
   //获取统计总数
@@ -69,18 +72,69 @@ class MyActivity extends Component{
       if (err.code === 100000) {
         this.setState({redirect: true});
         window.localStorage.removeItem('login_info');
+      } else {
+        message.error(err.message);
       }
-      message.error(err.message);
     });
   }
   changePage = (page) => {
-
+    page = page === 0 ? 1 : page;
+    const pagination = Object.assign(this.state.pagination, {currentPage: page});
+    this.setState({pagination});
+    this.loadList();
   }
+  //改变每页条数事件
   onShowSizeChange = (current, size) => {
-
+    let p = this.state.pagination;
+    p = Object.assign(p, {currentPage: current, limit: size});
+    this.setState({pagination: p});
+    this.loadList();
   }
-  cancelEvent = (id) => {
-    console.log(id);
+  cancelActivityEvent = (item) => {
+    const params = {
+      id: item.id,
+      loginName: this.state.loginName,
+      postStatus: 25
+    };
+    window.api.baseInstance('api/ad/campaign/updatePostStatusById', params).then(rs => {
+      message.success(rs.message);
+      this.loadList();
+    }).catch(err => {
+      if (err.code === 100000) {
+        this.setState({redirect: true});
+        window.localStorage.removeItem('login_info');
+      } else {
+        message.error(err.message);
+      }
+    });
+  }
+  changeFormEvent = (type, e, value) => {
+    let search = this.state.search;
+    let obj = {};
+    switch (typeof e) {
+      case 'objec':
+        if (type === 'dateStart' || type === 'dateEnd') {
+          obj = {[type]: value};
+        } else{
+          obj = {[type]: e.target.value};
+        }
+        break;
+      case 'number':
+        obj = {[type]: e};
+        break;
+      default:
+         obj = {[type]: e};
+        break;
+    }
+    search = Object.assign(search, obj);
+    this.setState({search});
+  }
+  searchEvent = () => {
+    this.loadList();
+  }
+  //创建活动
+  createEvent = () => {
+    router.push('/main/createactivity')
   }
   render() {
     const {
@@ -88,7 +142,8 @@ class MyActivity extends Component{
       activityData,
       pagination,
       total,
-      draftTotal
+      draftTotal,
+      search
     } = this.state;
     const columns = [
       {
@@ -99,7 +154,7 @@ class MyActivity extends Component{
       {
         title: '活动周期',
         render: (record) => (
-          <span>{record.dateStart}-{record.dateStart}</span>
+          <span>{window.common.getDate(record.dateStart, true)}-{window.common.getDate(record.dateStart, true)}</span>
         )
       },
       {
@@ -126,7 +181,7 @@ class MyActivity extends Component{
       {
         title: '已消耗',
         render: (record) => (
-          <span>{Math.round(record.postAmtTotal / record.unitPrice) - record.availableCnt}</span>
+          <span>{Math.abs(Math.round(record.postAmtTotal / record.unitPrice) - record.availableCnt)}</span>
         )
       },
       {
@@ -143,15 +198,15 @@ class MyActivity extends Component{
         dataIndex: '',
         render: (record) => (
           <div className="opeartion-items">
-            <span>查看</span>
-            <span>编辑</span>
+            <Link className="blue-color" to={`/main/activitydetail?id=${record.id}`}>查看</Link>
+            <Link className="blue-color ml10" to={`/main/createactivity?id=${record.id}`}>编辑</Link>
             {
               [20, 21, 23].map((item, index) => (
                 record.postStatus === item ?
                 <Popconfirm
                   key={index}
-                  title="是否要取消?"
-                  onConfirm={this.cancelEvent.bind(this, record)}
+                  title="是否要取消此活动?"
+                  onConfirm={this.cancelActivityEvent.bind(this, record)}
                   okText="是"
                   cancelText="否"
                 >
@@ -168,7 +223,7 @@ class MyActivity extends Component{
     if (redirect) return (<Redirect to="/relogin" />);
     return(
       <div className={style.mypromotion}>
-        <h1 className="nav-title">我的推广活动</h1>
+        <h1 className="nav-title">我的推广活动<Button className="button" onClick={this.createEvent.bind(this)}>新建推广活动</Button></h1>
         <ul className={style.activitynumber}>
             <li>
                 <div></div>
@@ -186,21 +241,26 @@ class MyActivity extends Component{
         <ul className={style.search}>
           <li>
             <label>活动日期</label>
-            <DatePicker className="w150 radius2"/>
-            <DatePicker className="w150 ml10"/>
+            <DatePicker className="w150 radius2" onChange={this.changeFormEvent.bind(this, 'dateStart')} format="YYYY-MM-DD" />
+            <DatePicker className="w150 ml10" onChange={this.changeFormEvent.bind(this, 'dateEnd')} format="YYYY-MM-DD" />
           </li>
           <li>
             <label>活动状态</label>
-            <Select placeholder="请选择" defaultValue="" className="w180 select">
+            <Select placeholder="请选择" defaultValue={search.postStatus} className="w180 select" onChange={this.changeFormEvent.bind(this, 'postStatus')}>
               <Option value="">请选择</Option>
+              {
+                window.common.postStatus.map((item, index) => (
+                  <Option key={index} value={20 + index}>{item}</Option>
+                ))
+              }
             </Select>
           </li>
           <li>
             <label>活动名称</label>
-            <Input className="w180" />
+            <Input className="w180" value={search.campaignName} onChange={this.changeFormEvent.bind(this, 'campaignName')} />
           </li>
           <li>
-            <Button type="primary">查询</Button>
+            <Button type="primary" onClick={this.searchEvent.bind(this)}>查询</Button>
           </li>
         </ul>
         <Table

@@ -57,8 +57,9 @@ class HavedTask extends Component{
       if (err.code === 100000) {
         this.setState({redirect: true});
         window.localStorage.removeItem('login_info');
+      } else {
+        message.error(err.message);
       }
-      message.error(err.message);
     });
   }
   changePage = (page) => {
@@ -112,8 +113,9 @@ class HavedTask extends Component{
       if (err.code === 100000) {
         this.setState({redirect: true});
         window.localStorage.removeItem('login_info');
+      } else {
+        message.error(err.message);
       }
-      message.error(err.message);
     });
   }
   render() {

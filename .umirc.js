@@ -41,6 +41,7 @@ export default {
       routes: [ //.代表src/pages
         {path: '/main/createactivity', component: './advertisers/mypromotion/createactivity'}, //创建推广活动(广告主)
         {path: '/main/myactivity', component: './advertisers/mypromotion/myactivity'}, //我的推广活动(广告主)
+        {path: '/main/activitydetail', component: './advertisers/mypromotion/activitydetail'},//我的推广活动详情(广告主)
         {path: '/main/materiallist', component: './advertisers/mypromotion/materiallist'}, //素材管理(广告主)
         {path: '/main/selectmateria', component: './advertisers/mypromotion/selectmateria'}, //选择素材(广告主)
         {path: '/main/editmateria', component: './advertisers/mypromotion/editmateria'}, //编辑素材(广告主)

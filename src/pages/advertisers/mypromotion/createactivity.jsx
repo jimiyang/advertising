@@ -1,42 +1,74 @@
 import React, {Component} from 'react';
 import {Input, DatePicker, Form, Radio, Button, message} from 'antd';
 import style from './style.less';
+import Redirect from 'umi/redirect';
 import router from 'umi/router';
-import Link from 'umi/link';
 const {RangePicker} = DatePicker;
 class CreateAdvertity extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      redirect: false,
       form: {
         loginName: '', //登录名
-        campaignName: '', //活动名称
+        campaignName: '1111', //活动名称
         dateStart: '', //开始时间
         dateEnd: '', //结束时间
-        adType: '', //活动形式
-        activity_shap: 0, //活动形式
+        adType: 'article', //活动形式
         targetGender: 0, //性别
-        targetMediaCategory: 0, //行业
-        targetArea: 0, //地区
-        billingType: 0, //计费方式
-        unitPrice: '', //阅读单价
-        postAmtTotal: '', //活动预算
+        targetMediaCategory: '', //行业
+        targetArea: '', //地区
+        billingType: 1, //计费方式
+        unitPrice: 10, //阅读单价
+        postAmtTotal: 10, //活动预算
         postStatus: 0 //活动状态
       },
+      categoryType: 1, //选择行业
+      areaType: 1, //选择地狱
+      validReading: 0, //有效阅读数，，只在页面显示
       mediaTypeLabel: [], //新媒体行业
-      provinceTypeType: [] //省
+      provinceTypeType: [], //省
+      selmediaValData: [], //选中的行业标签
+      selproviceValData: [] //选中的地域标签
     };
   }
   componentWillMount() {
-    this.getDictByType('mediaType').then(rs => {
-      this.setState({mediaTypeLabel: rs});
-    });
-    this.getDictByType('provinceType').then(rs => {
-      this.setState({provinceTypeType: rs});
-    });
     const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
     if (!loginInfo) return false;
-    this.setState({loginName: loginInfo.data.loginName});
+    const form = Object.assign(this.state.form, {loginName: loginInfo.data.loginName});
+    this.getDictByType('mediaType').then(rs => {
+      this.setState({mediaTypeLabel: rs, selmediaValData: new Array(rs.length)});
+    });
+    this.getDictByType('provinceType').then(rs => {
+      this.setState({provinceTypeType: rs, selproviceValData: new Array(rs.length)});
+    });
+    this.setState({form});
+    this.initForm();
+  }
+  initForm = () => {
+    if (!this.props.location.query.id) return false;
+    window.api.baseInstance('api/ad/campaign/getById', {id: this.props.location.query.id}).then(rs => {
+      const form = Object.assign(this.state.form, rs.data);
+      const arr = [1001, 1002];
+      let str =  new Array(29);
+      const mediaLabel = this.state.mediaTypeLabel;
+      arr.map((node, i) => {
+        mediaLabel.map((item, index) => {
+          if (node == Number(item.value)) {
+            console.log(node);
+            str[index] = node;
+          }
+        });
+      });
+      console.log(str);
+      this.setState({form, selmediaValData: str});
+    }).catch(err => {
+      if (err.code === 100000) {
+        this.setState({redirect: true});
+        window.localStorage.removeItem('login_info');
+      }
+      message.error(err.message);
+    });
   }
   //获取行业
   getDictByType = (type) => {
@@ -52,23 +84,102 @@ class CreateAdvertity extends Component {
       });
     });
   }
-  changeFormEvent = (type, e) => {
-    console.log(e);
+  //form 表单改变
+  changeFormEvent = (type, e, value) => {
+    let form = this.state.form;
+    let obj = {};
+    switch(type) {
+      case 'date':
+        obj={'dateStart': value[0], 'dateEnd': value[1]};
+        form = Object.assign(form, obj);
+        this.setState({form});
+        break;
+      case 'unitPrice':
+        form = Object.assign(form, {unitPrice: e.target.value});
+        if (form.postAmtTotal !== 0) {
+          this.setState({validReading: Math.round(form.postAmtTotal / e.target.value)});
+        }
+        break;
+      case 'postAmtTotal':
+        form = Object.assign(form, {postAmtTotal: e.target.value});
+        if (form.unitPrice !== 0) {
+          this.setState({validReading: Math.round(e.target.value / form.unitPrice)});
+        }
+        break;
+      case 'categoryType':
+        this.setState({[type]: e.target.value});
+        break;
+      case 'areaType':
+        this.setState({[type]: e.target.value});
+        break;
+      default:
+        obj = {[type]: e.target.value};
+        this.setState({form});
+        break;
+    }
+    this.setState({form});
   }
+  //创建活动事件
   createEvent = (e) => {
     e.preventDefault();
-    this.props.form.validateFields((err) => {
+    this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log(err);
+        let form = this.state.form;
+        delete values.date;
+        const category = window.common.removeEmptyArrayEle(form.targetMediaCategory);
+        const area = window.common.removeEmptyArrayEle(form.targetArea);
+        form.targetMediaCategory = category.join(',');
+        form.targetArea = area.join(',');
+        form = Object.assign(form, values);
+        console.log(form);
+        window.api.baseInstance('api/ad/campaign/add', form).then(rs => {
+          message.success(rs.message);
+          router.push('/main/myactivity');
+        }).catch(err => {
+          if (err.code === 100000) {
+            this.setState({redirect: true});
+            window.localStorage.removeItem('login_info');
+          }
+          message.error(err.message);
+        });
       }
     })
     //router.push('/main/selectmateria');
   }
+  //选择多个标签
+  selTagEvent = (item, index, type) => {
+    type = type === 'selmediaValData' ? 'selmediaValData' : 'selproviceValData';
+    let form = this.state.form;
+    if (type === 'selmediaValData') {
+      let str = this.state.selmediaValData;
+      if (str.includes(item.value) === true) {
+        str[index] = null;
+      } else {
+        str[index] = item.value;
+      }
+      form = Object.assign(form, {targetMediaCategory: str});
+      this.setState({form});
+    } else {
+      if (this.state.selproviceValData.includes(item.value) === true) {
+        this.state.selproviceValData[index] = null;
+      } else {
+        this.state.selproviceValData[index] = item.value;
+      }
+      form = Object.assign(form, {targetArea:  this.state.selproviceValData});
+      this.setState({form});
+    }
+  }
   render() {
     const {
+      redirect,
       form,
       mediaTypeLabel,
-      provinceTypeType
+      provinceTypeType,
+      validReading,
+      selmediaValData,
+      selproviceValData,
+      categoryType,
+      areaType
     } = this.state;
     const {getFieldDecorator} = this.props.form;
     const formItemLayout = {
@@ -93,91 +204,187 @@ class CreateAdvertity extends Component {
         }
       },
     };
+    if (redirect) return (<Redirect to="/relogin" />);
     return(
       <div className={style.mypromotion}>
-        <h1 className="nav-title">
-            新建活动
-            <Button className="button">新建推广活动</Button>    
-        </h1>
+        <h1 className="nav-title">新建活动</h1>
         <div className={style.createBlocks}>
             <h2 className="small-title"><em></em>基本信息</h2>
             <Form {...formItemLayout} onSubmit={this.createEvent} className={style.form} name="form" id="form">
                 <Form.Item label="活动名称" {...tailFormItemLayout} hideRequiredMark={true}>
                   {getFieldDecorator(
-                    'name',
+                    'campaignName',
                     {
-                      initialValue: form.name || '',
+                      initialValue: form.campaignName || '',
                       rules: [
                         {required: true, message: '请输入活动名称'}
                       ]
                     }    
-                  )(<Input placeholder="请输入活动名称" onChange={this.changeFormEvent.bind(this, 'name')} className={style.ipttxt} />)
+                  )(<Input placeholder="请输入活动名称" onChange={this.changeFormEvent.bind(this, 'campaignName')} className={style.ipttxt} />)
                   }
                 </Form.Item>
                 <Form.Item label="活动日期" {...tailFormItemLayout}>
-                   <RangePicker separator="至" className={style.ipttxt} style={{height: '36px'}} />
+                  {
+                    getFieldDecorator(
+                      'date',
+                      {
+                        rules: [
+                          {required: true, message: '请输入活动日期'}
+                        ]
+                      } 
+                    )(<RangePicker separator="至" className={style.ipttxt} style={{height: '36px'}} onChange={this.changeFormEvent.bind(this, 'date')}/>)
+                  }
                 </Form.Item>
                 <Form.Item label="活动形式" {...tailFormItemLayout}>
-                  <Radio defaultChecked={form.activity_shap === 0 ? true : false}>公众号软文</Radio>
+                  {
+                    getFieldDecorator(
+                      'adType',
+                      {
+                        initialValue: form.adType || '',
+                        rules: [
+                          {required: true, message: '请选择活动形式'}
+                        ]
+                      }
+                    )(<Radio defaultChecked={form.adType === 'article' ? true : false}>公众号软文</Radio>)
+                  }
                 </Form.Item>
                 <Form.Item label="条件设置" {...tailFormItemLayout}>
-                  <ul>
+                  <ul className={style.col}>
                     <li>
                        <span className={style.stitle}>男女比例</span>
-                       <Radio.Group onChange={this.changeFormEvent.bind(this)} value={form.targetGender}>
-                          {
-                            window.common.targetGender.map((item, index) => (
-                              <Radio key={index} value={index}>{item}</Radio>
-                            ))
-                          }
-                        </Radio.Group>
+                       <div>
+                          <Form.Item>
+                            {
+                              getFieldDecorator(
+                                'targetGender',
+                                {
+                                  initialValue: Number(form.targetGender),
+                                  rules: [
+                                    {required: true, message: '请选择男女比例'}
+                                  ]
+                                }
+                              )(<Radio.Group onChange={this.changeFormEvent.bind(this, 'targetGender')}>
+                                {
+                                  window.common.targetGender.map((item, index) => (
+                                    <Radio key={index} value={index}>{item}</Radio>
+                                  ))
+                                }
+                              </Radio.Group>)
+                            }
+                          </Form.Item>
+                        </div>
                     </li>
                     <li>
                         <span className={style.stitle}>选择行业</span>
-                        <Radio.Group onChange={this.changeFormEvent.bind(this)} value={form.targetMediaCategory}>
-                          <Radio value={0}>不限(默认)</Radio>
-                          <Radio value={1}>自定义(查询数据字典的29个标签)</Radio>
-                        </Radio.Group>
-                        <div className={`${style.tags} ${form.targetMediaCategory === 0 ? null : 'hide'}`}>
-                          {
-                            mediaTypeLabel.map((item, index) => (
-                              <label key={index} className={index === 1 ? style.active : null}>{item.label}</label>
-                            ))
-                          } 
+                        <div>
+                          <Form.Item>
+                            {
+                              getFieldDecorator(
+                                'categoryType',
+                                {
+                                  initialValue: categoryType,
+                                  rules: [
+                                    {required: true, message: '请选择行业'}
+                                  ]
+                                }
+                              )(<Radio.Group onChange={this.changeFormEvent.bind(this, 'categoryType')}>
+                                  <Radio value={0}>不限(默认)</Radio>
+                                  <Radio value={1}>自定义</Radio>
+                              </Radio.Group>)
+                            }
+                          </Form.Item>
+                          <div className={`${style.tags} ${categoryType === 1 ? null : 'hide'}`}>
+                            {
+                              mediaTypeLabel.map((item, index) => (
+                                <label key={index} className={selmediaValData[index] === Number(item.value) ? style.active : null} onClick={this.selTagEvent.bind(this, item, index, 'selmediaValData')}>{item.label}</label>
+                              ))
+                            } 
+                          </div>
                         </div>
                     </li>
                     <li>
                         <span className={style.stitle}>选择地域</span>
-                        <Radio.Group onChange={this.changeFormEvent.bind(this)} value={form.targetArea}>
-                          <Radio value={0}>不限(默认)</Radio>
-                          <Radio value={1}>自定义(查询数据字典的身份)</Radio>
-                        </Radio.Group>
-                        <div className={`${style.tags} ${form.targetArea === 0 ? null : 'hide'}`}>
-                          {
-                            provinceTypeType.map((item, index) => (
-                              <label key={index} className={index === 1 ? style.active : null}>{item.label}</label>
-                            ))
-                          } 
+                        <div>
+                          <Form.Item>
+                            {
+                              getFieldDecorator(
+                                'areaType',
+                                {
+                                  initialValue: areaType,
+                                  rules: [
+                                    {required: true, message: '请选择地域'}
+                                  ]
+                                }
+                              )(<Radio.Group onChange={this.changeFormEvent.bind(this, 'areaType')}>
+                                  <Radio value={0}>不限(默认)</Radio>
+                                  <Radio value={1}>自定义</Radio>
+                              </Radio.Group>)
+                            }
+                          </Form.Item>
+                          <div className={`${style.tags} ${areaType === 1 ? null : 'hide'}`}>
+                            {
+                              provinceTypeType.map((item, index) => (
+                                <label key={index} className={selproviceValData[index] === item.value ? style.active : null} onClick={this.selTagEvent.bind(this, item, index, 'selproviceValData')}>{item.label}</label>
+                              ))
+                            } 
+                          </div>
                         </div>
                     </li>
                   </ul>
                 </Form.Item>
                 <Form.Item label="计费方式" {...tailFormItemLayout}>
-                    <Radio.Group onChange={this.changeFormEvent.bind(this)} value={form.charge_mode}>
-                      <Radio value={1}>CPC</Radio>
-                      <Radio value={2}>万粉</Radio>
-                    </Radio.Group>
+                  {
+                    getFieldDecorator(
+                      'billingType',
+                      {
+                        initialValue: form.billingType,
+                        rules: [
+                          {required: true, message: '请选择计费方式'}
+                        ]
+                      }
+                    )(<Radio.Group onChange={this.changeFormEvent.bind(this, 'billingType')}>
+                        <Radio value={1}>CPC</Radio>
+                    </Radio.Group>)
+                  }
                 </Form.Item>
                 <h2 className="small-title"><em></em>价格信息</h2>
                 <ul className={style.priceInfo}>
-                  <li>阅读单价<Input className={style.ipttxt} />元/次阅读</li>
-                  <li>万粉收益<Input className={style.ipttxt} />元/万粉</li>
-                  <li style={{width: '100%'}}>活动预算<Input className={style.ipttxt} />元</li>     
+                  <li style={{width: '100%'}}>
+                    <Form.Item label="阅读单价">
+                      {
+                        getFieldDecorator(
+                          'unitPrice',
+                          {
+                            initialValue: form.unitPrice || '',
+                            rules: [
+                              {required: true, message: '请输入阅读单价'},
+                              {pattern: /^[0-9]+([.]{1}[0-9]{1,2})?$/, message: '只能输入整数或小数(保留后两位)'}
+                            ]
+                          }
+                        )(<Input className={style.ipttxt} onChange={this.changeFormEvent.bind(this, 'unitPrice')} />)
+                      }元/次阅读
+                    </Form.Item>
+                  </li>
+                  <li style={{width: '100%'}}>
+                    <Form.Item label="活动预算">
+                      {
+                        getFieldDecorator(
+                          'postAmtTotal',
+                          {
+                            initialValue: form.postAmtTotal || '',
+                            rules: [
+                              {required: true, message: '请输入活动预算'},
+                              {pattern: /^[0-9]+([.]{1}[0-9]{1,2})?$/, message: '只能输入整数或小数(保留后两位)'}
+                            ]
+                          }
+                        )(<Input className={style.ipttxt} onChange={this.changeFormEvent.bind(this, 'postAmtTotal')} />)
+                      }元
+                    </Form.Item>
+                  </li>
                 </ul>          
-                <div className={style.warning}>推广效果: 预计您的广告将实现次有效阅读10000         阅读次数=活动预算/阅读单价</div>
+                <div className={style.warning}>推广效果: 预计您的广告将实现<em className="m5">{validReading}</em>次有效阅读</div>
                 <Form.Item>
                   <Button type="primary" htmlType="submit" className={style.btn}>下一步</Button>
-                  <Link to="/main/selectmateria">下一步</Link>
                 </Form.Item>
             </Form>
         </div>

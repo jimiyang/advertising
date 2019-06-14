@@ -8,6 +8,17 @@ const utils =  {
   postStatus: ['活动草稿', '审核中', '审核驳回', '待接单', '活动过期', '活动取消', '接单中', '执行中', ' 执行完成', '执行结束'],
   //男女粉丝设置
   targetGender: ['不限', '男粉', '女粉', '男大于女', '女大于男', '男女各半'],
+  //删除数组中为空的元素
+  removeEmptyArrayEle(arr) {    
+    for(var i = 0; i < arr.length; i++) {
+     if(arr[i] == undefined) {
+        arr.splice(i,1);
+        i = i - 1; // i - 1 ,因为空元素在数组下标 2 位置，删除空之后，后面的元素要向前补位，
+        // 这样才能真正去掉空元素,觉得这句可以删掉的连续为空试试，然后思考其中逻辑
+      }
+     }
+     return arr;
+  },
   //获取时间
   getDate(time, flag) {
     const date = new Date(time);

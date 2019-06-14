@@ -70,8 +70,9 @@ class AdvertDetail extends Component{
       if (err.code === 100000) {
         this.setState({redirect: true});
         window.localStorage.removeItem('login_info');
+      } else {
+        message.error(err.message);
       }
-      message.error(err.message);
     });
   }
   changeFormEvent = (e) => {
@@ -87,8 +88,9 @@ class AdvertDetail extends Component{
         if (err.code === 100000) {
           this.setState({redirect: true});
           window.localStorage.removeItem('login_info');
+        } else {
+          message.error(err.message);
         }
-        message.error(err.message);
       });
     });
   }
@@ -105,8 +107,9 @@ class AdvertDetail extends Component{
       if (err.code === 100000) {
         this.setState({redirect: true});
         window.localStorage.removeItem('login_info');
+      } else {
+        message.error(err.message);
       }
-      message.error(err.message);
     });
   }
   //返回

@@ -42,14 +42,22 @@ class ConsumeList extends Component{
       if (err.code === 100000) {
         this.setState({redirect: true});
         window.localStorage.removeItem('login_info');
+      } else {
+        message.error(err.message);
       }
-      message.error(err.message);
     });;
   }
   changePage = (page) =>  {
     page = page === 0 ? 1 : page;
     const pagination = Object.assign(this.state.pagination, {currentPage: page});
     this.setState({pagination});
+    this.loadList();
+  }
+  //改变每页条数事件
+  onShowSizeChange = (current, size) => {
+    let p = this.state.pagination;
+    p = Object.assign(p, {currentPage: current, limit: size});
+    this.setState({pagination: p});
     this.loadList();
   }
   render(){

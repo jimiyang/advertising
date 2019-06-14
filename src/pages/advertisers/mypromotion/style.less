@@ -14,13 +14,18 @@
         border-radius: 2px;
         background: #498DFF;
       }
+      .col{
+        li{
+          display: flex;
+        }
+      }
     }
     .ipttxt{width: 260px;height: 36px; border-radius: 2px;}
     .tags{
       width: 450px;
       label{
           display: inline-block;border: 1px solid #E0E0E0;padding:0 12px; height: 30px; line-height: 30px;
-          border-radius: 2px;color: #3B4754;font-size: 13px;margin-right: 10px
+          border-radius: 2px;color: #3B4754;font-size: 13px;margin-right: 10px;cursor: pointer;
       }
       label.active{border: 1px solid #498DFF;color: #498DFF;}
     }
@@ -125,5 +130,40 @@
   /**编辑素材**/
   .editor{
     display: flex;
+  }
+  /**详情**/
+  .detaillist{
+    margin-top: 28px;color: #686E76;font-size: 13px;
+    li{
+      display: flex;align-items: flex-start;margin-bottom: 13px;
+      >div{
+        color: #3B4754;
+        li{
+          width: 100%; display: block;
+        }
+      }
+      .textarea{
+        background: #F8F8F8;color: #686E76;padding-left: 11px;padding-top: 7px;
+        width: 330px;height: 60px;
+      }
+      .coverimg{
+        img{width: 90px;height: 50px;margin-top: 12px;}
+      }
+      .tags{
+        width: 450px;
+        label{
+          display: inline-block;border: 1px solid #E0E0E0;padding:0 12px; height: 30px; line-height: 30px;
+          border-radius: 2px;color: #3B4754;font-size: 13px;margin-right: 10px;margin-top: 10px;
+        }
+        label.active{border: 1px solid #498DFF;color: #498DFF;}
+      }
+      
+    }
+    .btnitems{
+      margin-top: 50px;
+      button{
+        border-radius: 2px; background: #498DFF; padding: 0 25px; height: 36px;line-height: 36px;font-size: 14px;
+      }
+    }
   }
 }
