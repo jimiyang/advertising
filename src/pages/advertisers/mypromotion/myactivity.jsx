@@ -123,7 +123,7 @@ class MyActivity extends Component{
         obj = {[type]: e};
         break;
       default:
-         obj = {[type]: e};
+        obj = {[type]: e};
         break;
     }
     search = Object.assign(search, obj);

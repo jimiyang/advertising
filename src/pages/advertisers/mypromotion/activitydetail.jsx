@@ -20,26 +20,65 @@ class ActivityDetail extends Component{
           billingType: 0 //计费方式
         },
         mediaTypeLabel: [],
-        provinceTypeType: []
+        provinceTypeType: [],
+        selmediaValData: [], //选中的行业标签
+        selproviceValData: [] //选中的地域标签
     };
   }
   componentWillMount() {
     if (!this.props.location.query.id) return false;
-    this.initForm(this.props.location.query.id);
-    this.getDictByType('mediaType').then(rs => {
-      this.setState({mediaTypeLabel: rs});
+    Promise.all([window.api.baseInstance('admin/system/dict/getDictByType', {type: 'mediaType'}), window.api.baseInstance('admin/system/dict/getDictByType', {type: 'provinceType'})]).then(rs => {
+      this.setState({
+        mediaTypeLabel: rs[0].data,
+        selmediaValData: new Array(rs[0].data.length),
+        provinceTypeType: rs[1].data,
+        selproviceValData: new Array(rs[1].data.length)
+      });
+      this.initForm(this.props.location.query.id);
+    }).catch(err => {
+      if (err.code === 100000) {
+        this.setState({redirect: true});
+        window.localStorage.removeItem('login_info');
+      }
+      message.error(err.message);
     });
-    this.getDictByType('provinceType').then(rs => {
-      this.setState({provinceTypeType: rs});
-    });
-    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
-    if (!loginInfo) return false;
   }
   initForm = (id) => {
     window.api.baseInstance('api/ad/campaign/getById', {id}).then(rs => {
-      console.log(rs);
-      this.setState({form: rs.data});
+      const selmediaValData = this.initLabel('media', rs.data.targetMediaCategory);
+      const selproviceValData = this.initLabel('province', rs.data.targetArea);
+      this.setState({form: rs.data, selmediaValData, selproviceValData});
     });
+  }
+  initLabel = (type, data) => {
+    if (data.length === 0) return false;
+    let arr = data;
+    switch (type) {
+      case 'media':
+        const mediaLabel = this.state.mediaTypeLabel;
+        let selmediaValData = this.state.selmediaValData;
+        JSON.parse(arr).map((node, i) => {
+          mediaLabel.map((item, index) => {
+            if (node == Number(item.value)) {
+              selmediaValData[index] = node;
+            }
+          });
+        });
+        return selmediaValData;
+      case 'province':
+        const provinceLabel = this.state.provinceTypeType;
+        let selproviceValData = this.state.selproviceValData;
+        JSON.parse(arr).map((node, i) => {
+          provinceLabel.map((item, index) => {
+            if (node == Number(item.value)) {
+              selproviceValData[index] = node;
+            }
+          });
+        });
+      return selproviceValData;
+      default: 
+        break;
+    }
   }
   //获取行业
   getDictByType = (type) => {
@@ -60,7 +99,7 @@ class ActivityDetail extends Component{
     window.history.go(-1);
   }
   render() {
-    const {form, mediaTypeLabel, provinceTypeType} = this.state;
+    const {form, mediaTypeLabel, provinceTypeType, selmediaValData, selproviceValData} = this.state;
     return (
       <div className={style.mypromotion}>
         <h1 className="nav-title">我的推广活动 > 活动详情</h1>
@@ -82,7 +121,7 @@ class ActivityDetail extends Component{
                       <div className={`${style.tags} ${form.targetMediaCategory === "" ? 'hide' : null}`}>
                         {
                           mediaTypeLabel.map((item, index) => (
-                            <label key={index} className={item.value === form.targetMediaCategory ? style.active : null}>{item.label}</label>
+                            <label key={index} className={Number(item.value) === selmediaValData[index] ? style.active : null}>{item.label}</label>
                           ))
                         } 
                       </div>
@@ -92,7 +131,7 @@ class ActivityDetail extends Component{
                       <div className={`${style.tags} ${form.argetArea === "" ? 'hide' : null}`}>
                         {
                           provinceTypeType.map((item, index) => (
-                            <label key={index} className={item.value === form.targetArea ? style.active : null}>{item.label}</label>
+                            <label key={index} className={Number(item.value) === selproviceValData[index] ? style.active : null}>{item.label}</label>
                           ))
                         } 
                       </div>

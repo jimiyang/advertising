@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import {Input, DatePicker, Form, Radio, Button, message} from 'antd';
+import {Input, DatePicker, Form, Radio, Button, message, Breadcrumb} from 'antd';
+import moment from 'moment';
 import style from './style.less';
 import Redirect from 'umi/redirect';
 import router from 'umi/router';
@@ -11,20 +12,20 @@ class CreateAdvertity extends Component {
       redirect: false,
       form: {
         loginName: '', //登录名
-        campaignName: '1111', //活动名称
-        dateStart: '', //开始时间
-        dateEnd: '', //结束时间
+        campaignName: '', //活动名称
+        dateStart: new Date(), //开始时间
+        dateEnd: new Date(), //结束时间
         adType: 'article', //活动形式
         targetGender: 0, //性别
         targetMediaCategory: '', //行业
         targetArea: '', //地区
-        billingType: 1, //计费方式
-        unitPrice: 10, //阅读单价
-        postAmtTotal: 10, //活动预算
+        billingType: 0, //计费方式
+        unitPrice: 0, //阅读单价
+        postAmtTotal: 0, //活动预算
         postStatus: 0 //活动状态
       },
-      categoryType: 1, //选择行业
-      areaType: 1, //选择地狱
+      categoryType: 0, //选择行业
+      areaType: 0, //选择地狱
       validReading: 0, //有效阅读数，，只在页面显示
       mediaTypeLabel: [], //新媒体行业
       provinceTypeType: [], //省
@@ -36,32 +37,30 @@ class CreateAdvertity extends Component {
     const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
     if (!loginInfo) return false;
     const form = Object.assign(this.state.form, {loginName: loginInfo.data.loginName});
-    this.getDictByType('mediaType').then(rs => {
-      this.setState({mediaTypeLabel: rs, selmediaValData: new Array(rs.length)});
+    Promise.all([window.api.baseInstance('admin/system/dict/getDictByType', {type: 'mediaType'}), window.api.baseInstance('admin/system/dict/getDictByType', {type: 'provinceType'})]).then(rs => {
+      this.setState({
+        mediaTypeLabel: rs[0].data,
+        selmediaValData: new Array(rs[0].data.length),
+        provinceTypeType: rs[1].data,
+        selproviceValData: new Array(rs[1].data.length)
+      });
+      this.initForm();
+    }).catch(err => {
+      console.log(1);
+      if (err.code === 100000) {
+        this.setState({redirect: true});
+        window.localStorage.removeItem('login_info');
+      }
+      message.error(err.message);
     });
-    this.getDictByType('provinceType').then(rs => {
-      this.setState({provinceTypeType: rs, selproviceValData: new Array(rs.length)});
-    });
-    this.setState({form});
-    this.initForm();
   }
   initForm = () => {
     if (!this.props.location.query.id) return false;
     window.api.baseInstance('api/ad/campaign/getById', {id: this.props.location.query.id}).then(rs => {
       const form = Object.assign(this.state.form, rs.data);
-      const arr = [1001, 1002];
-      let str =  new Array(29);
-      const mediaLabel = this.state.mediaTypeLabel;
-      arr.map((node, i) => {
-        mediaLabel.map((item, index) => {
-          if (node == Number(item.value)) {
-            console.log(node);
-            str[index] = node;
-          }
-        });
-      });
-      console.log(str);
-      this.setState({form, selmediaValData: str});
+      const selmediaValData = this.initLabel('media', form.targetMediaCategory);
+      const selproviceValData = this.initLabel('province', form.targetArea);
+      this.setState({form, selmediaValData: selmediaValData, selproviceValData: selproviceValData, validReading: Math.round(form.postAmtTotal / form.unitPrice)});
     }).catch(err => {
       if (err.code === 100000) {
         this.setState({redirect: true});
@@ -70,19 +69,36 @@ class CreateAdvertity extends Component {
       message.error(err.message);
     });
   }
-  //获取行业
-  getDictByType = (type) => {
-    return new Promise((resolve, reject) => {
-      window.api.baseInstance('admin/system/dict/getDictByType', {type}).then(rs => {
-        resolve(rs.data);
-      }).catch(err => {
-        if (err.code === 100000) {
-          this.setState({redirect: true});
-          window.localStorage.removeItem('login_info');
-        }
-        message.error(err.message);
-      });
-    });
+  //初始化标签
+  initLabel = (type, data) => {
+    if (data.length === 0) return false;
+    let arr = data;
+    switch (type) {
+      case 'media':
+        const mediaLabel = this.state.mediaTypeLabel;
+        let selmediaValData = this.state.selmediaValData;
+        JSON.parse(arr).map((node, i) => {
+          mediaLabel.map((item, index) => {
+            if (node == Number(item.value)) {
+              selmediaValData[index] = node;
+            }
+          });
+        });
+        return selmediaValData;
+      case 'province':
+        const provinceLabel = this.state.provinceTypeType;
+        let selproviceValData = this.state.selproviceValData;
+        JSON.parse(arr).map((node, i) => {
+          provinceLabel.map((item, index) => {
+            if (node == Number(item.value)) {
+              selproviceValData[index] = node;
+            }
+          });
+        });
+      return selproviceValData;
+      default: 
+        break;
+    }
   }
   //form 表单改变
   changeFormEvent = (type, e, value) => {
@@ -128,13 +144,19 @@ class CreateAdvertity extends Component {
         delete values.date;
         const category = window.common.removeEmptyArrayEle(form.targetMediaCategory);
         const area = window.common.removeEmptyArrayEle(form.targetArea);
-        form.targetMediaCategory = category.join(',');
-        form.targetArea = area.join(',');
+        form.targetMediaCategory = category;
+        form.targetArea = area;
+        let serviceName = 'api/ad/campaign/add';
+        if (this.props.location.query.id !== undefined) {
+          serviceName = 'api/ad/campaign/edit'
+          form.targetMediaCategory = JSON.parse(category);
+          form.targetArea = JSON.parse(area);
+        }
         form = Object.assign(form, values);
-        console.log(form);
-        window.api.baseInstance('api/ad/campaign/add', form).then(rs => {
+        //console.log(form);
+        window.api.baseInstance(serviceName, form).then(rs => {
           message.success(rs.message);
-          router.push('/main/myactivity');
+          router.push('/main/selectmateria');
         }).catch(err => {
           if (err.code === 100000) {
             this.setState({redirect: true});
@@ -152,18 +174,18 @@ class CreateAdvertity extends Component {
     let form = this.state.form;
     if (type === 'selmediaValData') {
       let str = this.state.selmediaValData;
-      if (str.includes(item.value) === true) {
+      if (str.includes(Number(item.value)) === true) {
         str[index] = null;
       } else {
-        str[index] = item.value;
+        str[index] = Number(item.value);
       }
       form = Object.assign(form, {targetMediaCategory: str});
       this.setState({form});
     } else {
-      if (this.state.selproviceValData.includes(item.value) === true) {
+      if (this.state.selproviceValData.includes(Number(item.value)) === true) {
         this.state.selproviceValData[index] = null;
       } else {
-        this.state.selproviceValData[index] = item.value;
+        this.state.selproviceValData[index] = Number(item.value);
       }
       form = Object.assign(form, {targetArea:  this.state.selproviceValData});
       this.setState({form});
@@ -228,11 +250,12 @@ class CreateAdvertity extends Component {
                     getFieldDecorator(
                       'date',
                       {
+                        initialValue: [moment(`${window.common.getDate(form.dateStart, true)}`, "YYYY-MM-DD"), moment(`${window.common.getDate(form.dateEnd, true)}`, "YYYY-MM-DD")],
                         rules: [
                           {required: true, message: '请输入活动日期'}
                         ]
                       } 
-                    )(<RangePicker separator="至" className={style.ipttxt} style={{height: '36px'}} onChange={this.changeFormEvent.bind(this, 'date')}/>)
+                    )(<RangePicker format="YYYY-MM-DD" separator="至" className={style.ipttxt} style={{height: '36px'}} onChange={this.changeFormEvent.bind(this, 'date')}/>)
                   }
                 </Form.Item>
                 <Form.Item label="活动形式" {...tailFormItemLayout}>
@@ -324,7 +347,7 @@ class CreateAdvertity extends Component {
                           <div className={`${style.tags} ${areaType === 1 ? null : 'hide'}`}>
                             {
                               provinceTypeType.map((item, index) => (
-                                <label key={index} className={selproviceValData[index] === item.value ? style.active : null} onClick={this.selTagEvent.bind(this, item, index, 'selproviceValData')}>{item.label}</label>
+                                <label key={index} className={selproviceValData[index] === Number(item.value) ? style.active : null} onClick={this.selTagEvent.bind(this, item, index, 'selproviceValData')}>{item.label}</label>
                               ))
                             } 
                           </div>
@@ -343,7 +366,7 @@ class CreateAdvertity extends Component {
                         ]
                       }
                     )(<Radio.Group onChange={this.changeFormEvent.bind(this, 'billingType')}>
-                        <Radio value={1}>CPC</Radio>
+                        <Radio value={0}>CPC</Radio>
                     </Radio.Group>)
                   }
                 </Form.Item>

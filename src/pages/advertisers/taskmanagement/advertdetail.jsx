@@ -17,6 +17,7 @@ class AdvertDetail extends Component{
           dateEnd: '', //活动结束时间
           targetGender: '', //男女比例
           targetMediaCategory: '', //行业标签
+          impImage: '', //货送素材
           targetArea: '', //地域
           adType: '', //活动形式
           unitPrice: '', //活动阅读单价
@@ -40,32 +41,43 @@ class AdvertDetail extends Component{
       },
       mediaTypeLabel: [],
       provinceTypeType: [],
+      selmediaValData: [],
+      selproviceValData: [],
       type: '0'//判断是查看活动页面[0]还是审核接单页面[1]
     };
   }
   componentWillMount() {
     if (!this.props.location.query.id) return false;
-    this.initForm(this.props.location.query.id);
-    this.getDictByType('mediaType').then(rs => {
-      this.setState({mediaTypeLabel: rs});
+    Promise.all([window.api.baseInstance('admin/system/dict/getDictByType', {type: 'mediaType'}), window.api.baseInstance('admin/system/dict/getDictByType', {type: 'provinceType'})]).then(rs => {
+      this.initForm(this.props.location.query.id);
+      const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
+      if (!loginInfo) return false;
+      const params = Object.assign(this.state.params, {loginName: loginInfo.data.loginName, id: this.props.location.query.id});
+      this.setState({
+        params,
+        type: this.props.location.query.type,
+        mediaTypeLabel: rs[0].data,
+        selmediaValData: new Array(rs[0].data.length),
+        provinceTypeType: rs[1].data,
+        selproviceValData: new Array(rs[1].data.length)
+      });
+    }).catch(err => {
+      if (err.code === 100000) {
+        this.setState({redirect: true});
+        window.localStorage.removeItem('login_info');
+      }
+      message.error(err.message);
     });
-    this.getDictByType('provinceType').then(rs => {
-      this.setState({provinceTypeType: rs});
-    });
-    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
-    if (!loginInfo) return false;
-    const params = Object.assign(this.state.params, {loginName: loginInfo.data.loginName, id: this.props.location.query.id});
-    this.setState({params, type: this.props.location.query.type});
   }
   //初始化数据详情
   initForm = (id) => {
-    const params = {
-      id
-    };
-    window.api.baseInstance('api/ad/mission/getById', params).then(rs => {
+    window.api.baseInstance('api/ad/mission/getById', {id}).then(rs => {
       if (!rs.data) return false;
       const form = Object.assign(this.state.form, rs.data);
-      this.setState({form});
+      console.log(form);
+      const selmediaValData = this.initLabel('media', form.adCampaign.targetMediaCategory);
+      const selproviceValData = this.initLabel('province', form.adCampaign.targetArea);
+      this.setState({form, selmediaValData, selproviceValData});
     }).catch(err => {
       if (err.code === 100000) {
         this.setState({redirect: true});
@@ -75,24 +87,39 @@ class AdvertDetail extends Component{
       }
     });
   }
+  initLabel = (type, data) => {
+    if (data.length === 0) return false;
+    let arr = data;
+    switch (type) {
+      case 'media':
+        const mediaLabel = this.state.mediaTypeLabel;
+        let selmediaValData = this.state.selmediaValData;
+        JSON.parse(arr).map((node, i) => {
+          mediaLabel.map((item, index) => {
+            if (node == Number(item.value)) {
+              selmediaValData[index] = node;
+            }
+          });
+        });
+        return selmediaValData;
+      case 'province':
+        const provinceLabel = this.state.provinceTypeType;
+        let selproviceValData = this.state.selproviceValData;
+        JSON.parse(arr).map((node, i) => {
+          provinceLabel.map((item, index) => {
+            if (node == Number(item.value)) {
+              selproviceValData[index] = node;
+            }
+          });
+        });
+      return selproviceValData;
+      default: 
+        break;
+    }
+  }
   changeFormEvent = (e) => {
     const params = Object.assign(this.state.params, {audit_remark: e.target.value});
     this.setState({params});
-  }
-  //获取行业
-  getDictByType = (type) => {
-    return new Promise((resolve, reject) => {
-      window.api.baseInstance('admin/system/dict/getDictByType', {type}).then(rs => {
-        resolve(rs.data);
-      }).catch(err => {
-        if (err.code === 100000) {
-          this.setState({redirect: true});
-          window.localStorage.removeItem('login_info');
-        } else {
-          message.error(err.message);
-        }
-      });
-    });
   }
   //审核
   checkEvent = () => {
@@ -123,7 +150,9 @@ class AdvertDetail extends Component{
       mediaTypeLabel,
       provinceTypeType,
       type,
-      params
+      params,
+      selmediaValData,
+      selproviceValData
     } = this.state;
     if (redirect) return (<Redirect to="/relogin" />);
     return(
@@ -179,7 +208,7 @@ class AdvertDetail extends Component{
                   <div className={`${style.tags} ${form.adCampaign.targetMediaCategory === "" ? 'hide' : null}`}>
                     {
                       mediaTypeLabel.map((item, index) => (
-                        <label key={index} className={item.value === form.adCampaign.targetMediaCategory ? style.active : null}>{item.label}</label>
+                        <label key={index} className={Number(item.value) === selmediaValData[index] ? style.active : null}>{item.label}</label>
                       ))
                     } 
                   </div>
@@ -189,7 +218,7 @@ class AdvertDetail extends Component{
                   <div className={`${style.tags} ${form.adCampaign.targetArea === "" ? 'hide' : null}`}>
                     {
                       provinceTypeType.map((item, index) => (
-                        <label key={index} className={item.value === form.adCampaign.targetArea ? style.active : null}>{item.label}</label>
+                        <label key={index} className={Number(item.value) === selproviceValData[index] ? style.active : null}>{item.label}</label>
                       ))
                     } 
                   </div>
@@ -205,7 +234,7 @@ class AdvertDetail extends Component{
             活动素材：
             <div className={style.coverimg}>
               <p>展示封面标题，点击可查看详情</p>
-              <img src={require('../../../assets/media-ico.jpg')} />
+              <img src={form.adCampaign.impImage} />
             </div>
           </li>
           <li>
