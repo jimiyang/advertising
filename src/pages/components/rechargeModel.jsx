@@ -9,6 +9,12 @@ class RechargeModel extends Component{
       channelType: 'WX'
     };
   }
+  componentWillMount() {
+    this.setState({amount: this.props.amount});
+  }
+  componentWillReceiveProps(props) {
+    this.setState({amount: props.amount});
+  }
   changeFormEvent = (type, e) => {
     switch(typeof e) {
       case 'object':

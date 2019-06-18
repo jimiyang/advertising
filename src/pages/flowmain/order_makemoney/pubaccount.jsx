@@ -21,6 +21,11 @@ class PubAccount extends Component{
       ]
     };
   }
+  loadList = () => {
+    window.api.baseIntance('flow/mission/complate', {}).then(rs => {
+
+    });
+  }
   render() {
     const {
       pubAccountData

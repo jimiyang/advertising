@@ -25,9 +25,9 @@ class Enter extends Component {
             <Link to="/register?type=1">发布广告</Link>
           </li>
           <li>
-            <h1>媒体主</h1>
+            <h1>流量主</h1>
             <p>广告丰富品相好，价格可观收入多</p>
-            <img src={require('../../assets/advert-ico.jpg')} />
+            <img src={require('../../assets/media-ico.jpg')} style={{marginBottom: '47px'}} />
             <Link to="/register?type=2">入住联拓推</Link>
           </li>
         </ul>

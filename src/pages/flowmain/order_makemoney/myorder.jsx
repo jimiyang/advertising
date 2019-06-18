@@ -80,6 +80,7 @@ class MyOrder extends Component{
             ))
           }
         </dl>
+        <iframe src="http://localhost:8000/main/adtask?aa=0" style={{width: '1000px', height: '400px'}}/>
       </div>
     );
   }

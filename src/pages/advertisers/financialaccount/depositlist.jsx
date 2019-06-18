@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import {DatePicker, Table, Select, Input, Button, Modal, message} from 'antd';
 import style from './style.less';
 import Redirect from 'umi/redirect';
+import router from 'umi/router';
+import QRCode from 'qrcode.react'; //二维码
 import WithdrawList from './withdrawallist'; //提现记录
 import ConsumeList from './consumelist'; //消费记录
 import RechargeModel from '../../components/rechargeModel'; //充值modal
@@ -23,6 +25,7 @@ class DepositList extends Component{
       available_balance: 0, //可用余额
       freezen_balance: 0, //冻结余额
       detailData: {}, //订单详情数据
+      qrUrl: '',
       pagination: {
         size: 'small',
         limit: 10, //每页显示多少条
@@ -133,7 +136,9 @@ class DepositList extends Component{
   }
   //充值弹窗
   saveMoneyEvent = () => {
-    this.setState({isVisible: true});
+    let topup = this.state.topup;
+    topup = Object.assign(topup, {amount: ''});
+    this.setState({isVisible: true, topup});
   }
   //提现弹窗
   widthdrawEvent = () => {
@@ -167,7 +172,8 @@ class DepositList extends Component{
       operatorLoginName: this.state.loginName
     };
     window.api.baseInstance('api/topup/native', params).then(rs => {
-      message.success(`${rs.message},充值金额为：${rs.data.amount}元`);
+      this.setState({qrUrl: rs.data.payUrl});
+      router.push({pathname: '/main/qrcode', query: {url: rs.data.payUrl}});
     }).catch(err => {
       if (err.code === 100000) {
         this.setState({redirect: true});
@@ -207,7 +213,8 @@ class DepositList extends Component{
       search,
       available_balance,
       freezen_balance,
-      detailData
+      detailData,
+      topup
     } = this.state;
     const columns = [
       {
@@ -269,7 +276,7 @@ class DepositList extends Component{
             <Button type="primary" onClick={this.rechargeEvent.bind(this)}>确定</Button>
           }
         >
-          <RechargeModel changeFormEvent={this.bindValue.bind(this)} />
+          <RechargeModel changeFormEvent={this.bindValue.bind(this)} amount={topup.amount} />
         </Modal>
         <Modal
           visible={isDrawVisible}

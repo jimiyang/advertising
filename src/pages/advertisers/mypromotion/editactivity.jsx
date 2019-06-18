@@ -5,7 +5,7 @@ import style from './style.less';
 import Redirect from 'umi/redirect';
 import router from 'umi/router';
 const {RangePicker} = DatePicker;
-class CreateAdvertity extends Component {
+class EditAdvertity extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -44,6 +44,22 @@ class CreateAdvertity extends Component {
         provinceTypeType: rs[1].data,
         selproviceValData: new Array(rs[1].data.length)
       });
+      this.initForm();
+    }).catch(err => {
+      if (err.code === 100000) {
+        this.setState({redirect: true});
+        window.localStorage.removeItem('login_info');
+      }
+      message.error(err.message);
+    });
+  }
+  initForm = () => {
+    if (!this.props.location.state) return false;
+    window.api.baseInstance('api/ad/campaign/getById', {id: this.props.location.state.id}).then(rs => {
+      const form = Object.assign(this.state.form, rs.data);
+      const selmediaValData = this.initLabel('media', form.targetMediaCategory);
+      const selproviceValData = this.initLabel('province', form.targetArea);
+      this.setState({form, selmediaValData: selmediaValData, selproviceValData: selproviceValData, validReading: Math.round(form.postAmtTotal / form.unitPrice)});
     }).catch(err => {
       if (err.code === 100000) {
         this.setState({redirect: true});
@@ -118,7 +134,7 @@ class CreateAdvertity extends Component {
     }
     this.setState({form});
   }
-  //创建活动事件
+  //编辑活动事件
   createEvent = (e) => {
     e.preventDefault();
     this.props.form.validateFields((err, values) => {
@@ -129,9 +145,11 @@ class CreateAdvertity extends Component {
         const area = window.common.removeEmptyArrayEle(form.targetArea);
         form.targetMediaCategory = category;
         form.targetArea = area;
+        form.targetMediaCategory = JSON.parse(category);
+        form.targetArea = JSON.parse(area);
         form = Object.assign(form, values);
         //console.log(form);
-        window.api.baseInstance('api/ad/campaign/add', form).then(rs => {
+        window.api.baseInstance('api/ad/campaign/edit', form).then(rs => {
           message.success(rs.message);
           router.push('/main/selectmateria');
         }).catch(err => {
@@ -392,4 +410,4 @@ class CreateAdvertity extends Component {
     )
   }
 }
-export default Form.create()(CreateAdvertity);
+export default Form.create()(EditAdvertity);

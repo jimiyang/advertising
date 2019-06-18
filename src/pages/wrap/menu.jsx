@@ -48,10 +48,18 @@ class MenuApp extends Component {
               name: '接单赚钱',
               ico: 'money-collect',
               children: [
-                {id: 50, name: '我授权的公众号', url: '/main/pubaccount'},
-                {id: 51, name: '我要接单赚钱', url: '/main/myorder'},
-                {id: 52, name: '已接广告任务', url: '/main/adtask'}
+                //{id: 50, name: '我授权的公众号', url: '/main/pubaccount'},
+                {id: 51, name: '可接任务', url: '/main/myorder'},
+                {id: 52, name: '已接任务', url: '/main/adtask'}
               ]    
+            },
+            {
+              id: 40,
+              name: '我的收益',
+              ico: 'money-collect',
+              children: [
+                {id: 401, name: '结算记录', url: '/main/depositlist'}
+              ]
             }
           ],
           administoraData: [

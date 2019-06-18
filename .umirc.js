@@ -40,6 +40,7 @@ export default {
       component: '../layouts/index.js',
       routes: [ //.代表src/pages
         {path: '/main/createactivity', component: './advertisers/mypromotion/createactivity'}, //创建推广活动(广告主)
+        {path: '/main/editactivity', component: './advertisers/mypromotion/editactivity'}, //编辑推广活动(广告主)
         {path: '/main/myactivity', component: './advertisers/mypromotion/myactivity'}, //我的推广活动(广告主)
         {path: '/main/activitydetail', component: './advertisers/mypromotion/activitydetail'},//我的推广活动详情(广告主)
         {path: '/main/materiallist', component: './advertisers/mypromotion/materiallist'}, //素材管理(广告主)
@@ -50,6 +51,7 @@ export default {
         {path: '/main/depositlist', component: './advertisers/financialaccount/depositlist'}, //充值记录(广告主)
         {path: '/main/withdrawallist', component: './advertisers/financialaccount/withdrawallist'}, //提现记录(广告主)
         {path: '/main/consumelist', component: './advertisers/financialaccount/consumelist'}, //消费记录(广告主)
+        {path: '/main/qrcode', component: './advertisers/financialaccount/qrcode'}, //展示二维码页面
         {path: '/main/pubaccount', component: './flowmain/order_makemoney/pubaccount'}, //我授权的公众号(流量主)
         {path: '/main/edit', component: './flowmain/order_makemoney/edit'}, //编辑我授权的公众号(流量主)
         {path: '/main/myorder', component: './flowmain/order_makemoney/myorder'}, //我要接单赚钱(流量主)

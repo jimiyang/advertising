@@ -63,6 +63,9 @@ class AdTask extends Component{
       statusData: ['待审核', '待执行', '执行中', '待结算', '任务完成', '审核驳回', '任务取消']
     };
   }
+  componentWillMount() {
+    console.log(this.props.location.query.aa);
+  }
   render() {
     const {
       pubAccountData

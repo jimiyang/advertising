@@ -247,13 +247,13 @@ class AdvertDetail extends Component{
             <div>预计您的广告将实现<em className="red-color m5">{form.adCampaign.availableCnt}</em>次有效阅读</div>
           </li>
           {
-            type === '1' ? <li>审核状态：<div><Radio value={params.missionStatus} defaultChecked={true}>不通过</Radio></div></li> : null
+            type === 1 ? <li>审核状态：<div><Radio value={params.missionStatus} defaultChecked={true}>不通过</Radio></div></li> : null
           }
           {
-            type === '1' ? <li>活动审核意见：<div><TextArea rows={4} className={style.textarea} value={params.audit_remark} onChange={this.changeFormEvent.bind(this)} /></div></li> : null
+            type === 1 ? <li>活动审核意见：<div><TextArea rows={4} className={style.textarea} value={params.audit_remark} onChange={this.changeFormEvent.bind(this)} /></div></li> : null
           }  
           {
-            type === '1' ?
+            type === 1 ?
             <li className={style.btnitems}><Button type="primary" onClick={this.checkEvent.bind(this)}>提交</Button></li>
             :
             <li className="mt30"><Button onClick={this.goBackEvent.bind(this)}>返回</Button></li>

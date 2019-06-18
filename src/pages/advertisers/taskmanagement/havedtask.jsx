@@ -158,7 +158,12 @@ class HavedTask extends Component{
         dataIndex: 'appNickName'
       },
       {
-        title: '预计指出金额',
+        title: '接单阅读数',
+        key: 'missionReadCnt',
+        dataIndex: 'missionReadCnt'
+      },
+      {
+        title: '预计支出金额',
         key: 'adEstimateCost',
         dataIndex: 'adEstimateCost'
       },
@@ -166,11 +171,6 @@ class HavedTask extends Component{
         title: '阅读单价',
         key: 'adUnitPrice',
         dataIndex: 'adUnitPrice'
-      },
-      {
-        title: '接单阅读数',
-        key: 'missionReadCnt',
-        dataIndex: 'missionReadCnt'
       },
       {
         title: '实际阅读',
@@ -189,7 +189,7 @@ class HavedTask extends Component{
         render: (record) => (
           <div className="opeartion-items">
             <Link className="blue-color" to={{pathname: '/main/advertdetail', state: {id: record.id, type: 0}}}>查看活动</Link>
-            {record.missionStatus === 11 ? <Link className="blue-color ml10" to={`/main/advertdetail?id=${record.id}&type=${1}`}>审核接单</Link> : null}
+            {record.missionStatus === 11 ? <Link className="blue-color ml10" to={{pathname: '/main/advertdetail', state: {id: record.id, type: 1}}}>审核接单</Link> : null}
             {
               record.missionStatus === 13 ?
                 <Popconfirm
