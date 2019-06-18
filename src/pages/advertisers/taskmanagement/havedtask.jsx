@@ -188,7 +188,7 @@ class HavedTask extends Component{
         dataIndex: '',
         render: (record) => (
           <div className="opeartion-items">
-            <Link className="blue-color" to={`/main/advertdetail?id=${record.id}&type=${0}`}>查看活动</Link>
+            <Link className="blue-color" to={{pathname: '/main/advertdetail', state: {id: record.id, type: 0}}}>查看活动</Link>
             {record.missionStatus === 11 ? <Link className="blue-color ml10" to={`/main/advertdetail?id=${record.id}&type=${1}`}>审核接单</Link> : null}
             {
               record.missionStatus === 13 ?

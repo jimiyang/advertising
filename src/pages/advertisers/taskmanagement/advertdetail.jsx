@@ -47,15 +47,16 @@ class AdvertDetail extends Component{
     };
   }
   componentWillMount() {
-    if (!this.props.location.query.id) return false;
+    const state = this.props.location.state;
+    if (!state.id) return false;
     Promise.all([window.api.baseInstance('admin/system/dict/getDictByType', {type: 'mediaType'}), window.api.baseInstance('admin/system/dict/getDictByType', {type: 'provinceType'})]).then(rs => {
-      this.initForm(this.props.location.query.id);
+      this.initForm(state.id);
       const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
       if (!loginInfo) return false;
-      const params = Object.assign(this.state.params, {loginName: loginInfo.data.loginName, id: this.props.location.query.id});
+      const params = Object.assign(this.state.params, {loginName: loginInfo.data.loginName, id: state.id});
       this.setState({
         params,
-        type: this.props.location.query.type,
+        type: state.type,
         mediaTypeLabel: rs[0].data,
         selmediaValData: new Array(rs[0].data.length),
         provinceTypeType: rs[1].data,

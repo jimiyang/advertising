@@ -55,8 +55,8 @@ class CreateAdvertity extends Component {
     });
   }
   initForm = () => {
-    if (!this.props.location.query.id) return false;
-    window.api.baseInstance('api/ad/campaign/getById', {id: this.props.location.query.id}).then(rs => {
+    if (!this.props.location.state.id) return false;
+    window.api.baseInstance('api/ad/campaign/getById', {id: this.props.location.state.id}).then(rs => {
       const form = Object.assign(this.state.form, rs.data);
       const selmediaValData = this.initLabel('media', form.targetMediaCategory);
       const selproviceValData = this.initLabel('province', form.targetArea);

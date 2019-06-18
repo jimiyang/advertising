@@ -198,8 +198,8 @@ class MyActivity extends Component{
         dataIndex: '',
         render: (record) => (
           <div className="opeartion-items">
-            <Link className="blue-color" to={`/main/activitydetail?id=${record.id}`}>查看</Link>
-            <Link className="blue-color ml10" to={`/main/createactivity?id=${record.id}`}>编辑</Link>
+            <Link className="blue-color" to={{pathname: '/main/activitydetail', state: {id: record.id}}}>查看</Link>
+            <Link className="blue-color ml10" to={{pathname: '/main/createactivity', state: {id: record.id}}}>编辑</Link>
             {
               [20, 21, 23].map((item, index) => (
                 record.postStatus === item ?

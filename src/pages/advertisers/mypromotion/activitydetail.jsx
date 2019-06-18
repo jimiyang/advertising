@@ -26,7 +26,7 @@ class ActivityDetail extends Component{
     };
   }
   componentWillMount() {
-    if (!this.props.location.query.id) return false;
+    if (!this.props.location.state.id) return false;
     Promise.all([window.api.baseInstance('admin/system/dict/getDictByType', {type: 'mediaType'}), window.api.baseInstance('admin/system/dict/getDictByType', {type: 'provinceType'})]).then(rs => {
       this.setState({
         mediaTypeLabel: rs[0].data,
@@ -34,7 +34,7 @@ class ActivityDetail extends Component{
         provinceTypeType: rs[1].data,
         selproviceValData: new Array(rs[1].data.length)
       });
-      this.initForm(this.props.location.query.id);
+      this.initForm(this.props.location.state.id);
     }).catch(err => {
       if (err.code === 100000) {
         this.setState({redirect: true});

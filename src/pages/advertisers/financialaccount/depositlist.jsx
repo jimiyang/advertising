@@ -12,7 +12,7 @@ class DepositList extends Component{
   constructor(props) {
     super(props);
     this.state = {
-      isActive: 2,
+      isActive: 0,
       loginName: '',
       depositData: [],
       status: ['下单', '成功', '失败'],
