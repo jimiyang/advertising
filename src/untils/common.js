@@ -33,7 +33,7 @@ const utils =  {
     let second = date.getSeconds();
     minute = minute < 10 ? (`0${minute}`) : minute;
     second = second < 10 ? (`0${second}`) : second;
-    const str = flag ? `${y}-${m}-${d} ${h}:${minute}:${second}` : `${m}月${d}日 ${h}:${minute} `;
+    const str = flag ? `${y}-${m}-${d} ${h}:${minute}:${second}` : `${y}-${m}-${d} `;
     return str;
   },
   getAdType(type) { //活动形式

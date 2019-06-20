@@ -1,12 +1,13 @@
 import React, {Component} from 'react';
 import {DatePicker, Table, Select, Input, Button, message} from 'antd';
 import style from './style.less';
-import { race } from 'redux-saga/effects';
+import Redirect from 'umi/redirect';
 const {Option} = Select; 
 class ConsumeList extends Component{
   constructor(props) {
     super(props);
     this.state = {
+      redirect: false,
       depositData: [],
       pagination: {
         size: 'small',
@@ -53,7 +54,7 @@ class ConsumeList extends Component{
       } else {
         message.error(err.message);
       }
-    });;
+    });
   }
   changePage = (page) => {
     page = page === 0 ? 1 : page;
@@ -109,7 +110,8 @@ class ConsumeList extends Component{
     const {
       depositData,
       pagination,
-      search
+      search,
+      redirect
     } = this.state;
     const columns = [
       {
@@ -143,6 +145,7 @@ class ConsumeList extends Component{
         dataIndex: 'orderStatus'
       }
     ];
+    if (redirect) return (<Redirect to="/relogin" />);
     return(
       <div className={style.financialModel}>
         <ul className={style.search}>

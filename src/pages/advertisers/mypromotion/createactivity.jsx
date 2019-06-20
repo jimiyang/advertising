@@ -52,37 +52,6 @@ class CreateAdvertity extends Component {
       message.error(err.message);
     });
   }
-  //初始化标签
-  initLabel = (type, data) => {
-    if (data.length === 0) return false;
-    let arr = data;
-    switch (type) {
-      case 'media':
-        const mediaLabel = this.state.mediaTypeLabel;
-        let selmediaValData = this.state.selmediaValData;
-        JSON.parse(arr).map((node, i) => {
-          mediaLabel.map((item, index) => {
-            if (node == Number(item.value)) {
-              selmediaValData[index] = node;
-            }
-          });
-        });
-        return selmediaValData;
-      case 'province':
-        const provinceLabel = this.state.provinceTypeType;
-        let selproviceValData = this.state.selproviceValData;
-        JSON.parse(arr).map((node, i) => {
-          provinceLabel.map((item, index) => {
-            if (node == Number(item.value)) {
-              selproviceValData[index] = node;
-            }
-          });
-        });
-      return selproviceValData;
-      default: 
-        break;
-    }
-  }
   //form 表单改变
   changeFormEvent = (type, e, value) => {
     let form = this.state.form;

@@ -58,7 +58,7 @@ class MenuApp extends Component {
               name: '我的收益',
               ico: 'money-collect',
               children: [
-                {id: 401, name: '结算记录', url: '/main/depositlist'}
+                {id: 401, name: '结算记录', url: '/main/arningslist'}
               ]
             }
           ],
