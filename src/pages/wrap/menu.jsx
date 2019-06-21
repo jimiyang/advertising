@@ -67,37 +67,46 @@ class MenuApp extends Component {
               id: 6,
               name: '员工管理',
               ico: 'money-collect',
-              children: [
-                {id: 60, name: '添加员工', url: '/main/add'},
-                {id: 61, name: '员工列表', url: '/main/employesslist'}
-              ]    
+              url: '/main/employesslist',
+              children: []    
             },
             {
               id: 7,
               name: '广告主管理',
               ico: 'money-collect',
+              url: '',
               children: []    
             },
             {
               id: 8,
               name: '流量主管理',
               ico: 'money-collect',
-              children: [
-                {id: 81, name: '流量主管理列表', url: '/main/flowlist'},
-                {id: 82, name: '流量主账号信息', url: '/main/accountinfo'}
-              ]    
+              url: '/main/flowlist',
+              children: []    
             },
             {
               id: 9,
               name: '提现管理',
               ico: 'money-collect',
-              children: [
-                {id: 90, name: '提现管理列表', url: '/main/cashlist'},
-              ]    
+              url: '/main/cashlist',
+              children: []    
+            },
+            {
+              id: 10,
+              name: '转账充值审核',
+              ico: 'money-collect',
+              url: '/main/cashlist',
+              children: []    
             },
             {
               id: 11,
-              name: '活动管理',
+              name: '信息管理 ',
+              ico: 'money-collect',
+              children: []    
+            },
+            {
+              id: 12,
+              name: '消息发布 ',
               ico: 'money-collect',
               children: []    
             }
@@ -119,7 +128,7 @@ class MenuApp extends Component {
           data = this.state.administoraData;
           break;
         default:
-          data = this.state.advertMenuData;
+          data = this.state.administoraData;
           break;
       }
       data = this.state.defaultMenuData.concat(data);

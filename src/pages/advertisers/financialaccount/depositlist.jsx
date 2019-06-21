@@ -32,7 +32,8 @@ class DepositList extends Component{
         total: 0,
         showQuickJumper: true,
         showSizeChanger: true,
-        onChange: this.changePage
+        onChange: this.changePage,
+        onShowSizeChange: this.onShowSizeChange
       },
       search: {
         dateStart: '',
