@@ -22,7 +22,8 @@ class ConsumeList extends Component{
         dateStart: '',
         dateEnd: '',
         orderStatus: '',
-        orderNo: ''
+        orderNo: '',
+        as:''
       }
     };
   }
