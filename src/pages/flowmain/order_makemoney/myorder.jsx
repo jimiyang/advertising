@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {Button, Select, Input, Modal, message, Pagination} from 'antd';
-import router from 'umi/router';
 import Redirect from 'umi/redirect';
 import Link from 'umi/link';
 import style from './style.less';

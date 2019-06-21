@@ -8,11 +8,23 @@ class ArningsList extends Component {
     this.state = {
       loginName: '',
       earningsData: [],
+      available_balance: 0, //可用余额
+      freezen_balance: 0, //冻结余额
       search: {
-
+        dateStart: null,
+        dateEnd: null,
+        orderNo: null,
+        orderStatus: null
       },
       pagination: {
-
+        size: 'small',
+        showQuickJumper: true,
+        showSizeChanger: true,
+        total: 0,
+        currentPage: 1,
+        limit: 10,
+        onChange: this.changePage,
+        onShowSizeChange: this.onShowSizeChange
       }
     };
   }
@@ -21,21 +33,76 @@ class ArningsList extends Component {
     if (!loginInfo) return false;
     await this.setState({loginName: loginInfo.data.loginName});
     this.loadList();
+    this.getCaQuery();
   }
-  loadList = () => {
-    const {loginName} = this.state;
-    const params = {
-      loginName
-    };
-    window.api.baseInstance('admin/flow/finance/list', params).then(rs => {
-      console.log(rs);
+  //获取可用余额和冻结余额
+  getCaQuery = () => {
+    window.api.baseInstance('api/merchant/caQuery', {operatorLoginName: this.state.loginName}).then(rs => {
+      //console.log(rs);
+      this.setState({available_balance: rs.data.available_balance, freezen_balance: rs.data.freezen_balance});
+    }).catch(err => {
+      if (err.code === 100000) {
+        this.setState({redirect: true});
+        window.localStorage.removeItem('login_info');
+      }
+      message.error(err.message);
     });
   }
-  changeFormEvent = (type, e) => {
-
+  loadList = () => {
+    const {loginName, pagination, search} = this.state;
+    const params = {
+      currentPage: pagination.currentPage,
+      limit: pagination.limit,
+      loginName,
+      ...search
+    };
+    console.log(search);
+    window.api.baseInstance('admin/flow/finance/list', params).then(rs => {
+      console.log(rs);
+      const p = Object.assign(pagination, {total: rs.total});
+      this.setState({earningsData: rs.data, pagination: p});
+    }).catch(err => {
+      if (err.code === 100000) {
+        this.setState({redirect: true});
+        window.localStorage.removeItem('login_info');
+      }
+      message.error(err.message);
+    });
+  }
+  changePage = (page) => {
+    page = page === 0 ? 1 : page;
+    const pagination = Object.assign(this.state.pagination, {currentPage: page});
+    this.setState({pagination});
+    this.loadList();
+  }
+  //改变每页条数事件
+  onShowSizeChange = (current, size) => {
+    let p = this.state.pagination;
+    p = Object.assign(p, {currentPage: current, limit: size});
+    this.setState({pagination: p});
+    this.loadList();
+  }
+  changeFormEvent = (type, e, value) => {
+    let search = this.state.search;
+    let obj = {};
+    switch (type) {
+      case 'dateStart':
+        obj = {[type]: value};
+        break;
+      case 'dateEnd':
+        obj = {[type]: value};
+        break;
+      case 'orderNo':
+        obj = {[type]: e.target.value};
+        break;
+      default:
+        break;
+    }
+    search = Object.assign(search, obj);
+    this.setState({search});
   }
   searchEvent = () => {
-    console.log(this.state.search);
+    this.loadList();
   }
   //提现弹窗
   widthdrawEvent = () => {
@@ -46,6 +113,8 @@ class ArningsList extends Component {
     const {
       redirect,
       search,
+      available_balance,
+      freezen_balance,
       earningsData,
       pagination
     } = this.state;
@@ -90,11 +159,11 @@ class ArningsList extends Component {
         <div className={style.accountAmount}>
           <div>
             <div className={style.accountItems}>
-              10.00
+              {available_balance}
               <h1>账户可用余额</h1>
             </div>
             <div className={style.lockAmount}>
-              0.00
+              {freezen_balance}
               <h1>账户冻结余额</h1>
             </div>
           </div>
@@ -110,7 +179,7 @@ class ArningsList extends Component {
           </li>
           <li className="ml30">
             结算单号
-            <Input className="w180 ml10" value={search.orderNo} onChange={this.changeFormEvent.bind(this, 'orderNo')} />
+            <Input className="w180 ml10" format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'orderNo')} />
           </li>
           <li className="ml30">
             <Button type="primary" onClick={this.searchEvent.bind(this)}>查询</Button>

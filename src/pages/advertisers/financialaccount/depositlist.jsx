@@ -3,7 +3,6 @@ import {DatePicker, Table, Select, Input, Button, Modal, message} from 'antd';
 import style from './style.less';
 import Redirect from 'umi/redirect';
 import router from 'umi/router';
-import QRCode from 'qrcode.react'; //二维码
 import WithdrawList from './withdrawallist'; //提现记录
 import ConsumeList from './consumelist'; //消费记录
 import RechargeModel from '../../components/rechargeModel'; //充值modal

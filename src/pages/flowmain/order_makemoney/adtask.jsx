@@ -25,7 +25,7 @@ class AdTask extends Component{
         limit: 10,
         onChange: this.changePage,
         onShowSizeChange: this.onShowSizeChange
-      },
+      }
     };
   }
   async componentWillMount() {
@@ -34,6 +34,7 @@ class AdTask extends Component{
     await this.setState({loginName: loginInfo.data.loginName});
     this.loadList();
     this.getListApps(loginInfo.data.loginName);
+    this.getCaQuery();
   }
   loadList = () => {
     const {loginName, pagination, search} = this.state;
@@ -44,7 +45,7 @@ class AdTask extends Component{
       ...search
     };
     window.api.baseInstance('flow/mission/list', params).then(rs => {
-      console.log(rs);
+      //console.log(rs);
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({pubAccountData: rs.data, pagination: p});
     }).catch(err => {
