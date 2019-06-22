@@ -156,6 +156,7 @@ class ArningsList extends Component {
     if (redirect) return (<Redirect to="/relogin" />);
     return(
       <div className={style.arnings}>
+        <h1 className="nav-title">接单赚钱 > 已接任务</h1>
         <div className={style.accountAmount}>
           <div>
             <div className={style.accountItems}>

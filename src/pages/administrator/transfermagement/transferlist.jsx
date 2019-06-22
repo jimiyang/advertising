@@ -5,7 +5,7 @@ import Redirect from 'umi/redirect';
 import style from '../style.less';
 import AddFlowMain from '../../components/addflowmain'; //添加流量主
 const Option = Select.Option;
-class FlowList extends Component{
+class TransferList extends Component{
   constructor(props) {
     super(props);
     this.state = {
@@ -211,23 +211,23 @@ class FlowList extends Component{
         >
           <AddFlowMain type={search.type} />
         </Modal>
-        <h1 className="nav-title">流量主管理<Button type="primary" onClick={this.addEvent.bind(this)}>添加</Button></h1>
-        <ul className={style.search}>
+        <h1 className="nav-title">转账充值审核</h1>
+        <ul className={style.search} style={{flexWrap: 'wrap'}}>
           <li>
-            流量主名称
-            <Input placeholder="请输入流量主名称" className="ml10" value={search.merchantName} onChange={this.changeFormEvent.bind(this, 'merchantName')} />
+            商户名称
+            <Input placeholder="请输入商户名称" className="ml10" value={search.merchantName} onChange={this.changeFormEvent.bind(this, 'merchantName')} />
           </li>
           <li>
-            流量主编码
-            <Input placeholder="请输入流量主编码" className="ml10" value={search.merchantCode} onChange={this.changeFormEvent.bind(this, 'merchantCode')} />
+            商户编码
+            <Input placeholder="请输入商户编码" className="ml10" value={search.merchantCode} onChange={this.changeFormEvent.bind(this, 'merchantCode')} />
           </li>
-          <li>
-            流量主状态
-            <Select defaultValue={search.status} className="ml10" onChange={this.changeFormEvent.bind(this, 'status')}>
-              <Option value={null}>请选择</Option>
-              <Option value={1}>启用</Option>
-              <Option value={2}>停用</Option>
-            </Select>
+          <li style={{width: '100%'}}>
+            充值单号
+            <Input placeholder="请输入商户编码" className="ml10" value={search.merchantCode} onChange={this.changeFormEvent.bind(this, 'merchantCode')} />
+          </li>
+          <li style={{width: '100%'}}>
+            创建时间
+            <Input placeholder="请输入商户编码" className="ml10" value={search.merchantCode} onChange={this.changeFormEvent.bind(this, 'merchantCode')} />
           </li>
           <li>
             <Button type="primary" onClick={this.searchEvent.bind(this)}>查询</Button>
@@ -244,4 +244,4 @@ class FlowList extends Component{
     )
   }
 }
-export default FlowList;
+export default TransferList;

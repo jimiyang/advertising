@@ -3,9 +3,9 @@ import {Table, Input, Button, Select, message, Popconfirm, Modal} from 'antd';
 import Link from 'umi/link';
 import Redirect from 'umi/redirect';
 import style from '../style.less';
-import AddFlowMain from '../../components/addflowmain'; //添加流量主
+import AddFlowMain from '../../components/addflowmain'; //添加广告主
 const Option = Select.Option;
-class FlowList extends Component{
+class AdList extends Component{
   constructor(props) {
     super(props);
     this.state = {
@@ -17,7 +17,7 @@ class FlowList extends Component{
         merchantName: null,
         merchantCode: null,
         status: null,
-        type: 2 //流量主类型
+        type: 1 //广告主类型
       },
       pagination: {
         size: 'small',
@@ -46,6 +46,7 @@ class FlowList extends Component{
       ...search
     };
     window.api.baseInstance('api/merchant/list', params).then(rs => {
+      console.log(rs);
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({adData: rs.data, pagination: p});
     }).catch(err => {
@@ -134,12 +135,11 @@ class FlowList extends Component{
       }
     });
   }
-  //添加流量主
   addEvent = () => {
     this.setState({isAddVisible: true});
   }
   closeEvent = () => {
-    this.setState({isAddVisible: false});
+    this.setState({isAddVisible: false});   
   }
   render() {
     const {
@@ -151,7 +151,7 @@ class FlowList extends Component{
     } = this.state;
     const columns = [
       {
-        title: '流量主名称',
+        title: '广告主名称',
         key: 'merchantName',
         dataIndex: 'merchantName'
       },
@@ -175,9 +175,9 @@ class FlowList extends Component{
         key: 'status',
         dataIndex: 'status',
         render: (record) => (
-          <span>{record === 1 ? '启用' : '停用'}</span>
+          <span>{record === 1 ? '启用' : ' 停用'}</span>
         )
-      },
+      }
       /*{
         title: '操作',
         render: (record) => (
@@ -211,18 +211,18 @@ class FlowList extends Component{
         >
           <AddFlowMain type={search.type} />
         </Modal>
-        <h1 className="nav-title">流量主管理<Button type="primary" onClick={this.addEvent.bind(this)}>添加</Button></h1>
+        <h1 className="nav-title">广告主管理<Button type="primary" onClick={this.addEvent.bind(this)}>添加</Button></h1>
         <ul className={style.search}>
           <li>
-            流量主名称
-            <Input placeholder="请输入流量主名称" className="ml10" value={search.merchantName} onChange={this.changeFormEvent.bind(this, 'merchantName')} />
+            广告主名称
+            <Input placeholder="请输入广告主名称" className="ml10" value={search.merchantName} onChange={this.changeFormEvent.bind(this, 'merchantName')} />
           </li>
           <li>
-            流量主编码
-            <Input placeholder="请输入流量主编码" className="ml10" value={search.merchantCode} onChange={this.changeFormEvent.bind(this, 'merchantCode')} />
+            广告主编码
+            <Input placeholder="请输入广告主编码" className="ml10" value={search.merchantCode} onChange={this.changeFormEvent.bind(this, 'merchantCode')} />
           </li>
           <li>
-            流量主状态
+            广告主状态
             <Select defaultValue={search.status} className="ml10" onChange={this.changeFormEvent.bind(this, 'status')}>
               <Option value={null}>请选择</Option>
               <Option value={1}>启用</Option>
@@ -244,4 +244,4 @@ class FlowList extends Component{
     )
   }
 }
-export default FlowList;
+export default AdList;

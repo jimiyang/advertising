@@ -74,7 +74,7 @@ class MenuApp extends Component {
               id: 7,
               name: '广告主管理',
               ico: 'money-collect',
-              url: '',
+              url: '/main/adlist',
               children: []    
             },
             {
@@ -95,7 +95,7 @@ class MenuApp extends Component {
               id: 10,
               name: '转账充值审核',
               ico: 'money-collect',
-              url: '/main/cashlist',
+              url: '/main/transferlist',
               children: []    
             },
             {
@@ -118,17 +118,17 @@ class MenuApp extends Component {
       if (window.localStorage.getItem('login_info') === null) return false;
       let data = [];
       switch(loginInfo.data.merchantType) {
+        case 0:
+          data = this.state.administoraData;
+          break;
         case 1:
           data = this.state.advertMenuData;
           break;
-        case 2:
+        case 2: 
           data = this.state.flowofMainMenu;
           break;
-        case 3: 
-          data = this.state.administoraData;
-          break;
         default:
-          data = this.state.administoraData;
+          data = this.state.advertMenuData;
           break;
       }
       data = this.state.defaultMenuData.concat(data);

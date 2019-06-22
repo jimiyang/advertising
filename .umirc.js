@@ -58,12 +58,13 @@ export default {
         {path: '/main/adtask', component: './flowmain/order_makemoney/adtask'}, //已接广告任务(流量主)
         {path: '/main/adtaskdetail', component: './flowmain/order_makemoney/adtaskdetail'}, //已接广告任务详情(流量主)
         {path: '/main/arningslist', component: './flowmain/myarnings/arningslist'}, //我的收益（结算记录）流量主
-        {path: '/main/add', component: './administrator/employees/add'}, //添加员工(天目管理员)
         {path: '/main/employesslist', component: './administrator/employees/employesslist'}, //员工列表(天目管理员)
+        {path: '/main/adlist', component: './administrator/admangement/adlist'}, //广告主管理列表(天目管理员)
         {path: '/main/flowlist', component: './administrator/flowmainmangement/flowlist'}, //流量主管理列表(天目管理员)
         {path: '/main/accountinfo', component: './administrator/flowmainmangement/accountinfo'}, //流量主账号信息(天目管理员)
         {path: '/main/cashlist', component: './administrator/cashmangement/cashlist'}, //提现管理(天目管理员)
         {path: '/main/cashdetail', component: './administrator/cashmangement/cashdetail'}, //提现管理详情(天目管理员)
+        {path: '/main/transferlist', component: './administrator/transfermagement/transferlist'}, // 转账充值审核（天目管理员）
       ]
     },
   ],

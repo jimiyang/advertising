@@ -104,7 +104,8 @@ class EmployessList extends Component{
     console.log('clear');
   }
   addEvent = (type, item) => {
-    if (item !== null) {
+    let addForm = this.state.addForm;
+    if (type === 'edit') {
       const params = {
         id: item.id,
         operatorLoginName: this.state.operatorLoginName
@@ -119,8 +120,11 @@ class EmployessList extends Component{
           message.error(err.message);
         }
       });
+    } else {
+      addForm = Object.assign(addForm, {name: null, mobile: null});
+      this.setState({addForm});
     }
-    this.setState({isAddVisible: true, type});
+    this.setState({type, isAddVisible: true});
   }
   //添加员工事件change
   changeValueEvent = (type, e) => {
@@ -130,14 +134,24 @@ class EmployessList extends Component{
     this.setState({addForm});
   }
   saveEvent = () => {
-    let {operatorLoginName, addForm} = this.state
-    const params = {
+    let {operatorLoginName, addForm, type} = this.state
+    let params = {
       operatorLoginName,
       ...addForm
     };
-    console.log(this.state.type);
-    window.api.baseInstance('api/employee/add', params).then(rs => {
-      console.log(rs);
+    //type === 'add' ?
+    let url = 'api/employee/add';
+    if (type === 'add') {
+      url = 'api/employee/add';
+      delete params.id;
+    } else {
+      url = 'api/employee/edit';
+      params = Object.assign(params, {employeeId: params.id});
+    }
+    window.api.baseInstance(url, params).then(rs => {
+      message.success(rs.message);
+      this.setState({isAddVisible: false});
+      this.loadList();
     }).catch(err => {
       if (err.code === 100000) {
         this.setState({redirect: true});
@@ -149,12 +163,13 @@ class EmployessList extends Component{
   }
   resetPwdEvent = (item) => {
     const params = {
-      password: '123456',
+      password: '111qqq',
       employeeId: item.id,
       operatorLoginName: this.state.operatorLoginName
     };
     window.api.baseInstance('api/employee/edit', params).then(rs => {
-      console.log(rs);
+      message.success(rs.message);
+      this.loadList();
     }).catch(err => {
       if (err.code === 100000) {
         this.setState({redirect: true});
@@ -165,13 +180,15 @@ class EmployessList extends Component{
     });
   }
   confirm = (item) => {
+    const status = item.status === 1 ? 2 : 1; //1启用，2停用
     const params = {
-      status: 2,
+      status,
       employeeId: item.id,
       operatorLoginName: this.state.operatorLoginName
     };
     window.api.baseInstance('api/employee/edit', params).then(rs => {
-      console.log(rs);
+      message.success(rs.message);
+      this.loadList();
     }).catch(err => {
       if (err.code === 100000) {
         this.setState({redirect: true});
@@ -212,8 +229,8 @@ class EmployessList extends Component{
       },
       {
         title: '创建时间',
-        key: 'gmt_time',
-        dataIndex: 'gmt_time'
+        key: 'gmtCreate',
+        dataIndex: 'gmtCreate'
       },
       {
         title: '操作',
@@ -231,12 +248,12 @@ class EmployessList extends Component{
               <span className="ml10 blue-color">重置密码</span>
             </Popconfirm>
             <Popconfirm
-              title="是否要停用"
+              title={`是否要${Number(record.status) === 1 ? '停用' : '启用'}此员工账号`}
               onConfirm={this.confirm.bind(this, record)}
               okText="是"
               cancelText="否"
             >
-              <span className="ml10 blue-color">停用</span>
+              <span className="ml10 blue-color">{Number(record.status) === 1 ? '停用' : '启用'}</span>
             </Popconfirm>
           </div>
         )
