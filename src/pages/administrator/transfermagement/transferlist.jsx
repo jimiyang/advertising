@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Table, Input, Button, Select, message, Popconfirm, Modal} from 'antd';
+import {Table, Input, Button, Select, message, Popconfirm, Modal, DatePicker} from 'antd';
 import Link from 'umi/link';
 import Redirect from 'umi/redirect';
 import style from '../style.less';
@@ -212,34 +212,7 @@ class TransferList extends Component{
           <AddFlowMain type={search.type} />
         </Modal>
         <h1 className="nav-title">转账充值审核</h1>
-        <ul className={style.search} style={{flexWrap: 'wrap'}}>
-          <li>
-            商户名称
-            <Input placeholder="请输入商户名称" className="ml10" value={search.merchantName} onChange={this.changeFormEvent.bind(this, 'merchantName')} />
-          </li>
-          <li>
-            商户编码
-            <Input placeholder="请输入商户编码" className="ml10" value={search.merchantCode} onChange={this.changeFormEvent.bind(this, 'merchantCode')} />
-          </li>
-          <li style={{width: '100%'}}>
-            充值单号
-            <Input placeholder="请输入商户编码" className="ml10" value={search.merchantCode} onChange={this.changeFormEvent.bind(this, 'merchantCode')} />
-          </li>
-          <li style={{width: '100%'}}>
-            创建时间
-            <Input placeholder="请输入商户编码" className="ml10" value={search.merchantCode} onChange={this.changeFormEvent.bind(this, 'merchantCode')} />
-          </li>
-          <li>
-            <Button type="primary" onClick={this.searchEvent.bind(this)}>查询</Button>
-          </li>
-        </ul>
-        <Table
-          dataSource={adData}
-          columns={columns}
-          pagination={pagination}
-          rowKey={record => record.id}
-          className="table"
-        />
+        <div>开发中......</div>
       </div>
     )
   }

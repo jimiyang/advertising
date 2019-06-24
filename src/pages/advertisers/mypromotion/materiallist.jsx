@@ -1,59 +1,115 @@
 import React, {Component} from 'react';
-import {Checkbox, Input, Button, Table} from 'antd';
+import {Radio, Input, Button, Table, message} from 'antd';
+import Redirect from 'umi/redirect';
+import Link from 'umi/link';
 import style from './style.less';
 class MaterialList extends Component{
   constructor(props) {
     super(props);
     this.state = {
+      loginName: null,
+      redirect: false,
       articletypeData: ['电商', '广告', '小说', '知识付费', '其他'],
-      materiaData: [
-        {
-          materia_id: 1,
-          materia_title: '我始终努力地为你斑斓',
-          materia_type: 2,
-          materia_pic: 'http://static.liantuobank.com/project/lianfutong/images/imgdemo3.jpg',
-          materia_time: '2019-10-30 12:30:40'
-        },
-        {
-          materia_id: 2,
-          materia_title: '我始终努力地为你斑斓',
-          materia_type: 3,
-          materia_pic: 'http://static.liantuobank.com/project/lianfutong/images/imgdemo3.jpg',
-          materia_time: '2019-10-30 12:30:40'
-        }
-      ],
+      materiaData: [],
+      search: {
+        title: null,
+        articleType: null
+      },
       pagination: {
-        size: 'small'
+        size: 'small',
+        showQuickJumper: true,
+        showSizeChanger: true,
+        total: 0,
+        currentPage: 1,
+        limit: 10,
+        pageSize: 10,
+        onChange: this.changePage,
+        onShowSizeChange: this.onShowSizeChange
       }
     };
   }
+  async componentWillMount() {
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
+    if (!loginInfo) return false;
+    await this.setState({
+      loginName: loginInfo.data.loginName
+    });
+    this.loadList();
+  }
+  loadList = () => {
+    let {loginName, search, pagination} = this.state;
+    const params = {
+      loginName,
+      currentPage: pagination.currentPage,
+      limit: pagination.limit,
+      ...search
+    };
+    window.api.baseInstance('ad/article/list', params).then(rs => {
+      const p = Object.assign(pagination, {total: rs.data.totalNum});
+      this.setState({materiaData: rs.data.items, pagination: p});
+    }).catch(err => {
+      if (err.code === 100000) {
+        this.setState({redirect: true});
+        window.localStorage.removeItem('login_info');
+      } else {
+        message.error(err.message);
+      }
+    });
+  }
+  changePage = (page) => {
+    page = page === 0 ? 1 : page;
+    const pagination = Object.assign(this.state.pagination, {currentPage: page});
+    this.setState({pagination});
+    this.loadList();
+  }
+  //改变每页条数事件
+  onShowSizeChange = (current, size) => {
+    let p = this.state.pagination;
+    p = Object.assign(p, {currentPage: current, limit: size});
+    this.setState({pagination: p});
+    this.loadList();
+  }
+  changeFormEvent = (type, e) => {
+    let search = this.state.search;
+    search = Object.assign(search, {[type]: e.target.value});
+    this.setState({search});
+  }
+  searchEvent = () => {
+    this.loadList();
+  }
+  clearEvent = () => {
+    let search = this.state.search;
+    search = Object.assign(search, {title: null, articleType: null});
+    this.setState({search});
+    this.loadList();
+  }
   render() {
     const {
+      redirect,
       articletypeData,
       materiaData,
-      pagination
+      pagination,
+      search
     } = this.state;
     const columns = [
       {
         title: '标题',
-        key: 'materia_title',
-        dataIndex: '',
         render: (record) => (
           <div className={style.titleinfo}>
-            <img src={record.materia_pic} />
+            <img src={record.contentSourceUrl} />
             <div className="g-tl">
-              {record.materia_title}
-              <p>{record.materia_time}</p>
+              {record.title}
+              <p>{record.createDate}</p>
             </div>
           </div>
         )
       },
       {
         title: '文章类型',
-        key: 'materia_type',
-        dataIndex: 'materia_type',
+        key: 'articleType',
+        dataIndex: 'articleType',
         render: (record) => (
-          <span>{articletypeData[record]}</span>
+          <span>{articletypeData[record - 1]}</span>
         )
       },
       {
@@ -62,39 +118,42 @@ class MaterialList extends Component{
         dataIndex: '',
         render: (record) => (
           <div className="opeartion-items">
-            <span>编辑</span>
+            <Link className="blue-color" to="/">编辑</Link>
           </div>
         )
       },
     ]
+    if (redirect) return (<Redirect to="/relogin" />);
     return(
       <div className={style.mypromotion}>
-        <h1 className="nav-title">素材管理列表</h1>
+        <h1 className="nav-title">素材库列表</h1>
         <ul className={`${style.search} mt40`}>
           <li>
-            <label>标题</label>
-            <Input />
+            <label className={style.name}>标题</label>
+            <Input value={search.title} onChange={this.changeFormEvent.bind(this, 'title')} />
           </li>
           <li>
-            <label>文章类型</label>
+            <label className={style.name}>文章类型</label>
             <div className={style.chks}>
+              <Radio.Group onChange={this.onChange} value={search.articleType}>
               {
                 articletypeData.map((item, index) => (
-                  <Checkbox key={index}>{item}</Checkbox>  
+                  <Radio key={index} value={index + 1} onChange={this.changeFormEvent.bind(this, 'articleType')}>{item}</Radio>  
                 ))
               }
+              </Radio.Group>
             </div>
           </li>
           <li>
-            <Button type="primary" className="mr20">查询</Button>
-            <Button className="mr20">重置</Button>
+            <Button type="primary" className="mr20" onClick={this.searchEvent.bind(this)}>查询</Button>
+            <Button className="mr20" onClick={this.clearEvent.bind(this)}>重置</Button>
           </li>
         </ul>
         <Table
           dataSource={materiaData}
           columns={columns}
           pagination={pagination}
-          rowKey={record => record.materia_id}
+          rowKey={record => record.id}
           className="table"
         />
       </div>

@@ -34,7 +34,6 @@ class AdTask extends Component{
     await this.setState({loginName: loginInfo.data.loginName});
     this.loadList();
     this.getListApps(loginInfo.data.loginName);
-    this.getCaQuery();
   }
   loadList = () => {
     const {loginName, pagination, search} = this.state;

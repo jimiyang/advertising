@@ -30,7 +30,6 @@ class DepositList extends Component{
         limit: 10, //每页显示多少条
         currentPage: 1,
         total: 0,
-        showQuickJumper: true,
         showSizeChanger: true,
         onChange: this.changePage,
         onShowSizeChange: this.onShowSizeChange

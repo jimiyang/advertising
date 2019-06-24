@@ -33,16 +33,15 @@ class MyActivity extends Component{
       total: 0
     }
   }
-  componentWillMount() {
+  async componentWillMount() {
     const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
     if (!loginInfo) return false;
     //因为setState是异步的，他会在render后才生效,加入一个回调函数
-    this.setState({
+    await this.setState({
       loginName: loginInfo.data.loginName
-    },()=>{
-      this.loadList();
-      this.getCount(loginInfo.data.loginName);
     });
+    this.loadList();
+    this.getCount(loginInfo.data.loginName);
   }
   loadList = () => {
     const {pagination, search, loginName} = this.state;

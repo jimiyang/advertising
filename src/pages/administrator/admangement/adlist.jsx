@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
-import {Table, Input, Button, Select, message, Popconfirm, Modal} from 'antd';
-import Link from 'umi/link';
+import {Table, Input, Button, Select, message, Modal} from 'antd';
 import Redirect from 'umi/redirect';
 import style from '../style.less';
 import AddFlowMain from '../../components/addflowmain'; //添加广告主
+import { isNull } from 'util';
 const Option = Select.Option;
 class AdList extends Component{
   constructor(props) {
@@ -28,6 +28,13 @@ class AdList extends Component{
         limit: 10,
         onChange: this.changePage,
         onShowSizeChange: this.onShowSizeChange
+      },
+      addForm: {
+        merchantName: null,
+        contactName: null,
+        mobile: null,
+        loginName: null,
+        password: null
       }
     };
   }
@@ -46,7 +53,6 @@ class AdList extends Component{
       ...search
     };
     window.api.baseInstance('api/merchant/list', params).then(rs => {
-      console.log(rs);
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({adData: rs.data, pagination: p});
     }).catch(err => {
@@ -82,7 +88,6 @@ class AdList extends Component{
         obj = {[type]: e.target.value};
         break;
       case 'status':
-        console.log(e);
         obj = {[type]: e};
         break;
       default:
@@ -140,6 +145,32 @@ class AdList extends Component{
   }
   closeEvent = () => {
     this.setState({isAddVisible: false});   
+  }
+  //保存添加员工信息s
+  saveEvent = () => {
+    const {form} = this.formRef.props;
+    form.validateFields((err, values) => {
+      if (!err) {
+        let addForm = this.state.addForm;
+        addForm = Object.assign(addForm, {type: 1}, values); //1是添加广告主
+        window.api.baseInstance('api/merchant/add', addForm).then(rs => {
+          message.success(rs.message);
+          this.setState({isAddVisible: false});
+          this.loadList();
+        }).catch(err => {
+          if (err.code === 100000) {
+            this.setState({redirect: true});
+            window.localStorage.removeItem('login_info');
+          } else {
+            message.error(err.message);
+          }
+        });
+      }
+    });
+    
+  }
+  saveFormRef = formRef => {
+    this.formRef = formRef;
   }
   render() {
     const {
@@ -205,12 +236,13 @@ class AdList extends Component{
     if (redirect) return (<Redirect to="/relogin" />);
     return (
       <div className={style.administrator}>
-        <Modal
-          visible={isAddVisible}
-          onCancel={this.closeEvent.bind(this)}
-        >
-          <AddFlowMain type={search.type} />
-        </Modal>
+        <AddFlowMain
+          wrappedComponentRef={this.saveFormRef}
+          type={search.type}
+          isAddVisible={isAddVisible}
+          onCancel={this.closeEvent}
+          onCreate={this.saveEvent}
+        />
         <h1 className="nav-title">广告主管理<Button type="primary" onClick={this.addEvent.bind(this)}>添加</Button></h1>
         <ul className={style.search}>
           <li>

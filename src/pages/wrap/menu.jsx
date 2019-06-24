@@ -22,12 +22,12 @@ class MenuApp extends Component {
               children: [
                 {id: 20, name: '新建推广活动', url: '/main/createactivity'},
                 {id: 21, name: '我的推广活动', url: '/main/myactivity'},
-                {id: 22, name: '素材管理', url: '/main/materiallist'}
+                {id: 22, name: '素材库', url: '/main/materiallist'}
               ]
             },
             {
               id: 3,
-              name: '已结单的任务',
+              name: '已接单的任务',
               ico: 'account-book',
               children: [
                 {id: 30, name: '已接单任务', url: '/main/havedtask'}
@@ -102,12 +102,16 @@ class MenuApp extends Component {
               id: 11,
               name: '信息管理 ',
               ico: 'money-collect',
-              children: []    
+              children: [
+                {id: 111, name: '活动管理', url: '/main/activitylist'},
+                {id: 112, name: '任务管理', url: '/main/tasklist'} 
+              ]    
             },
             {
               id: 12,
               name: '消息发布 ',
               ico: 'money-collect',
+              url: '/main/msglist',
               children: []    
             }
           ]

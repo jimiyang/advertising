@@ -64,7 +64,10 @@ export default {
         {path: '/main/accountinfo', component: './administrator/flowmainmangement/accountinfo'}, //流量主账号信息(天目管理员)
         {path: '/main/cashlist', component: './administrator/cashmangement/cashlist'}, //提现管理(天目管理员)
         {path: '/main/cashdetail', component: './administrator/cashmangement/cashdetail'}, //提现管理详情(天目管理员)
-        {path: '/main/transferlist', component: './administrator/transfermagement/transferlist'}, // 转账充值审核（天目管理员）
+        {path: '/main/transferlist', component: './administrator/transfermagement/transferlist'}, // 转账充值审核（天目管理员
+        {path: '/main/activitylist', component: './administrator/information/activitylist'}, // 活动管理（天目管理员)
+        {path: '/main/tasklist', component: './administrator/information/tasklist'}, // 任务管理（天目管理员)
+        {path: '/main/msglist', component: './administrator/message/msglist'}, // 消息发布（天目管理员)
       ]
     },
   ],

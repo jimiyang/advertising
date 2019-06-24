@@ -1,9 +1,6 @@
 import React, {Component} from 'react';
 import {Button, Input, DatePicker, Table, Modal} from 'antd';
 import Link from 'umi/link';
-import style from './style.less';
-import AuditModel from '../../components/auditModel'; //审核弹层
-import PayModel from '../../components/payModel'; //付款
 class CashList extends Component{
   constructor(props) {
     super(props);
@@ -102,7 +99,7 @@ class CashList extends Component{
     ];
     return (
       <div>
-        <h1 className="nav-title">提现管理</h1>
+        <h1 className="nav-title">消息发布</h1>
         <div>开发中.....</div>
       </div>
     );
