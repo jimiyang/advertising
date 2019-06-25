@@ -7,29 +7,32 @@ class SelectMateria extends Component{
   constructor(props) {
     super(props);
     this.state = {
-      isActive: 0
+      isActive: 0,
+      type: 'edit',
+      id: null
     };
   }
-  tapEvent = (index) => {
-    this.setState({isActive: index});
+  async componentWillMount() {
+    console.log(this.props.location);
+    const state = this.props.location.state
+    if (!state) return false;
+    await this.setState({type: state.type, id: state.id});
   }
   render() {
-    const {isActive} = this.state;
+    const {isActive, type} = this.state;
     return(
       <div className={style.mypromotion}>
         <h1 className="nav-title">新建活动 > 编辑素材</h1>
-        <h2 className="small-title"><em></em>快速功能</h2>
         <div className={style.selectmateriaitems}>
-          <div className={style.type}>
-            <span className={`${style.items} ${isActive === 0 ? style.active : null}`} onClick={this.tapEvent.bind(this, 0)}>一键导入素材</span>
-            <span className={`${style.items} ${isActive === 1 ? style.active : null}`} onClick={this.tapEvent.bind(this, 1)}>选择历史素材</span>
-            <span className={`${style.items} ${isActive === 2 ? style.active : null}`} onClick={this.tapEvent.bind(this, 2)}>选择历史素材</span>
-          </div>
-          <p>导入微信文章</p>
-          <div className={style.link}>
-            微信连接地址
-            <Input />
-            <Button type="primary">确定</Button>
+          {
+            type === 'edit' ? null
+            :
+            <div className={style.type}>
+              <span className={`${style.items} ${isActive === 0 ? style.active : null}`}>选择历史素材</span>
+            </div>
+          }
+          <div className={style.content}>
+            <iframe className={style.iframe} src="http://testadx.liantuo.com/fshstatic/#/" width="1500" height="1000px"></iframe>
           </div>
         </div>
       </div>

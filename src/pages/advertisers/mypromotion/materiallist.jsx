@@ -94,12 +94,13 @@ class MaterialList extends Component{
     const columns = [
       {
         title: '标题',
+        key: 'title',
         render: (record) => (
           <div className={style.titleinfo}>
             <img src={record.contentSourceUrl} />
             <div className="g-tl">
               {record.title}
-              <p>{record.createDate}</p>
+              <p>{window.common.getDate(record.createDate)}</p>
             </div>
           </div>
         )
@@ -118,7 +119,7 @@ class MaterialList extends Component{
         dataIndex: '',
         render: (record) => (
           <div className="opeartion-items">
-            <Link className="blue-color" to="/">编辑</Link>
+            <Link className="blue-color" to={{pathname: '/main/selectmateria', state: {id: record.id, type: 'edit'}}}>编辑</Link>
           </div>
         )
       },
@@ -130,19 +131,7 @@ class MaterialList extends Component{
         <ul className={`${style.search} mt40`}>
           <li>
             <label className={style.name}>标题</label>
-            <Input value={search.title} onChange={this.changeFormEvent.bind(this, 'title')} />
-          </li>
-          <li>
-            <label className={style.name}>文章类型</label>
-            <div className={style.chks}>
-              <Radio.Group onChange={this.onChange} value={search.articleType}>
-              {
-                articletypeData.map((item, index) => (
-                  <Radio key={index} value={index + 1} onChange={this.changeFormEvent.bind(this, 'articleType')}>{item}</Radio>  
-                ))
-              }
-              </Radio.Group>
-            </div>
+            <Input style={{width: '400px'}}value={search.title} onChange={this.changeFormEvent.bind(this, 'title')} />
           </li>
           <li>
             <Button type="primary" className="mr20" onClick={this.searchEvent.bind(this)}>查询</Button>
@@ -150,7 +139,7 @@ class MaterialList extends Component{
           </li>
         </ul>
         <Table
-          dataSource={materiaData}
+          dataSource={this.state.materiaData}
           columns={columns}
           pagination={pagination}
           rowKey={record => record.id}

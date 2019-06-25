@@ -57,9 +57,13 @@ class EditAdvertity extends Component {
     if (!this.props.location.state) return false;
     window.api.baseInstance('api/ad/campaign/getById', {id: this.props.location.state.id}).then(rs => {
       const form = Object.assign(this.state.form, rs.data);
+      const media = typeof form.targetMediaCategory === 'string' ? [] : JSON.parse(form.targetMediaCategory);
+      const categoryType = JSON.parse(form.targetMediaCategory).length !== 0 ? 1 : 0;
+      const area = typeof form.targetArea === 'string' ? [] : JSON.parse(form.targetArea);
+      const areaType = JSON.parse(form.targetArea).length !== 0 ? 1 : 0;
       const selmediaValData = this.initLabel('media', form.targetMediaCategory);
       const selproviceValData = this.initLabel('province', form.targetArea);
-      this.setState({form, selmediaValData: selmediaValData, selproviceValData: selproviceValData, validReading: Math.round(form.postAmtTotal / form.unitPrice)});
+      this.setState({categoryType, areaType, form, selmediaValData, selproviceValData, validReading: Math.round(form.postAmtTotal / form.unitPrice)});
     }).catch(err => {
       if (err.code === 100000) {
         this.setState({redirect: true});
@@ -70,31 +74,34 @@ class EditAdvertity extends Component {
   }
   //初始化标签
   initLabel = (type, data) => {
-    if (data.length === 0) return false;
     let arr = data;
     switch (type) {
       case 'media':
         const mediaLabel = this.state.mediaTypeLabel;
         let selmediaValData = this.state.selmediaValData;
-        JSON.parse(arr).map((node, i) => {
-          mediaLabel.map((item, index) => {
-            if (node == Number(item.value)) {
-              selmediaValData[index] = node;
-            }
+        if (arr !== '' || arr.length !== 0) {
+          JSON.parse(arr).map((node, i) => {
+            mediaLabel.map((item, index) => {
+              if (node == Number(item.value)) {
+                selmediaValData[index] = node;
+              }
+            });
           });
-        });
+        }
         return selmediaValData;
       case 'province':
         const provinceLabel = this.state.provinceTypeType;
         let selproviceValData = this.state.selproviceValData;
-        JSON.parse(arr).map((node, i) => {
-          provinceLabel.map((item, index) => {
-            if (node == Number(item.value)) {
-              selproviceValData[index] = node;
-            }
+        if (arr !== '' || arr.length !== 0) {
+          JSON.parse(arr).map((node, i) => {
+            provinceLabel.map((item, index) => {
+              if (node == Number(item.value)) {
+                selproviceValData[index] = node;
+              }
+            });
           });
-        });
-      return selproviceValData;
+        }
+        return selproviceValData;
       default: 
         break;
     }
@@ -143,12 +150,18 @@ class EditAdvertity extends Component {
         delete values.date;
         const category = window.common.removeEmptyArrayEle(form.targetMediaCategory);
         const area = window.common.removeEmptyArrayEle(form.targetArea);
-        form.targetMediaCategory = category;
-        form.targetArea = area;
-        form.targetMediaCategory = JSON.parse(category);
-        form.targetArea = JSON.parse(area);
+        if (category.length === 0 || category === '') {
+          form.targetMediaCategory = [];
+        } else {
+          form.targetMediaCategory = typeof category === 'string' ? JSON.parse(category) : category;
+        }
+        if (area.length === 0) {
+          form.targetArea = [];
+          form.targetArea.length = 0;
+        } else {
+          form.targetArea = typeof area === 'string' ? JSON.parse(area) : area;
+        }
         form = Object.assign(form, values);
-        //console.log(form);
         window.api.baseInstance('api/ad/campaign/edit', form).then(rs => {
           message.success(rs.message);
           router.push('/main/selectmateria');

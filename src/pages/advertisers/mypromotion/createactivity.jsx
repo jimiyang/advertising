@@ -96,10 +96,9 @@ class CreateAdvertity extends Component {
         delete values.date;
         const category = window.common.removeEmptyArrayEle(form.targetMediaCategory);
         const area = window.common.removeEmptyArrayEle(form.targetArea);
-        form.targetMediaCategory = category;
-        form.targetArea = area;
+        form.targetMediaCategory = category === '' ? [] : category;
+        form.targetArea = area === '' ? [] : area;
         form = Object.assign(form, values);
-        //console.log(form);
         window.api.baseInstance('api/ad/campaign/add', form).then(rs => {
           message.success(rs.message);
           router.push('/main/selectmateria');
@@ -319,7 +318,7 @@ class CreateAdvertity extends Component {
                 <h2 className="small-title"><em></em>价格信息</h2>
                 <ul className={style.priceInfo}>
                   <li style={{width: '100%'}}>
-                    <Form.Item label="阅读单价">
+                    <Form.Item label="阅读单价" {...tailFormItemLayout}>
                       {
                         getFieldDecorator(
                           'unitPrice',
@@ -330,12 +329,12 @@ class CreateAdvertity extends Component {
                               {pattern: /^[0-9]+([.]{1}[0-9]{1,2})?$/, message: '只能输入整数或小数(保留后两位)'}
                             ]
                           }
-                        )(<Input className={style.ipttxt} onChange={this.changeFormEvent.bind(this, 'unitPrice')} />)
-                      }元/次阅读
+                        )(<div><Input className={style.ipttxt} onChange={this.changeFormEvent.bind(this, 'unitPrice')} />元/次阅读</div>)
+                      }
                     </Form.Item>
                   </li>
                   <li style={{width: '100%'}}>
-                    <Form.Item label="活动预算">
+                    <Form.Item label="活动预算" {...tailFormItemLayout}>
                       {
                         getFieldDecorator(
                           'postAmtTotal',

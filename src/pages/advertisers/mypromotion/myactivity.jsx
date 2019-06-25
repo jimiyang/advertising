@@ -153,7 +153,7 @@ class MyActivity extends Component{
       {
         title: '活动周期',
         render: (record) => (
-          <span>{window.common.getDate(record.dateStart, true)}-{window.common.getDate(record.dateStart, true)}</span>
+          <span>{window.common.getDate(record.dateStart, false)}-{window.common.getDate(record.dateStart, false)}</span>
         )
       },
       {
@@ -164,7 +164,10 @@ class MyActivity extends Component{
       {
         title: '活动预算',
         key: 'postAmtTotal',
-        dataIndex: 'postAmtTotal'
+        dataIndex: 'postAmtTotal',
+        render: (record) => (
+          <span>{window.common.formatNumber(record)}</span>
+        )
       },
       {
         title: '阅读单价',
@@ -174,13 +177,13 @@ class MyActivity extends Component{
       {
         title: '任务阅读数',
         render: (record) => (
-          <span>{Math.round(record.postAmtTotal / record.unitPrice)}</span>
+          <span>{window.common.formatNumber(Math.round(record.postAmtTotal / record.unitPrice))}</span>
         )
       },
       {
         title: '已消耗',
         render: (record) => (
-          <span>{Math.abs(Math.round(record.postAmtTotal / record.unitPrice) - record.availableCnt)}</span>
+          <span>{window.common.formatNumber(Math.abs(Math.round(record.postAmtTotal / record.unitPrice) - record.availableCnt))}</span>
         )
       },
       {
@@ -198,7 +201,9 @@ class MyActivity extends Component{
         render: (record) => (
           <div className="opeartion-items">
             <Link className="blue-color" to={{pathname: '/main/activitydetail', state: {id: record.id}}}>查看</Link>
-            <Link className="blue-color ml10" to={{pathname: '/main/editactivity', state: {id: record.id}}}>编辑</Link>
+            {
+              Number(record.postStatus) === 25 ? null : <Link className="blue-color ml10" to={{pathname: '/main/editactivity', state: {id: record.id}}}>编辑</Link>
+            }
             {
               [20, 21, 23].map((item, index) => (
                 record.postStatus === item ?

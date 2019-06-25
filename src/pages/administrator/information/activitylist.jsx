@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
-import {DatePicker, Select, Input, Button, Table, message} from 'antd';
+import {DatePicker, Select, Input, Button, Table, message, Popconfirm} from 'antd';
 import Redirect from 'umi/redirect';
 import style from '../style.less';
+import Link from 'umi/link';
 const Option = Select.Option;
 class ActivityList extends Component{
   constructor(props) {
@@ -70,10 +71,9 @@ class ActivityList extends Component{
     this.setState({pagination: p});
     this.loadList();
   }
-  //获取任务统计数
+  //获取活动统计数
   getAdCount = () => {
     window.api.baseInstance('api/ad/campaign/getAdCampaignCountByPostStatus', {loginName: this.state.loginName}).then(rs => {
-      //console.log(rs);
       this.setState({activityTotal: rs.data.total, draftTotal: rs.data.draftTotal});
     });
   }
@@ -103,6 +103,25 @@ class ActivityList extends Component{
   searchEvent = () => {
     this.loadList();
   }
+  //取消
+  cancelActivityEvent = (item) => {
+    const params = {
+      id: item.id,
+      loginName: this.state.loginName,
+      postStatus: 25
+    };
+    window.api.baseInstance('api/ad/campaign/updatePostStatusById', params).then(rs => {
+      message.success(rs.message);
+      this.loadList();
+    }).catch(err => {
+      if (err.code === 100000) {
+        this.setState({redirect: true});
+        window.localStorage.removeItem('login_info');
+      } else {
+        message.error(err.message);
+      }
+    });
+  }
   render() {
     const {
       search,
@@ -117,23 +136,20 @@ class ActivityList extends Component{
         title: '序号',
         key: 'id',
         dataIndex: 'id',
-        width: 100,
-        fixed: 'left'
+        width: 100
       },
       {
         title: '活动周期',
         width: 200,
-        fixed: 'left',
         render: (record) => (
-          <span>{record.dateStart}-{record.dateEnd}</span>
+          <span>{window.common.getDate(record.dateStart, false)}-{window.common.getDate(record.dateEnd, false)}</span>
         )
       },
       {
         title: '广告主账户',
         key: 'merchantCode',
         dataIndex: 'merchantCode',
-        width: 150,
-        fixed: 'left'
+        width: 150
       },
       {
         title: '活动名称',
@@ -161,30 +177,6 @@ class ActivityList extends Component{
         )
       },
       {
-        title: '已认领比例',
-        key: '',
-        dataIndex: '',
-        width: 150
-      },
-      {
-        title: '已发布文章',
-        key: '',
-        dataIndex: '',
-        width: 150
-      },
-      {
-        title: '距离任务开始',
-        key: '',
-        dataIndex: '',
-        width: 150
-      },
-      {
-        title: '已消耗',
-        key: '',
-        dataIndex: '',
-        width: 200
-      },
-      {
         title: '活动状态',
         key: 'postStatus',
         dataIndex: 'postStatus',
@@ -198,9 +190,17 @@ class ActivityList extends Component{
         width: 250,
         render: (record) => (
           <div className="opeartion-items">
-            <span>查看</span>
-            <span>编辑</span>
-            <span>取消</span>
+            <Link className="blue-color" to={{pathname: '/main/viewdetail', state: {id: record.id, type: 0}}}>查看</Link>
+            {record.postStatus === 21 ? <Link className="blue-color" to={{pathname: '/main/viewdetail', state: {id: record.id, type: 1}}}>审核</Link> : null}
+            {record.postStatus === 23 ? 
+              <Popconfirm
+                title="是否要取消此活动?"
+                onConfirm={this.cancelActivityEvent.bind(this, record)}
+                okText="是"
+                cancelText="否"
+              >
+                <span >取消</span>
+              </Popconfirm> : null}
           </div>
         )
       }
@@ -231,8 +231,11 @@ class ActivityList extends Component{
             活动状态
             <Select className="ml10" defaultValue={search.postStatus} onChange={this.changeFormEvent.bind(this, 'postStatus')}>
               <Option value={null}>请选择</Option>
-              <Option value={21}>审核中</Option>
-              <Option value={22}>审核驳回</Option>
+              {
+                window.common.orderStatus.map((item, index) => (
+                  <Option key={index} value={index + 20}>{item}</Option>
+                ))
+              }
             </Select>
           </li>
           <li>
@@ -249,7 +252,7 @@ class ActivityList extends Component{
           pagination={pagination}
           rowKey={record => record.id}
           className="table"
-          scroll={{x: 2000}}
+          scroll={{x: 1200}}
         />
       </div>
     );

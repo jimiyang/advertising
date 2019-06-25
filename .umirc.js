@@ -66,6 +66,8 @@ export default {
         {path: '/main/cashdetail', component: './administrator/cashmangement/cashdetail'}, //提现管理详情(天目管理员)
         {path: '/main/transferlist', component: './administrator/transfermagement/transferlist'}, // 转账充值审核（天目管理员
         {path: '/main/activitylist', component: './administrator/information/activitylist'}, // 活动管理（天目管理员)
+        {path: '/main/viewdetail', component: './administrator/information/viewdetail'}, // 活动管理查看（天目管理员)
+        {path: '/main/modify', component: './administrator/information/modify'}, // 活动管理编辑（天目管理员)
         {path: '/main/tasklist', component: './administrator/information/tasklist'}, // 任务管理（天目管理员)
         {path: '/main/msglist', component: './administrator/message/msglist'}, // 消息发布（天目管理员)
       ]

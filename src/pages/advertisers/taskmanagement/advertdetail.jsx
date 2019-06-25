@@ -34,7 +34,7 @@ class AdvertDetail extends Component{
         },
       },
       params: {
-        missionStatus: 16,
+        missionStatus: 11,
         loginName: '',
         audit_remark: '',
         id: ''
@@ -78,7 +78,8 @@ class AdvertDetail extends Component{
       console.log(form);
       const selmediaValData = this.initLabel('media', form.adCampaign.targetMediaCategory);
       const selproviceValData = this.initLabel('province', form.adCampaign.targetArea);
-      this.setState({form, selmediaValData, selproviceValData});
+      const params = Object.assign(this.state.params, {audit_remark: form.adMissionOrder.auditRemark});
+      this.setState({form, selmediaValData, selproviceValData, params});
     }).catch(err => {
       if (err.code === 100000) {
         this.setState({redirect: true});
@@ -118,8 +119,8 @@ class AdvertDetail extends Component{
         break;
     }
   }
-  changeFormEvent = (e) => {
-    const params = Object.assign(this.state.params, {audit_remark: e.target.value});
+  changeFormEvent = (type, e) => {
+    const params = Object.assign(this.state.params, {[type]: e.target.value});
     this.setState({params});
   }
   //审核
@@ -247,14 +248,22 @@ class AdvertDetail extends Component{
             <div>预计您的广告将实现<em className="red-color m5">{form.adCampaign.availableCnt}</em>次有效阅读</div>
           </li>
           {
-            type === 1 ? <li>审核状态：<div><Radio value={params.missionStatus} defaultChecked={true}>不通过</Radio></div></li> : null
+            type === 1 ? <li>审核状态：<div>
+              <Radio.Group onChange={this.changeFormEvent.bind(this, 'missionStatus')} value={params.missionStatus}>
+                <Radio value={11}>通过</Radio>
+                <Radio value={16}>不通过</Radio>
+              </Radio.Group>
+              </div>
+            </li> : null
           }
           {
-            type === 1 ? <li>活动审核意见：<div><TextArea rows={4} className={style.textarea} value={params.audit_remark} onChange={this.changeFormEvent.bind(this)} /></div></li> : null
+            type === 1 ? <li>活动审核意见：<div><TextArea rows={4} className={style.textarea} value={params.audit_remark} onChange={this.changeFormEvent.bind(this, 'audit_remark')} /></div></li> : null
           }  
           {
             type === 1 ?
-            <li className={style.btnitems}><Button type="primary" onClick={this.checkEvent.bind(this)}>提交</Button></li>
+            <li className={style.btnitems}>
+              <Button type="primary" onClick={this.checkEvent.bind(this)}>提交</Button>
+            </li>
             :
             <li className="mt30"><Button onClick={this.goBackEvent.bind(this)}>返回</Button></li>
           } 

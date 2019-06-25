@@ -32,6 +32,9 @@ class Login extends Component {
     switch(typeof e) {
       case 'object':
         text = e.target.value;
+        if (text === '') {
+          this.setState({password: null});
+        }
         break;
       case 'string':
         text = e;

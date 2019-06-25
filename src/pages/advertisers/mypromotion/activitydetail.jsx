@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Button, message} from 'antd';
+import Redirect from 'umi/redirect';
 import style from './style.less';
 class ActivityDetail extends Component{
   constructor(props) {
@@ -51,7 +52,7 @@ class ActivityDetail extends Component{
     });
   }
   initLabel = (type, data) => {
-    if (data.length === 0) return false;
+    if (data === undefined) return false;
     let arr = data;
     switch (type) {
       case 'media':
@@ -99,7 +100,8 @@ class ActivityDetail extends Component{
     window.history.go(-1);
   }
   render() {
-    const {form, mediaTypeLabel, provinceTypeType, selmediaValData, selproviceValData} = this.state;
+    const {form, mediaTypeLabel, provinceTypeType, selmediaValData, selproviceValData, redirect} = this.state;
+    if (redirect) return (<Redirect to="/relogin" />);
     return (
       <div className={style.mypromotion}>
         <h1 className="nav-title">我的推广活动 > 活动详情</h1>
@@ -107,7 +109,7 @@ class ActivityDetail extends Component{
           <h2 className="small-title"><em></em>基本信息</h2>
           <ul className={style.detaillist}>
               <li>活动名称：<div>{form.campaignName}</div></li>
-              <li>活动日期：<div>{window.common.getDate(form.dateStart, true)}至{window.common.getDate(form.dateEnd, true)}</div></li>
+              <li>活动日期：<div>{form.dateStart !== '' ? window.common.getDate(form.dateStart, false) : null}至{form.dateEnd !== '' ? window.common.getDate(form.dateEnd, false) : null}</div></li>
               <li>活动形式：<div>{window.common.getAdType(form.adType)}</div></li>
               <li>
                 条件设置：

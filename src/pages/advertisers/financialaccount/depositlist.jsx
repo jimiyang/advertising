@@ -67,6 +67,7 @@ class DepositList extends Component{
     };
     //console.log(params);
     window.api.baseInstance('/api/topup/list', params).then(rs => {
+      console.log(rs);
       const pagination = Object.assign(this.state.pagination, {total: rs.total});
       this.setState({depositData: rs.data, pagination});
     }).catch(err => {
@@ -154,13 +155,6 @@ class DepositList extends Component{
   //调用子组件的表单事件
   bindValue = (type, e) => {
     let topup = this.state.topup;
-    if (type === 'amount') {
-      const reg = /^[0-9]+([.]{1}[0-9]{1,2})?$/;
-      if (!reg.test(e.target.value)) {
-        message.error('请输入整数或小数(保留后两位)');
-        return false;
-      }
-    }
     topup = Object.assign(topup, {[type]: e.target.value});
     this.setState({topup});
   }
@@ -170,9 +164,15 @@ class DepositList extends Component{
       ...this.state.topup,
       operatorLoginName: this.state.loginName
     };
+    const reg = /^[0-9]+([.]{1}[0-9]{1,2})?$/;
+    if (!reg.test(params.amount)) {
+      message.error('请输入整数或小数(保留后两位)');
+      return false;
+    }
     window.api.baseInstance('api/topup/native', params).then(rs => {
+      console.log(rs);
       this.setState({qrUrl: rs.data.payUrl});
-      router.push({pathname: '/main/qrcode', query: {url: rs.data.payUrl}});
+      router.push({pathname: '/main/qrcode', query: rs.data});
     }).catch(err => {
       if (err.code === 100000) {
         this.setState({redirect: true});
@@ -236,7 +236,7 @@ class DepositList extends Component{
         key: 'topupType',
         dataIndex: 'topupType',
         render: (record) => (
-          <span>{record === 'ALI' ? '支付宝' : '微信'}</span>
+          <span>{record === 1 ? '微信' : '支付宝'}</span>
         )
       },
       {

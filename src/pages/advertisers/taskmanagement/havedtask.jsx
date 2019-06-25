@@ -26,7 +26,7 @@ class HavedTask extends Component{
         showSizeChanger: true,
         total: 0,
         currentPage: 1,
-        limit: 10,
+        limit: 3,
         onChange: this.changePage,
         onShowSizeChange: this.onShowSizeChange
       }
@@ -51,6 +51,7 @@ class HavedTask extends Component{
       ...search
     };
     window.api.baseInstance('api/ad/mission/list', params).then(rs => {
+      console.log(rs.data[0]);
       const pagination = Object.assign(this.state.pagination, {total: rs.total});
       this.setState({orderData: rs.data, pagination});
     }).catch(err => {
@@ -129,67 +130,114 @@ class HavedTask extends Component{
       {
         title: '序号',
         key: 'id',
-        dataIndex: 'id'
+        dataIndex: 'id',
+        width: 100
       },
       {
         title: '订单号',
         key: 'missionId',
-        dataIndex: 'missionId'
+        dataIndex: 'missionId',
+        width: 200
+      },
+      {
+        title: '活动时间',
+        key: 'createDates',
+        dataIndex: '',
+        width: 200
+      },
+      {
+        title: '活动名称',
+        key: 'campaignName',
+        dataIndex: 'campaignName',
+        width: 200
+      },
+      {
+        title: (<div>接单公众号<p>分类&标签</p></div>),
+        key: 'appNickName',
+        dataIndex: 'appNickName',
+        width: 200
+      },
+      {
+        title: '接单时间',
+        key: 'createDate',
+        dataIndex: 'createDate',
+        width: 200,
+        render: (record) => (
+          <span>{window.common.getDate(record)}</span>
+        )
+      },
+      {
+        title: (<div>预计发文时间<p>点&段</p></div>),
+        key: 'planPostArticleTime',
+        dataIndex: 'planPostArticleTime',
+        width: 200,
+        render: (record) => (
+          <span>{record}</span>
+        )
       },
       {
         title: '广告位置',
         key: 'appArticlePosition',
         dataIndex: 'appArticlePosition',
+        width: 200,
         render: (record) => (
           <span>{window.common.advertLocal[record-1]}</span>
         )
       },
       {
-        title: '订单状态',
+        title: '接单阅读数',
+        key: 'missionReadCnt',
+        dataIndex: 'missionReadCnt',
+        width: 200
+      },
+      {
+        title: '实际阅读',
+        key: 'missionRealReadCnt',
+        dataIndex: 'missionRealReadCnt',
+        width: 200
+      },
+      {
+        title: '预期支出金额',
+        key: 'adEstimateCost',
+        dataIndex: 'adEstimateCost',
+        width: 200
+      },
+      {
+        title: '预估支出金额',
+        key: 'C',
+        width: 200,
+        render: (record) => (
+          <span>{record.missionRealReadCnt} * {record.adUnitPrice}</span>
+        )
+      },
+      {
+        title: '任务状态',
         key: 'missionStatus',
         dataIndex: 'missionStatus',
+        width: 200,
         render: (record) => (
           <span>{window.common.orderStatus[record - 10]}</span>
         )
       },
       {
-        title: '接单公众号',
-        key: 'appNickName',
-        dataIndex: 'appNickName'
-      },
-      {
-        title: '接单阅读数',
-        key: 'missionReadCnt',
-        dataIndex: 'missionReadCnt'
-      },
-      {
-        title: '预计支出金额',
-        key: 'adEstimateCost',
-        dataIndex: 'adEstimateCost'
-      },
-      {
         title: '阅读单价',
         key: 'adUnitPrice',
-        dataIndex: 'adUnitPrice'
-      },
-      {
-        title: '实际阅读',
-        key: 'missionRealReadCnt',
-        dataIndex: 'missionRealReadCnt'
-      },
-      {
-        title: '活动名称',
-        key: 'campaignName',
-        dataIndex: 'campaignName'
+        dataIndex: 'adUnitPrice',
+        width: 200
       },
       {
         title: '操作',
         key: 'opeartion',
-        dataIndex: '',
+        width: 200,
         render: (record) => (
           <div className="opeartion-items">
             <Link className="blue-color" to={{pathname: '/main/advertdetail', state: {id: record.id, type: 0}}}>查看活动</Link>
-            {record.missionStatus === 11 ? <Link className="blue-color ml10" to={{pathname: '/main/advertdetail', state: {id: record.id, type: 1}}}>审核接单</Link> : null}
+            {
+              [10, 11].map((item, index) => (
+                record.missionStatus === item ? 
+                <Link key={item} className="blue-color ml10" to={{pathname: '/main/advertdetail', state: {id: record.id, type: 1}}}>审核接单</Link> : null
+              ))
+            }
             {
               record.missionStatus === 13 ?
                 <Popconfirm
@@ -216,7 +264,7 @@ class HavedTask extends Component{
             <DatePicker className="ml10" format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />   
           </dt>
           <dd>
-            订单选择
+            任务状态
             <Select defaultValue={search.missionStatus} onChange={this.changeFormEvent.bind(this, 'missionStatus')} className="w180 ml10">
               <Option value="">全部</Option>
               {
@@ -249,6 +297,7 @@ class HavedTask extends Component{
           rowKey={record => record.id}
           pagination={pagination}
           className="table"
+          scroll={{x: 2000}}
         />
       </div>  
     )

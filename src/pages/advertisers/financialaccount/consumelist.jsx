@@ -106,6 +106,25 @@ class ConsumeList extends Component{
   searchEvent = () => {
     this.loadList();
   }
+  //查看订单详情
+  viewDetailEvent = (item) => {
+    //console.log(item.orderNo);
+    /*const params = {
+      operatorLoginName: this.state.loginName,
+      orderNo: item.orderNo
+    };
+    window.api.baseInstance('api/topup/getByOrderNo', params).then(rs => {
+      //console.log(rs);
+      this.setState({detailData: rs.data, isDetailVisible: true});
+    }).catch(err => {
+      if (err.code === 100000) {
+        this.setState({redirect: true});
+        window.localStorage.removeItem('login_info');
+      } else {
+        message.error(err.message);
+      }
+    });*/
+  }
   render(){
     const {
       depositData,
@@ -117,7 +136,11 @@ class ConsumeList extends Component{
       {
         title: '结算单号',
         key: 'missionId',
-        dataIndex: 'missionId'
+        render: (record) =>  (
+          <div className="opeartion-items">
+            <span className="blue-color line" onClick={this.viewDetailEvent.bind(this, record)}>{record.missionId}</span>
+          </div>
+        )
       },
       {
         title: '消费金额',

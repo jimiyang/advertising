@@ -20,8 +20,15 @@ class BasicLayout extends Component {
     }
   }
   componentWillMount() {
-    //console.log(this.props.location.pathname);
-    //console.log(this.props);
+    if (this.props.location.query !== {}) {
+      let params = {
+        data: {
+          loginName: this.props.location.query.loginName
+        }
+      };
+      return false;
+      window.localStorage.setItem('login_info', JSON.stringify(params));
+    }
   }
   handleClick = (pane) => {
     router.push(pane.url);
