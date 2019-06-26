@@ -16,40 +16,49 @@ class BasicLayout extends Component {
     super(props);
     this.state = {
       redirect: false,
-      id: ''
+      id: '',
+      type: null
     }
   }
   componentWillMount() {
-    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
-    if (!loginInfo) return false;
-    if (this.props.location.query !== {}) {
+    const query = this.props.location.query;
+    if (query.type !== undefined) {
       let params = {
         data: {
-          loginName: this.props.location.query.loginName
+          loginName: query.loginName,
+          type: query.type
         }
       };
-      return false;
+      this.setState({type: query.type});
       window.localStorage.setItem('login_info', JSON.stringify(params));
+    } else {
+      console.log(1);
     }
-    
   }
   handleClick = (pane) => {
     router.push(pane.url);
   }
   render() {
+    const {
+      type
+    } = this.state;
     return (
       <div className="section">
         { window.localStorage.getItem('login_info') === null  ? 
           <Login /> :
           <Layout>
-            <Sider className="sider">
-              <div className="logo">
-                <img src={require('../assets/logo.png')} />
-              </div>
-              <Menu handleClick={this.handleClick.bind(this)} id={this.state.id} />
-            </Sider>
+            {
+              type === 'fans' ? null
+              :
+              <Sider className="sider">
+                <div className="logo">
+                  <img src={require('../assets/logo.png')} />
+                </div>
+                <Menu handleClick={this.handleClick.bind(this)} id={this.state.id} />
+              </Sider>
+            }
             <Layout>
-              <Header />
+              {type === 'fans' ? null : <Header />}
               <Content className={(this.props.location.pathname === '/main/editor') ? null : "content-blocks"}>
                 {this.props.location.pathname === '/main' ? <Main /> : this.props.children}
               </Content>

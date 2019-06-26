@@ -6,7 +6,7 @@ class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loginName: 'topup20190520', //流量主：hahahahah1111 //广告主：topup20190520 //管理员：SHcszfwx
+      loginName: 'hahahahah1111', //流量主：hahahahah1111 //广告主：topup20190520 //管理员：SHcszfwx
       password: '111qqq'
     }
   }
@@ -19,6 +19,7 @@ class Login extends Component {
     window.api.baseInstance('login', this.state).then(rs => {
       if (rs.success === true) {
         message.success(rs.message);
+        console.log(rs);
         window.localStorage.setItem('login_info', JSON.stringify(rs));
         router.push('/main');
       }
