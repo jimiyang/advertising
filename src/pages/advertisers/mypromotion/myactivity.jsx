@@ -15,11 +15,11 @@ class MyActivity extends Component{
       activityData: [],
       pagination: {
         size: 'small',
-        showQuickJumper: true,
         showSizeChanger: true,
         total: 0,
         currentPage: 1,
         limit: 10,
+        pageSize: 10,
         onChange: this.changePage,
         onShowSizeChange: this.onShowSizeChange
       },
@@ -85,7 +85,7 @@ class MyActivity extends Component{
   //改变每页条数事件
   onShowSizeChange = (current, size) => {
     let p = this.state.pagination;
-    p = Object.assign(p, {currentPage: current, limit: size});
+    p = Object.assign(p, {currentPage: current, limit: size, pageSize: size});
     this.setState({pagination: p});
     this.loadList();
   }
@@ -202,7 +202,13 @@ class MyActivity extends Component{
           <div className="opeartion-items">
             <Link className="blue-color" to={{pathname: '/main/activitydetail', state: {id: record.id}}}>查看</Link>
             {
-              Number(record.postStatus) === 25 ? null : <Link className="blue-color ml10" to={{pathname: '/main/editactivity', state: {id: record.id}}}>编辑</Link>
+              //Number(record.postStatus) !== 20 ? null : <Link className="blue-color ml10" to={{pathname: '/main/editactivity', state: {id: record.id}}}>编辑</Link>
+              [20, 22].map((item, index) => (
+                record.postStatus === item ? 
+                <Link key={index} className="blue-color ml10" to={{pathname: '/main/editactivity', state: {id: record.id}}}>编辑</Link>
+                :
+                null
+              ))
             }
             {
               [20, 21, 23].map((item, index) => (

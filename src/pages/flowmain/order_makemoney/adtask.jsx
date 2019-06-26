@@ -44,7 +44,6 @@ class AdTask extends Component{
       ...search
     };
     window.api.baseInstance('flow/mission/list', params).then(rs => {
-      //console.log(rs);
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({pubAccountData: rs.data, pagination: p});
     }).catch(err => {
@@ -72,7 +71,8 @@ class AdTask extends Component{
   //查询所有公众号
   getListApps = (loginName) => {
     window.api.baseInstance('flow/wechat/listapps', {loginName}).then(rs => {
-      this.setState({appsData: rs.data});
+      const appsData = rs.data === undefined ? [] : rs.data;
+      this.setState({appsData});
     }).catch(err => {
       if (err.code === 100000) {
         this.setState({redirect: true});
@@ -114,8 +114,8 @@ class AdTask extends Component{
         title: (<div><p>预计发文时间</p><p>实际发文时间</p></div>),
         render: (record) => (
           <div>
-            <p>{record.planPostArticleTime}</p>
-            <p>{record.realPostArticleTime}</p>
+            <p>{window.common.getDate(record.planPostArticleTime, false)}</p>
+            <p>{record.realPostArticleTime !== undefined ? window.common.getDate(record.realPostArticleTime, false) : '--'}</p>
           </div>
         )
       },

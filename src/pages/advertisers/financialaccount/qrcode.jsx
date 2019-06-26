@@ -27,12 +27,33 @@ class QrCode extends Component{
       operatorLoginName,
       orderNo
     };
-    this.getOrderQuery(params);
+    //this.getOrderQuery(params);
+    //this.orderStatus(params);
+    timer=window.setInterval(this.orderStatus(params), 1000);
   }
-  componentDidMount() {
-
+  orderStatus = (params) => {
+    window.api.baseInstance('api/topup/orderQuery', params).then(rs => {
+      if (rs.data.status === 1) {
+        console.log(33333);
+        message.success(rs.message);
+        router.push('/main/depositlist');
+        clearTimeout(timer);
+      } else if(rs.code === 300107 || rs.data.status === 2){
+        console.log(11111);
+        timer=window.setInterval(this.orderStatus(params), 3000);
+      }
+    }).catch(err => {
+      if (err.code === 100000) {
+        this.setState({redirect: true});
+        window.localStorage.removeItem('login_info');
+      } else {
+        console.log('fail');
+        timer=window.setInterval(this.orderStatus(params), 3000);
+        this.setState({messageTip: err.message});
+      }
+    });
   }
-  getOrderQuery = (params) => {
+  /*getOrderQuery = (params) => {
     window.api.baseInstance('api/topup/orderQuery', params).then(rs => {
       if (rs.data.status === 1) {
         console.log(rs);
@@ -52,9 +73,10 @@ class QrCode extends Component{
         this.setState({messageTip: err.message});
       }
     });
-  }
+  }*/
   componentWillUnmount() {
-    clearTimeout(timer);
+    //clearTimeout(timer);
+    clearInterval(timer);
   }
   render() {
     const {

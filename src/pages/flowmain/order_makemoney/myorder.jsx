@@ -70,7 +70,8 @@ class MyOrder extends Component{
   //查询所有公众号
   getListApps = (loginName) => {
     window.api.baseInstance('flow/wechat/listapps', {loginName}).then(rs => {
-      this.setState({appsData: rs.data});
+      const appsData = rs.data === undefined ? [] : rs.data;
+      this.setState({appsData});
     }).catch(err => {
       if (err.code === 100000) {
         this.setState({redirect: true});

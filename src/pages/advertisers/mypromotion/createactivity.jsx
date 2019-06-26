@@ -13,8 +13,8 @@ class CreateAdvertity extends Component {
       form: {
         loginName: '', //登录名
         campaignName: '', //活动名称
-        dateStart: new Date(), //开始时间
-        dateEnd: new Date(), //结束时间
+        dateStart: null, //开始时间
+        dateEnd: null, //结束时间
         adType: 'article', //活动形式
         targetGender: 0, //性别
         targetMediaCategory: '', //行业
@@ -195,7 +195,7 @@ class CreateAdvertity extends Component {
                     getFieldDecorator(
                       'date',
                       {
-                        initialValue: [moment(`${window.common.getDate(form.dateStart, true)}`, "YYYY-MM-DD"), moment(`${window.common.getDate(form.dateEnd, true)}`, "YYYY-MM-DD")],
+                        initialValue: [],
                         rules: [
                           {required: true, message: '请输入活动日期'}
                         ]

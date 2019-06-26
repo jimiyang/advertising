@@ -164,7 +164,14 @@ class EditAdvertity extends Component {
         form = Object.assign(form, values);
         window.api.baseInstance('api/ad/campaign/edit', form).then(rs => {
           message.success(rs.message);
-          router.push('/main/selectmateria');
+          //router.push('/main/selectmateria');
+          router.push({
+            pathname: '/main/selectmateria',
+            state: {
+              id: form.id,
+              type: 'add'
+            }
+          });
         }).catch(err => {
           if (err.code === 100000) {
             this.setState({redirect: true});
@@ -381,7 +388,7 @@ class EditAdvertity extends Component {
                 <h2 className="small-title"><em></em>价格信息</h2>
                 <ul className={style.priceInfo}>
                   <li style={{width: '100%'}}>
-                    <Form.Item label="阅读单价">
+                    <Form.Item label="阅读单价"  {...tailFormItemLayout}>
                       {
                         getFieldDecorator(
                           'unitPrice',
@@ -397,7 +404,7 @@ class EditAdvertity extends Component {
                     </Form.Item>
                   </li>
                   <li style={{width: '100%'}}>
-                    <Form.Item label="活动预算">
+                    <Form.Item label="活动预算"  {...tailFormItemLayout}>
                       {
                         getFieldDecorator(
                           'postAmtTotal',

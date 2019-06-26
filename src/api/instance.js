@@ -1,7 +1,8 @@
 import axios from 'axios';
+import {message} from 'antd';
 const instance = axios.create({
-  baseURL: '',
-  //baseURL: 'http://192.168.19.173:8000',
+  //baseURL: '',
+  baseURL: 'http://192.168.19.173:8000',
   timeout: 50000,
   withCredentials: true
 });

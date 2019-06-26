@@ -13,34 +13,31 @@ class HavedTask extends Component{
       loginName: '',
       orderData: [],
       search: {
-        dateStart: '',
-        dateEnd: '',
-        missionStatus: '', //订单状态
-        campaignName: '', //活动名称
-        missionId: '', //订单号
-        appArticlePosition: '' //广告位置
+        dateStart: null,
+        dateEnd: null,
+        missionStatus: null, //订单状态
+        campaignName: null, //活动名称
+        missionId: null, //订单号
+        appArticlePosition: null //广告位置
       },
       pagination: {
         size: 'small',
-        showQuickJumper: true,
         showSizeChanger: true,
         total: 0,
         currentPage: 1,
-        limit: 3,
+        limit: 10,
+        pageSize: 10,
         onChange: this.changePage,
         onShowSizeChange: this.onShowSizeChange
       }
     }
   }
-  componentWillMount() {
+  async componentWillMount() {
     const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
     if (!loginInfo) return false;
     //因为setState是异步的，他会在render后才生效,加入一个回调函数
-    this.setState({
-      loginName: loginInfo.data.loginName
-    },()=>{
-      this.loadList();
-    });
+    await this.setState({loginName: loginInfo.data.loginName});
+    this.loadList();
   }
   loadList = () => {
     const {pagination, search} = this.state;
@@ -51,9 +48,8 @@ class HavedTask extends Component{
       ...search
     };
     window.api.baseInstance('api/ad/mission/list', params).then(rs => {
-      console.log(rs.data[0]);
-      const pagination = Object.assign(this.state.pagination, {total: rs.total});
-      this.setState({orderData: rs.data, pagination});
+      const p = Object.assign(pagination, {total: rs.total});
+      this.setState({orderData: rs.data, pagination: p});
     }).catch(err => {
       if (err.code === 100000) {
         this.setState({redirect: true});
@@ -72,7 +68,7 @@ class HavedTask extends Component{
   //改变每页条数事件
   onShowSizeChange = (current, size) => {
     let p = this.state.pagination;
-    p = Object.assign(p, {currentPage: current, limit: size});
+    p = Object.assign(p, {currentPage: current, limit: size, pageSize: size});
     this.setState({pagination: p});
     this.loadList();
   }
@@ -294,8 +290,8 @@ class HavedTask extends Component{
         <Table
           dataSource={orderData}
           columns={columns}
-          rowKey={record => record.id}
           pagination={pagination}
+          rowKey={record => record.id}
           className="table"
           scroll={{x: 2000}}
         />

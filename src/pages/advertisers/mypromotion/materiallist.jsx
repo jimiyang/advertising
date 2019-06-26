@@ -1,7 +1,8 @@
 import React, {Component} from 'react';
-import {Radio, Input, Button, Table, message} from 'antd';
+import {Popconfirm, Input, Button, Table, message} from 'antd';
 import Redirect from 'umi/redirect';
 import Link from 'umi/link';
+import router from 'umi/router';
 import style from './style.less';
 class MaterialList extends Component{
   constructor(props) {
@@ -25,14 +26,16 @@ class MaterialList extends Component{
         pageSize: 10,
         onChange: this.changePage,
         onShowSizeChange: this.onShowSizeChange
-      }
+      },
+      id: null
     };
   }
   async componentWillMount() {
     const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
     if (!loginInfo) return false;
     await this.setState({
-      loginName: loginInfo.data.loginName
+      loginName: loginInfo.data.loginName,
+      type: this.props.type
     });
     this.loadList();
   }
@@ -83,13 +86,35 @@ class MaterialList extends Component{
     this.setState({search});
     this.loadList();
   }
+  //删除素材
+  delEvent = (id) => {
+    const params = {
+      id,
+      loginName: this.state.loginName
+    };
+    window.api.baseInstance('ad/article/deleteArticleById', params).then(rs => {
+      message.success(rs.message);
+      this.loadList();
+    }).catch(err => {
+      if (err.code === 100000) {
+        this.setState({redirect: true});
+        window.localStorage.removeItem('login_info');
+      } else {
+        message.error(err.message);
+      }
+    });
+  }
+  addEvent = () => {
+    router.push('/main/editor');
+  }
   render() {
     const {
       redirect,
       articletypeData,
       materiaData,
       pagination,
-      search
+      search,
+      type,
     } = this.state;
     const columns = [
       {
@@ -119,15 +144,25 @@ class MaterialList extends Component{
         dataIndex: '',
         render: (record) => (
           <div className="opeartion-items">
-            <Link className="blue-color" to={{pathname: '/main/selectmateria', state: {id: record.id, type: 'edit'}}}>编辑</Link>
+            <Link className="blue-color" to={{pathname: '/main/editor', state: {id: record.id}}}>编辑</Link>
+            <Popconfirm
+              title="是否要删除素材?"
+              onConfirm={this.delEvent.bind(this, record.id)}
+              okText="是"
+              cancelText="否"
+            >
+              <span>删除</span>
+            </Popconfirm>
           </div>
         )
-      },
-    ]
+      }
+    ];
     if (redirect) return (<Redirect to="/relogin" />);
     return(
       <div className={style.mypromotion}>
-        <h1 className="nav-title">素材库列表</h1>
+        <h1 className="nav-title">素材库列表
+          <Button type="primary" onClick={this.addEvent.bind(this)}>添加素材</Button>
+        </h1>
         <ul className={`${style.search} mt40`}>
           <li>
             <label className={style.name}>标题</label>

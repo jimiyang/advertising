@@ -231,7 +231,7 @@ input, .radius2, .ant-input, .ant-select-selection{border-radius: 2px;}
 .header-blocks span.username{padding-left: 8px;padding-right: 10px;display: inline-block;}
 .header-blocks .ant-btn{padding: 0 20px;}
 .content-blocks{
-  padding: 31px 78px 0 78px;
+  padding: 31px 30px 0 30px;
   min-height: 360px;
 }
 .ant-layout{
@@ -283,7 +283,11 @@ input, .radius2, .ant-input, .ant-select-selection{border-radius: 2px;}
   background: #EEF6FD 100%;
   font-size: 13px;
   font-weight: normal;
+  
 }
 .ant-table-thead > tr > th{text-align: center;color:#686E76; padding: 14px;font-weight: normal;}
-.ant-table-tbody > tr > td{padding: 10px 0;font-size: 12px;color: #3B4754;text-align: center;font-weight: normal;}
+.ant-table-tbody > tr > td{cursor: pointer;padding: 10px 0;font-size: 12px;color: #3B4754;text-align: center;font-weight: normal;}
 .table .opeartion-items span{color: #498DFF;margin:0 13px;display: inline-block;cursor: pointer;}
+.clickRowStyl{
+  background-color: #e8e8e8;
+}

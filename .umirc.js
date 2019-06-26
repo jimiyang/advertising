@@ -45,7 +45,7 @@ export default {
         {path: '/main/activitydetail', component: './advertisers/mypromotion/activitydetail'},//我的推广活动详情(广告主)
         {path: '/main/materiallist', component: './advertisers/mypromotion/materiallist'}, //素材管理(广告主)
         {path: '/main/selectmateria', component: './advertisers/mypromotion/selectmateria'}, //选择素材(广告主)
-        {path: '/main/editmateria', component: './advertisers/mypromotion/editmateria'}, //编辑素材(广告主)
+        {path: '/main/editor', component: './advertisers/mypromotion/editor'}, //编辑器(广告主)
         {path: '/main/havedtask', component: './advertisers/taskmanagement/havedtask'}, //已接单任务(广告主)
         {path: '/main/advertdetail', component: './advertisers/taskmanagement/advertdetail'}, //查看活动/审核接单(广告主)
         {path: '/main/depositlist', component: './advertisers/financialaccount/depositlist'}, //充值记录(广告主)

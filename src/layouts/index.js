@@ -20,6 +20,8 @@ class BasicLayout extends Component {
     }
   }
   componentWillMount() {
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
+    if (!loginInfo) return false;
     if (this.props.location.query !== {}) {
       let params = {
         data: {
@@ -29,6 +31,7 @@ class BasicLayout extends Component {
       return false;
       window.localStorage.setItem('login_info', JSON.stringify(params));
     }
+    
   }
   handleClick = (pane) => {
     router.push(pane.url);
@@ -47,7 +50,7 @@ class BasicLayout extends Component {
             </Sider>
             <Layout>
               <Header />
-              <Content className="content-blocks">
+              <Content className={(this.props.location.pathname === '/main/editor') ? null : "content-blocks"}>
                 {this.props.location.pathname === '/main' ? <Main /> : this.props.children}
               </Content>
             </Layout>

@@ -112,7 +112,6 @@ class ArningsList extends Component {
   render () {
     const {
       redirect,
-      search,
       available_balance,
       freezen_balance,
       earningsData,
