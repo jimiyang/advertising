@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Button, Select, Input, Modal, message, Pagination} from 'antd';
 import Redirect from 'umi/redirect';
 import Link from 'umi/link';
+import router from 'umi/router';
 import style from './style.less';
 import ReceiveAd from '../../components/receivead'; //确认接此广告模板
 import {isNull} from 'util';
@@ -17,27 +18,15 @@ class MyOrder extends Component{
       isVisible: false,
       pagination: {
         limit: 10,
+        pageSize: 10,
         currentPage: 1,
         total: 0
       },
+      appNickName: null,
       search: {
         adType: null,
         appNickName: null,
         campaignName: null
-      },
-      detailForm: {
-        appId: '',
-        appNickName: '',
-        targetMediaCategory: '',
-        campaignName: '',
-        unitPrice: '',
-        dateStart: '',
-        dateEnd: ''
-      },
-      creatForm: {
-        articlePosition: null,
-        missionReadCnt: null,
-        planPostArticleTime: null
       }
     };
   }
@@ -70,6 +59,7 @@ class MyOrder extends Component{
   //查询所有公众号
   getListApps = (loginName) => {
     window.api.baseInstance('flow/wechat/listapps', {loginName}).then(rs => {
+      console.log(rs);
       const appsData = rs.data === undefined ? [] : rs.data;
       this.setState({appsData});
     }).catch(err => {
@@ -81,18 +71,22 @@ class MyOrder extends Component{
       }
     });
   }
-  closeEvent = () => {
-    this.setState({isVisible: false});
-  }
   changePage = (page) => {
     page = page === 0 ? 1 : page;
     const pagination = Object.assign(this.state.pagination, {currentPage: page});
     this.setState({pagination});
     this.loadList();
   }
+  //改变每页条数事件
+  onShowSizeChange = (current, size) => {
+    let p = this.state.pagination;
+    p = Object.assign(p, {currentPage: current, limit: size});
+    this.setState({pagination: p});
+    this.loadList();
+  }
   changeFormEvent = (type, e, value) => {
     let obj = {};
-    let {detailForm, search} = this.state;
+    let {search} = this.state;
     switch(type) {
       case 'campaignName':
         if (e === null) {
@@ -105,8 +99,8 @@ class MyOrder extends Component{
         obj = {[type]: e};
       case 'appNickName':
         obj = {[type]: value.props.value};
-        detailForm = Object.assign(detailForm, {appId: value.props.value, appNickName: value.props.children});
-        this.setState({detailForm});
+        //detailForm = Object.assign(detailForm, {appId: value.props.value, appNickName: value.props.children});
+        this.setState({appNickName: value.props.children});
         break;
       default: 
         obj = {[type]: e};
@@ -121,15 +115,26 @@ class MyOrder extends Component{
   }
   //接收此广告
   ReceiveEvent = (item) => {
-    //console.log(item);
-    let {search, detailForm} = this.state;
+    let {search, appNickName} = this.state;
     if (!search.appNickName) {
       message.error('请选择公众号');
       return false;
     }
-    window.api.baseInstance('flow/campaign/detail', {campaignId: item.campaignId}).then(rs => {
-      detailForm = Object.assign(detailForm, rs.data.campaign);
-      this.setState({isVisible: true, detailForm});
+    router.push({
+      pathname: '/main/receivead',
+      state: {
+        campaignId: item.campaignId,
+        appNickName
+      }
+    });
+    /*const params = Object.assign(detailForm, {
+      articlePosition: null,
+      missionReadCnt: null,
+      planPostArticleTime: null
+    });
+    Promise.all([window.api.baseInstance('admin/system/dict/getDictByType', {type: 'mediaType'}), window.api.baseInstance('flow/campaign/detail', {campaignId: item.campaignId}), window.api.baseInstance('admin/system/dict/getDictByType', {type: 'provinceType'})]).then(rs => {
+      detailForm = Object.assign(detailForm, {targetData: rs[0].data}, rs[1].data.campaign, {areaData: rs[2].data});
+      this.setState({isVisible: true, detailForm: params});
     }).catch(err => {
       if (err.code === 100000) {
         this.setState({redirect: true});
@@ -137,30 +142,10 @@ class MyOrder extends Component{
       } else {
         message.error(err.message);
       }
-    });
-  }
-  //子模板改变事件
-  changeValueEvent = (type, e, value2) => {
-    let {creatForm} = this.state;
-    let obj = {};
-    switch(type) {
-      case 'articlePosition':
-        obj = {[type]: e};
-        break;
-      case 'missionReadCnt':
-        obj = {[type]: e.target.value};
-        break;
-      case 'planPostArticleTime':
-        obj = {[type]: value2};
-        break;
-      default:
-        break;
-    }
-    creatForm = Object.assign(creatForm, obj);
-    this.setState({creatForm});
+    });*/
   }
   //确定接此广告
-  creatEvent = () => {
+  /*creatEvent = () => {
     const {detailForm, loginName, creatForm} = this.state;
     const params = {
       campaignId: detailForm.campaignId,
@@ -185,7 +170,7 @@ class MyOrder extends Component{
       message.error('请选择预计发文时间');
       return false;
     }
-    let reg = /^[1-9]+([0-9])?$/;
+    let reg = /^\+?[1-9][0-9]*$/;
     if (!reg.test(creatForm.missionReadCnt)) {
       message.error('只能输入整数');
       return false;
@@ -202,7 +187,7 @@ class MyOrder extends Component{
         message.error(err.message);
       }
     });
-  }
+  }*/
   render() {
     const {
       redirect,
@@ -216,13 +201,6 @@ class MyOrder extends Component{
     if (redirect) return (<Redirect to="/relogin" />);
     return(
       <div className={style.pubAccount}>
-        <Modal
-          visible={isVisible}
-          onCancel={this.closeEvent.bind(this)}
-          onOk={this.creatEvent.bind(this)}
-        >
-          <ReceiveAd detailForm={detailForm} changeValueEvent={this.changeValueEvent} />
-        </Modal>
         <h1 className="nav-title">接单赚钱 > 可接任务</h1>
         <ul className={style.search}>
           <li>广告类型
@@ -272,9 +250,9 @@ class MyOrder extends Component{
                 )) : null
             }
           </dl>
-          <div className="g-tc">
+          <div className="g-tr">
             <Pagination
-              showQuickJumper
+              showSizeChanger
               defaultCurrent={pagination.currentPage}
               defaultPageSize={pagination.limit}
               total={pagination.total}

@@ -9,6 +9,7 @@ class MaterialList extends Component{
     super(props);
     this.state = {
       loginName: null,
+      employeeId: null,
       redirect: false,
       articletypeData: ['电商', '广告', '小说', '知识付费', '其他'],
       materiaData: [],
@@ -35,7 +36,7 @@ class MaterialList extends Component{
     if (!loginInfo) return false;
     await this.setState({
       loginName: loginInfo.data.loginName,
-      type: this.props.type
+      employeeId: loginInfo.data.employeeId
     });
     this.loadList();
   }
@@ -88,10 +89,13 @@ class MaterialList extends Component{
   }
   //删除素材
   delEvent = (id) => {
+    const {loginName, employeeId} = this.state;
     const params = {
       id,
-      loginName: this.state.loginName
+      loginName,
+      employeeId
     };
+    //console.log(params);
     window.api.baseInstance('ad/article/deleteArticleById', params).then(rs => {
       message.success(rs.message);
       this.loadList();

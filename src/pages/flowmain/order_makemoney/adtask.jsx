@@ -18,7 +18,6 @@ class AdTask extends Component{
       },
       pagination: {
         size: 'small',
-        showQuickJumper: true,
         showSizeChanger: true,
         total: 0,
         currentPage: 1,
@@ -122,32 +121,50 @@ class AdTask extends Component{
       {
         title: '预计发文位置',
         key: 'appArticlePosition',
-        dataIndex: 'appArticlePosition'
+        dataIndex: 'appArticlePosition',
+        render: (record) => (
+          <span>{window.common.advertLocal[record]}</span>
+        )
       },
       {
         title: '接单数',
         key: 'missionReadCnt',
-        dataIndex: 'missionReadCnt'
+        dataIndex: 'missionReadCnt',
+        render: (record) => (
+          <span>{record !== undefined ? window.common.formatNumber(record) : null}</span>
+        )
       },
       {
         title: '阅读单价',
         key: 'flowUnitPrice',
-        dataIndex: 'flowUnitPrice'
+        dataIndex: 'flowUnitPrice',
+        render: (record) => (
+          <span>{record !== undefined ? window.common.formatNumber(record) : null}</span>
+        )
       },
       {
         title: '预计收入',
         key: 'flowEstimateIncome',
-        dataIndex: 'flowEstimateIncome'
+        dataIndex: 'flowEstimateIncome',
+        render: (record) => (
+          <span>{record !== undefined ? window.common.formatNumber(record) : null}</span>
+        )
       },
       {
         title: '完成量',
         key: 'missionRealReadCnt',
-        dataIndex: 'missionRealReadCnt'
+        dataIndex: 'missionRealReadCnt',
+        render: (record) => (
+          <span>{record !== undefined ? window.common.formatNumber(record) : null}</span>
+        )
       },
       {
         title: '实际收入',
         key: 'flowRealIncome',
-        dataIndex: 'flowRealIncome'
+        dataIndex: 'flowRealIncome',
+        render: (record) => (
+          <span>{record !== undefined ? window.common.formatNumber(record) : null}</span>
+        )
       },
       {
         title: '订单状态',

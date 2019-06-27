@@ -48,6 +48,7 @@ class HavedTask extends Component{
       ...search
     };
     window.api.baseInstance('api/ad/mission/list', params).then(rs => {
+      console.log(rs);
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({orderData: rs.data, pagination: p});
     }).catch(err => {
@@ -130,7 +131,7 @@ class HavedTask extends Component{
         width: 100
       },
       {
-        title: '订单号',
+        title: '任务号',
         key: 'missionId',
         dataIndex: 'missionId',
         width: 200
@@ -177,7 +178,7 @@ class HavedTask extends Component{
         dataIndex: 'appArticlePosition',
         width: 200,
         render: (record) => (
-          <span>{window.common.advertLocal[record-1]}</span>
+          <span>{window.common.advertLocal[record - 1]}</span>
         )
       },
       {
@@ -185,6 +186,14 @@ class HavedTask extends Component{
         key: 'missionReadCnt',
         dataIndex: 'missionReadCnt',
         width: 200
+      },
+      {
+        title: '占比',
+        key: 'price',
+        width: 200,
+        render: (record) => (
+          <span>{Math.round(record.missionReadCnt / record.adUnitPrice / 100)}%</span>
+        )
       },
       {
         title: '实际阅读',
@@ -203,7 +212,7 @@ class HavedTask extends Component{
         key: 'C',
         width: 200,
         render: (record) => (
-          <span>{record.missionRealReadCnt} * {record.adUnitPrice}</span>
+          <span>{record.missionRealReadCnt !== undefined &&  record.adUnitPrice !== undefined ? record.missionRealReadCnt * record.adUnitPrice : null}</span>
         )
       },
       {
@@ -216,12 +225,6 @@ class HavedTask extends Component{
         )
       },
       {
-        title: '阅读单价',
-        key: 'adUnitPrice',
-        dataIndex: 'adUnitPrice',
-        width: 200
-      },
-      {
         title: '操作',
         key: 'opeartion',
         width: 200,
@@ -229,10 +232,8 @@ class HavedTask extends Component{
           <div className="opeartion-items">
             <Link className="blue-color" to={{pathname: '/main/advertdetail', state: {id: record.id, type: 0}}}>查看活动</Link>
             {
-              [10, 11].map((item, index) => (
-                record.missionStatus === item ? 
-                <Link key={item} className="blue-color ml10" to={{pathname: '/main/advertdetail', state: {id: record.id, type: 1}}}>审核接单</Link> : null
-              ))
+              record.missionStatus === 10 ? 
+                <Link className="blue-color ml10" to={{pathname: '/main/advertdetail', state: {id: record.id, type: 1}}}>审核接单</Link> : null
             }
             {
               record.missionStatus === 13 ?
@@ -252,15 +253,15 @@ class HavedTask extends Component{
     if (redirect) return (<Redirect to="/relogin" />);
     return(
       <div className={style.task}>
-        <h1 className="nav-title">账户管理</h1>
+        <h1 className="nav-title">已接单任务</h1>
         <dl className={style.search}>
           <dt style={{width: '100%'}}>
-            订单时间
+            活动时间：
             <DatePicker className="ml10" format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
             <DatePicker className="ml10" format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />   
           </dt>
           <dd>
-            任务状态
+            任务状态：
             <Select defaultValue={search.missionStatus} onChange={this.changeFormEvent.bind(this, 'missionStatus')} className="w180 ml10">
               <Option value="">全部</Option>
               {
@@ -269,7 +270,7 @@ class HavedTask extends Component{
             </Select>
           </dd>
           <dd>
-            广告位置
+            广告位置：
             <Select defaultValue={search.appArticlePosition} onChange={this.changeFormEvent.bind(this, 'appArticlePosition')} className="w180 ml10">
               <Option value="">全部</Option>
               {
@@ -278,10 +279,10 @@ class HavedTask extends Component{
             </Select>
           </dd>
           <dd>
-            订单号<Input className="w180 ml10" value={search.missionId} onChange={this.changeFormEvent.bind(this, 'missionId')} />
+            任务号：<Input className="w180 ml10" value={search.missionId} onChange={this.changeFormEvent.bind(this, 'missionId')} />
           </dd>
           <dd>
-            活动名称<Input className="w180 ml10" value={search.campaignName} onChange={this.changeFormEvent.bind(this, 'campaignName')} />
+            活动名称：<Input className="w180 ml10" value={search.campaignName} onChange={this.changeFormEvent.bind(this, 'campaignName')} />
           </dd>
           <dd>
             <Button type="primary" onClick={this.searchEvent.bind(this)}>查询</Button>

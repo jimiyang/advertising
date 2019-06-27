@@ -191,7 +191,7 @@ class ActivityList extends Component{
         render: (record) => (
           <div className="opeartion-items">
             <Link className="blue-color" to={{pathname: '/main/viewdetail', state: {id: record.id, type: 0}}}>查看</Link>
-            {record.postStatus === 21 ? <Link className="blue-color" to={{pathname: '/main/viewdetail', state: {id: record.id, type: 1}}}>审核</Link> : null}
+            {record.postStatus === 21 ? <Link className="blue-color ml10" to={{pathname: '/main/viewdetail', state: {id: record.id, type: 1}}}>审核</Link> : null}
             {record.postStatus === 23 ? 
               <Popconfirm
                 title="是否要取消此活动?"
@@ -199,7 +199,7 @@ class ActivityList extends Component{
                 okText="是"
                 cancelText="否"
               >
-                <span >取消</span>
+                <span className="ml10">取消</span>
               </Popconfirm> : null}
           </div>
         )
@@ -232,7 +232,7 @@ class ActivityList extends Component{
             <Select className="ml10" defaultValue={search.postStatus} onChange={this.changeFormEvent.bind(this, 'postStatus')}>
               <Option value={null}>请选择</Option>
               {
-                window.common.orderStatus.map((item, index) => (
+                window.common.postStatus.map((item, index) => (
                   <Option key={index} value={index + 20}>{item}</Option>
                 ))
               }

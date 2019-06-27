@@ -43,7 +43,6 @@ class SelectMateria extends Component{
   }
   async componentWillMount() {
     const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
-    console.log(loginInfo);
     const state = this.props.location.state;
     if (state) {
       this.setState({type: state.type, id: state.id});

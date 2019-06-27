@@ -162,6 +162,11 @@ class EditAdvertity extends Component {
           form.targetArea = typeof area === 'string' ? JSON.parse(area) : area;
         }
         form = Object.assign(form, values);
+        const dateLen = window.common.dateDiff(form.dateStart, form.dateEnd);
+        if (dateLen > 7) {
+          message.warning('活动周期最多7天！');
+          return false;
+        }
         window.api.baseInstance('api/ad/campaign/edit', form).then(rs => {
           message.success(rs.message);
           //router.push('/main/selectmateria');
@@ -244,7 +249,7 @@ class EditAdvertity extends Component {
     if (redirect) return (<Redirect to="/relogin" />);
     return(
       <div className={style.mypromotion}>
-        <h1 className="nav-title">新建活动</h1>
+        <h1 className="nav-title">编辑活动</h1>
         <div className={style.createBlocks}>
             <h2 className="small-title"><em></em>基本信息</h2>
             <Form {...formItemLayout} onSubmit={this.createEvent} className={style.form} name="form" id="form">

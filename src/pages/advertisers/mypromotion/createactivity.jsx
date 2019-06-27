@@ -99,9 +99,19 @@ class CreateAdvertity extends Component {
         form.targetMediaCategory = category === '' ? [] : category;
         form.targetArea = area === '' ? [] : area;
         form = Object.assign(form, values);
+        const dateLen = window.common.dateDiff(form.dateStart, form.dateEnd);
+        if (dateLen > 7) {
+          message.warning('活动周期最多7天！');
+          return false;
+        }
         window.api.baseInstance('api/ad/campaign/add', form).then(rs => {
           message.success(rs.message);
-          router.push('/main/selectmateria');
+          router.push({
+            pathname: '/main/selectmateria',
+            state: {
+              id: rs.data.id
+            }
+          });
         }).catch(err => {
           if (err.code === 100000) {
             this.setState({redirect: true});
@@ -190,14 +200,14 @@ class CreateAdvertity extends Component {
                   )(<Input placeholder="请输入活动名称" onChange={this.changeFormEvent.bind(this, 'campaignName')} className={style.ipttxt} />)
                   }
                 </Form.Item>
-                <Form.Item label="活动日期" {...tailFormItemLayout}>
+                <Form.Item label="活动周期" {...tailFormItemLayout}>
                   {
                     getFieldDecorator(
                       'date',
                       {
                         initialValue: [],
                         rules: [
-                          {required: true, message: '请输入活动日期'}
+                          {required: true, message: '请输入活动周期'}
                         ]
                       } 
                     )(<RangePicker format="YYYY-MM-DD" separator="至" className={style.ipttxt} style={{height: '36px'}} onChange={this.changeFormEvent.bind(this, 'date')}/>)

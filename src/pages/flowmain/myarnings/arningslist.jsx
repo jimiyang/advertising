@@ -18,7 +18,6 @@ class ArningsList extends Component {
       },
       pagination: {
         size: 'small',
-        showQuickJumper: true,
         showSizeChanger: true,
         total: 0,
         currentPage: 1,
@@ -38,7 +37,6 @@ class ArningsList extends Component {
   //获取可用余额和冻结余额
   getCaQuery = () => {
     window.api.baseInstance('api/merchant/caQuery', {operatorLoginName: this.state.loginName}).then(rs => {
-      //console.log(rs);
       this.setState({available_balance: rs.data.available_balance, freezen_balance: rs.data.freezen_balance});
     }).catch(err => {
       if (err.code === 100000) {
@@ -56,9 +54,7 @@ class ArningsList extends Component {
       loginName,
       ...search
     };
-    console.log(search);
     window.api.baseInstance('admin/flow/finance/list', params).then(rs => {
-      console.log(rs);
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({earningsData: rs.data, pagination: p});
     }).catch(err => {
@@ -126,7 +122,10 @@ class ArningsList extends Component {
       {
         title: '结算金额',
         key: 'orderAmt',
-        dataIndex: 'orderAmt'
+        dataIndex: 'orderAmt',
+        render: (record) => (
+          <span>{record !== undefined ? window.common.formatNumber(record) : null}</span>
+        )
       },
       {
         title: '活动名称',
@@ -143,19 +142,14 @@ class ArningsList extends Component {
         key: 'createDate',
         dataIndex: 'createDate',
         render: (record) => (
-          <span>{window.common.getDate(record, true)}</span>
+          <span>{window.common.getDate(record, false)}</span>
         )
-      },
-      {
-        title: '结算后余额',
-        key: '',
-        dataIndex: ''
       }
     ];
     if (redirect) return (<Redirect to="/relogin" />);
     return(
       <div className={style.arnings}>
-        <h1 className="nav-title">接单赚钱 > 已接任务</h1>
+        <h1 className="nav-title">我的收益 > 结算记录</h1>
         <div className={style.accountAmount}>
           <div>
             <div className={style.accountItems}>

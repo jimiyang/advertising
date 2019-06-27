@@ -45,6 +45,7 @@ class ConsumeList extends Component{
       ...search
     };
     window.api.baseInstance('admin/ad/finance/list', params).then(rs => {
+      console.log(rs);
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({depositData: rs.data, pagination: p});
     }).catch(err => {

@@ -52,6 +52,7 @@ class MyActivity extends Component{
       limit: pagination.limit
     };
     window.api.baseInstance('api/ad/campaign/list', params).then(rs => {
+      console.log(rs);
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({activityData: rs.data, pagination: p});
     }).catch(err => {
@@ -154,6 +155,14 @@ class MyActivity extends Component{
         title: '活动周期',
         render: (record) => (
           <span>{window.common.getDate(record.dateStart, false)}-{window.common.getDate(record.dateStart, false)}</span>
+        )
+      },
+      {
+        title: '广告主账户',
+        key: 'advertiserName',
+        dataIndex: 'advertiserName',
+        render: (record) => (
+          <span>{record}</span>
         )
       },
       {

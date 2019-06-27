@@ -19,8 +19,14 @@ class Login extends Component {
     window.api.baseInstance('login', this.state).then(rs => {
       if (rs.success === true) {
         message.success(rs.message);
-        console.log(rs);
-        window.localStorage.setItem('login_info', JSON.stringify(rs));
+        const params = {
+          data: {
+            employeeId: rs.data.employeeId,
+            loginName: rs.data.loginName,
+            merchantType: rs.data.merchantType
+          }
+        };
+        window.localStorage.setItem('login_info', JSON.stringify(params));
         router.push('/main');
       }
     }).catch(err => {

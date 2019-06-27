@@ -52,10 +52,10 @@ export default {
         {path: '/main/withdrawallist', component: './advertisers/financialaccount/withdrawallist'}, //提现记录(广告主)
         {path: '/main/consumelist', component: './advertisers/financialaccount/consumelist'}, //消费记录(广告主)
         {path: '/main/qrcode', component: './advertisers/financialaccount/qrcode'}, //展示二维码页面
-        {path: '/main/pubaccount', component: './flowmain/order_makemoney/pubaccount'}, //我授权的公众号(流量主)
         {path: '/main/edit', component: './flowmain/order_makemoney/edit'}, //编辑我授权的公众号(流量主)
         {path: '/main/myorder', component: './flowmain/order_makemoney/myorder'}, //我要接单赚钱(流量主)
         {path: '/main/adtask', component: './flowmain/order_makemoney/adtask'}, //已接广告任务(流量主)
+        {path: '/main/receivead', component: './flowmain/order_makemoney/receivead'}, //接此广告(流量主)
         {path: '/main/adtaskdetail', component: './flowmain/order_makemoney/adtaskdetail'}, //已接广告任务详情(流量主)
         {path: '/main/arningslist', component: './flowmain/myarnings/arningslist'}, //我的收益（结算记录）流量主
         {path: '/main/employesslist', component: './administrator/employees/employesslist'}, //员工列表(天目管理员)

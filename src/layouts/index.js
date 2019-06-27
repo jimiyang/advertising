@@ -26,13 +26,12 @@ class BasicLayout extends Component {
       let params = {
         data: {
           loginName: query.loginName,
-          type: query.type
         }
       };
       this.setState({type: query.type});
       window.localStorage.setItem('login_info', JSON.stringify(params));
     } else {
-      console.log(1);
+      //console.log(window.localStorage.getItem('login_info'));
     }
   }
   handleClick = (pane) => {

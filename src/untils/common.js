@@ -7,9 +7,12 @@ const utils =  {
   //广告主文章所在位置
   advertLocal: ['多图文第一条', '多图文第二条', '多图文第三条', '多图文第四条', '多图文第五条', '多图文第六条', '多图文第七条', '多图文第八条'],
   //活动状态
-  postStatus: ['活动草稿', '审核中', '审核驳回', '待接单', '活动过期', '活动取消', '接单中', '执行中', ' 执行完成', '执行结束'],
+  postStatus: ['草稿', '审核中', '审核驳回', '待接单', '过期未接单', '活动取消', '接单中', '执行中', '执行完毕', '活动完成'],
   //男女粉丝设置
   targetGender: ['不限', '男粉', '女粉', '男大于女', '女大于男', '男女各半'],
+  //任务状态
+  taskStatusData: ['待审核', '审核驳回', '待执行', '执行中', '任务取消', '待结算', '任务完成'],
+  articleUrl: 'http://www.baidu.com', //文章预览地址
   //删除数组中为空的元素
   removeEmptyArrayEle(arr) {    
     for(var i = 0; i < arr.length; i++) {
@@ -37,6 +40,13 @@ const utils =  {
     second = second < 10 ? (`0${second}`) : second;
     const str = flag ? `${y}-${m}-${d} ${h}:${minute}:${second}` : `${y}-${m}-${d} `;
     return str;
+  },
+  dateDiff(sDate1,  sDate2){ // 日期对比，得出天数 
+    let oDate1, oDate2, iDays;
+    oDate1 = new Date(sDate1);     
+    oDate2 = new Date(sDate2);  
+    iDays = parseInt(Math.abs(oDate1 - oDate2) / 1000 / 60 / 60 / 24) + 1;     
+    return  iDays;
   },
   getAdType(type) { //活动形式
     let typeName = '';

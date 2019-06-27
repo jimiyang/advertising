@@ -165,7 +165,7 @@ class AdvertDetail extends Component{
             订单号：<div>{form.adMissionOrder.missionId}</div>
           </li>
           <li>
-            接单时间：<div>{window.common.getDate(form.adMissionOrder.createDate, true)}</div>
+            接单时间：<div>{window.common.getDate(form.adMissionOrder.createDate, false)}</div>
           </li>
           <li>
             广告位置：<div>{window.common.advertLocal[form.adMissionOrder.appArticlePosition]}</div>
@@ -196,7 +196,7 @@ class AdvertDetail extends Component{
           </li>
           <li>
             活动日期：
-            <div>{form.adCampaign.dateStart} 至 {form.adCampaign.dateEnd}</div>
+            <div>{window.common.getDate(form.adCampaign.dateStart, false)} 至 {window.common.getDate(form.adCampaign.dateEnd, false)}</div>
           </li>
           <li>
             条件设置：
@@ -236,7 +236,10 @@ class AdvertDetail extends Component{
             活动素材：
             <div className={style.coverimg}>
               <p>展示封面标题，点击可查看详情</p>
-              <img src={form.adCampaign.impImage} />
+              <a href={`${window.common.articleUrl}?id=${form.adCampaign.postContent}`} target="_blank">
+                <img src={form.adCampaign.impImage} />
+                <span>{form.adCampaign.extrendJson}</span>
+              </a>
             </div>
           </li>
           <li>

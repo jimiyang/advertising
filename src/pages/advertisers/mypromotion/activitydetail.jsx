@@ -46,6 +46,7 @@ class ActivityDetail extends Component{
   }
   initForm = (id) => {
     window.api.baseInstance('api/ad/campaign/getById', {id}).then(rs => {
+      console.log(rs);
       const selmediaValData = this.initLabel('media', rs.data.targetMediaCategory);
       const selproviceValData = this.initLabel('province', rs.data.targetArea);
       this.setState({form: rs.data, selmediaValData, selproviceValData});
@@ -139,6 +140,16 @@ class ActivityDetail extends Component{
                       </div>
                     </li>
                   </ul>  
+                </div>
+              </li>
+              <li>
+                活动素材：
+                <div className={style.coverimg}>
+                  <p>展示封面标题，点击可查看详情</p>
+                  <a href={`${window.common.articleUrl}?id=${form.postContent}`} target="_blank">
+                    <img src={form.impImage} />
+                    <span>{form.extrendJson}</span>
+                  </a>
                 </div>
               </li>
               <li>计费方式：<div>{form.billingType === 0 ? 'CPC' : '万粉'}</div></li>

@@ -18,7 +18,7 @@ class TaskList extends Component{
       },
       pagination: {
         size: 'small',
-        limit: 2, //每页显示多少条
+        limit: 10, //每页显示多少条
         currentPage: 1,
         total: 0,
         showSizeChanger: true,
@@ -239,8 +239,8 @@ class TaskList extends Component{
             <Select className="ml10" defaultValue={search.postStatus} onChange={this.changeFormEvent.bind(this, 'postStatus')}>
               <Option value={null}>请选择</Option>
               {
-                window.common.orderStatus.map((item, index) => (
-                  <Option key={index} value={index + 20}>{item}</Option>
+                window.common.taskStatusData.map((item, index) => (
+                  <Option key={index} value={index + 10}>{item}</Option>
                 ))
               }
             </Select>

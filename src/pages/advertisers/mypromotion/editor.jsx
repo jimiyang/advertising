@@ -5,24 +5,28 @@ class Editor extends Component {
     super(props);
     this.state = {
       id: null,
-      iframeHeight: 800
+      iframeHeight: 800,
+      employeeId: null
     };
   }
   componentWillMount() {
     if (this.props.location.state) {
       this.setState({id: this.props.location.state.id});
     }
-    this.setState({iframeHeight: document.documentElement.clientHeight - 130});
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
+    //console.log(loginInfo.data.employeeId);
+    this.setState({iframeHeight: document.documentElement.clientHeight - 130, employeeId: loginInfo.data.employeeId});
   }
   render() {
     const {
       id,
-      iframeHeight
+      iframeHeight,
+      employeeId
     } = this.state;
     return (
       <div className={style.mypromotion}>
         <div className={style.content}>
-          <iframe className={style.iframe} src={`http://testadx.liantuo.com/fshstatic/#/?key=${id}}&type=ltt`} height={iframeHeight}></iframe>
+          <iframe className={style.iframe} src={`http://testadx.liantuo.com/fshstatic/#/?key=${id}}&type=ltt&employeeId=${employeeId}`} height={iframeHeight}></iframe>
         </div>
       </div>
     );

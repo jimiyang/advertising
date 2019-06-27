@@ -67,7 +67,6 @@ class DepositList extends Component{
     };
     //console.log(params);
     window.api.baseInstance('/api/topup/list', params).then(rs => {
-      console.log(rs);
       const pagination = Object.assign(this.state.pagination, {total: rs.total});
       this.setState({depositData: rs.data, pagination});
     }).catch(err => {
@@ -296,7 +295,7 @@ class DepositList extends Component{
         >
           <RechargeDetailModel detailForm={detailData}/>
         </Modal>
-        <h1 className="nav-title">账户详情</h1>
+        <h1 className="nav-title">我的财务支出 > 支出记录</h1>
         <div className={style.accountAmount}>
           <div>
             <div className={style.accountItems}>
