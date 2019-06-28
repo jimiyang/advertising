@@ -1,8 +1,9 @@
 import React, {Component} from 'react';
-import {DatePicker, Table, Select, Input, Button, Modal, message} from 'antd';
+import {DatePicker, Table, Select, Input, Button, Modal, message, notification} from 'antd';
 import style from './style.less';
 import Redirect from 'umi/redirect';
 import router from 'umi/router';
+import moment from 'moment';
 import WithdrawList from './withdrawallist'; //提现记录
 import ConsumeList from './consumelist'; //消费记录
 import RechargeModel from '../../components/rechargeModel'; //充值modal
@@ -35,10 +36,10 @@ class DepositList extends Component{
         onShowSizeChange: this.onShowSizeChange
       },
       search: {
-        dateStart: '',
-        dateEnd: '',
-        orderNo: '',
-        orderStatus: ''
+        dateStart: null,
+        dateEnd: null,
+        orderNo: null,
+        orderStatus: null
       },
       topup:{
         amount: '',
@@ -46,6 +47,7 @@ class DepositList extends Component{
       }
     }
   }
+  
   componentWillMount() {
     const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
     if (!loginInfo) return false;
@@ -56,8 +58,10 @@ class DepositList extends Component{
       this.loadList();
       this.getCaQuery();
     });
+    //console.log(window.common.getTime());
   }
   loadList = () => {
+    //this.openNotification();
     const {pagination, search} = this.state;
     const params = {
       loginName: this.state.loginName,
@@ -198,6 +202,18 @@ class DepositList extends Component{
       }
     });
   }
+  clearEvent = () => {
+    let search = this.state.search;
+    search = Object.assign(
+      search, {
+        dateStart: null,
+        dateEnd: null,
+        orderNo: null,
+        orderStatus: null
+      }
+    );
+    this.setState({search});
+  }
   render(){
     const {
       isActive,
@@ -264,8 +280,10 @@ class DepositList extends Component{
       }
     ];
     if (redirect) return (<Redirect to="/relogin" />);
+    
     return(
       <div className={style.financialModel}>
+        
         <Modal
           visible={isVisible}
           width={510}
@@ -327,8 +345,8 @@ class DepositList extends Component{
           <ul className={style.search}>
             <li>
               创建时间
-              <DatePicker className="w150 ml10" format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
-              <DatePicker className="ml10 w150" format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateEnd')} />
+              <DatePicker className="w150 ml10" value={search.dateStart === null ? null : moment(search.dateStart)} format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
+              <DatePicker className="ml10 w150" value={search.dateEnd === null ? null : moment(search.dateEnd)} format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateEnd')} />
             </li>
             <li>
               充值单号
@@ -336,8 +354,8 @@ class DepositList extends Component{
             </li>
             <li>
               订单状态
-              <Select defaultValue={search.orderStatus} onChange={this.changeFormEvent.bind(this, 'orderStatus')} className="w180 ml10">
-                <Option value="">全部</Option>
+              <Select value={search.orderStatus} onChange={this.changeFormEvent.bind(this, 'orderStatus')} className="w180 ml10">
+                <Option value={null}>全部</Option>
                 {
                   status.map((item, index) => (<Option value={index} key={index}>{item}</Option>))
                 }
@@ -345,6 +363,7 @@ class DepositList extends Component{
             </li>
             <li>
               <Button type="primary" onClick={this.searchEvent.bind(this)}>查询</Button>
+              <Button className="ml10" onClick={this.clearEvent.bind(this)}>重置</Button>
             </li>
           </ul>
           <Table

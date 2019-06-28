@@ -4,13 +4,13 @@ import moment from 'moment';
 import style from './style.less';
 import Redirect from 'umi/redirect';
 import router from 'umi/router';
-const {RangePicker} = DatePicker;
 class EditAdvertity extends Component {
   constructor(props) {
     super(props);
     this.state = {
       redirect: false,
       form: {
+        currentTime: null,
         loginName: '', //登录名
         campaignName: '', //活动名称
         dateStart: new Date(), //开始时间
@@ -19,7 +19,7 @@ class EditAdvertity extends Component {
         targetGender: 0, //性别
         targetMediaCategory: '', //行业
         targetArea: '', //地区
-        billingType: 0, //计费方式
+        billingType: 1, //计费方式
         unitPrice: 0, //阅读单价
         postAmtTotal: 0, //活动预算
         postStatus: 0 //活动状态
@@ -114,6 +114,18 @@ class EditAdvertity extends Component {
       case 'date':
         obj={'dateStart': value[0], 'dateEnd': value[1]};
         form = Object.assign(form, obj);
+        this.setState({form});
+        break;
+      case 'dateStart':
+        obj={'dateStart': value};
+        form = Object.assign(form, obj);
+        this.props.form.setFieldsValue({date: value});
+        this.setState({form});
+        break;
+      case 'dateEnd':
+        obj={'dateEnd': value};
+        form = Object.assign(form, obj);
+        this.props.form.setFieldsValue({date: value});
         this.setState({form});
         break;
       case 'unitPrice':
@@ -211,6 +223,18 @@ class EditAdvertity extends Component {
       this.setState({form});
     }
   }
+  disabledEndDate = (endValue) => {
+    const startValue = this.state.currentTime;
+    if (!endValue || !startValue) {return false;}
+    return endValue.valueOf() <= startValue.valueOf();
+  }
+  handleEndOpenChange = (open) => {
+    let me = this;
+    if(open){
+      me.currentTime = moment();
+    }
+    this.setState({currentTime: moment()});
+  }
   render() {
     const {
       redirect,
@@ -262,20 +286,38 @@ class EditAdvertity extends Component {
                         {required: true, message: '请输入活动名称'}
                       ]
                     }    
-                  )(<Input placeholder="请输入活动名称" onChange={this.changeFormEvent.bind(this, 'campaignName')} className={style.ipttxt} />)
+                  )(<Input style={{width: '425px'}} placeholder="请输入活动名称" onChange={this.changeFormEvent.bind(this, 'campaignName')} className={style.ipttxt} />)
                   }
                 </Form.Item>
-                <Form.Item label="活动日期" {...tailFormItemLayout}>
+                <Form.Item label="活动周期" {...tailFormItemLayout}>
                   {
                     getFieldDecorator(
                       'date',
                       {
-                        initialValue: [moment(`${window.common.getDate(form.dateStart, true)}`, "YYYY-MM-DD"), moment(`${window.common.getDate(form.dateEnd, true)}`, "YYYY-MM-DD")],
+                        initialValue: form.dateStart,
                         rules: [
-                          {required: true, message: '请输入活动日期'}
+                          {required: true, message: '请输入活动周期'}
                         ]
                       } 
-                    )(<RangePicker format="YYYY-MM-DD" separator="至" className={style.ipttxt} style={{height: '36px'}} onChange={this.changeFormEvent.bind(this, 'date')}/>)
+                    )(<div className={style.date}><DatePicker
+                        disabledDate={this.disabledEndDate}
+                        onOpenChange={this.handleEndOpenChange}
+                        className="mr10"
+                        showTime
+                        format="YYYY-MM-DD HH:mm:ss"
+                        placeholder="请输入开始时间"
+                        value={moment(form.dateStart)}
+                        onChange={this.changeFormEvent.bind(this, 'dateStart')}
+                      />至<DatePicker
+                        disabledDate={this.disabledEndDate}
+                        onOpenChange={this.handleEndOpenChange}
+                        className="ml10"
+                        showTime
+                        format="YYYY-MM-DD HH:mm:ss"
+                        placeholder="请输入结束时间"
+                        value={moment(form.dateEnd)}
+                        onChange={this.changeFormEvent.bind(this, 'dateEnd')}
+                      /></div>)
                   }
                 </Form.Item>
                 <Form.Item label="活动形式" {...tailFormItemLayout}>
@@ -386,7 +428,7 @@ class EditAdvertity extends Component {
                         ]
                       }
                     )(<Radio.Group onChange={this.changeFormEvent.bind(this, 'billingType')}>
-                        <Radio value={0}>CPC</Radio>
+                        <Radio value={1}>CPC</Radio>
                     </Radio.Group>)
                   }
                 </Form.Item>

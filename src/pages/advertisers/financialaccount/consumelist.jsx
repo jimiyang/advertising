@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {DatePicker, Table, Select, Input, Button, message} from 'antd';
 import style from './style.less';
 import Redirect from 'umi/redirect';
+import moment from 'moment';
 const {Option} = Select; 
 class ConsumeList extends Component{
   constructor(props) {
@@ -19,22 +20,18 @@ class ConsumeList extends Component{
         onShowSizeChange: this.onShowSizeChange
       },
       search: {
-        dateStart: '',
-        dateEnd: '',
-        orderStatus: '',
-        orderNo: ''
+        dateStart: null,
+        dateEnd: null,
+        orderStatus: null,
+        orderNo: null
       }
     };
   }
-  componentWillMount() {
+  async componentWillMount() {
     const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
     if (!loginInfo) return false;
-    //因为setState是异步的，他会在render后才生效,加入一个回调函数
-    this.setState({
-      loginName: loginInfo.data.loginName
-    },()=>{
-      this.loadList();
-    });
+    await this.setState({loginName: loginInfo.data.loginName});
+    this.loadList();
   }
   loadList = () => {
     const {search, pagination} = this.state;
@@ -45,7 +42,6 @@ class ConsumeList extends Component{
       ...search
     };
     window.api.baseInstance('admin/ad/finance/list', params).then(rs => {
-      console.log(rs);
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({depositData: rs.data, pagination: p});
     }).catch(err => {
@@ -107,24 +103,17 @@ class ConsumeList extends Component{
   searchEvent = () => {
     this.loadList();
   }
-  //查看订单详情
-  viewDetailEvent = (item) => {
-    //console.log(item.orderNo);
-    /*const params = {
-      operatorLoginName: this.state.loginName,
-      orderNo: item.orderNo
-    };
-    window.api.baseInstance('api/topup/getByOrderNo', params).then(rs => {
-      //console.log(rs);
-      this.setState({detailData: rs.data, isDetailVisible: true});
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
+  clearEvent = () => {
+    let search = this.state.search;
+    search = Object.assign(
+      search, {
+        dateStart: null,
+        dateEnd: null,
+        orderNo: null,
+        orderStatus: null
       }
-    });*/
+    );
+    this.setState({search});
   }
   render(){
     const {
@@ -138,9 +127,7 @@ class ConsumeList extends Component{
         title: '结算单号',
         key: 'missionId',
         render: (record) =>  (
-          <div className="opeartion-items">
-            <span className="blue-color line" onClick={this.viewDetailEvent.bind(this, record)}>{record.missionId}</span>
-          </div>
+          <span>{record.missionId}</span>
         )
       },
       {
@@ -175,8 +162,8 @@ class ConsumeList extends Component{
         <ul className={style.search}>
           <li>
             创建时间
-            <DatePicker className="w150 ml10" formate="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
-            <DatePicker className="ml10 w150" formate="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateEnd')} />
+            <DatePicker className="w150 ml10" value={search.dateStart === null ? null : moment(search.dateStart)} formate="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
+            <DatePicker className="ml10 w150" value={search.dateEnd === null ? null : moment(search.dateEnd)} formate="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateEnd')} />
           </li>
           <li>
             充值单号
@@ -184,8 +171,8 @@ class ConsumeList extends Component{
           </li>
           <li>
             订单状态
-            <Select defaultValue={search.orderStatus} className="w180 ml10" onChange={this.changeFormEvent.bind(this, 'orderStatus')}>
-              <Option value=''>全部</Option>
+            <Select value={search.orderStatus} className="w180 ml10" onChange={this.changeFormEvent.bind(this, 'orderStatus')}>
+              <Option value={null}>全部</Option>
               <Option value={10}>未支付</Option>
               <Option value={11}>支付中</Option>
               <Option value={12}>支付完成</Option>
@@ -194,6 +181,7 @@ class ConsumeList extends Component{
           </li>
           <li>
             <Button type="primary" onClick={this.searchEvent.bind(this)}>查询</Button>
+            <Button className="ml10" onClick={this.clearEvent.bind(this)}>重置</Button>
           </li>
         </ul>
         <Table

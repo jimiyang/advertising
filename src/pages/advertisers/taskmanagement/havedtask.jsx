@@ -3,6 +3,7 @@ import {DatePicker, Table, Select, Input, Button, message, Popconfirm} from 'ant
 import Link from 'umi/link';
 import Redirect from 'umi/redirect';
 import style from './style.less';
+import moment from 'moment';
 
 const {Option} = Select;
 class HavedTask extends Component{
@@ -48,7 +49,6 @@ class HavedTask extends Component{
       ...search
     };
     window.api.baseInstance('api/ad/mission/list', params).then(rs => {
-      console.log(rs);
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({orderData: rs.data, pagination: p});
     }).catch(err => {
@@ -96,6 +96,7 @@ class HavedTask extends Component{
   }
   //搜索
   searchEvent = () => {
+    console.log(this.state.search);
     this.loadList();
   }
   //结算
@@ -115,6 +116,20 @@ class HavedTask extends Component{
         message.error(err.message);
       }
     });
+  }
+  clearEvent = () => {
+    let search = this.state.search;
+    search = Object.assign(
+      search, {
+        missionStatus: null,
+        campaignName: null,
+        missionId: null,
+        appArticlePosition: null,
+        dateStart: null,
+        dateEnd: null
+      }
+    );
+    this.setState({search});
   }
   render() {
     const {
@@ -140,7 +155,13 @@ class HavedTask extends Component{
         title: '活动时间',
         key: 'createDates',
         dataIndex: '',
-        width: 200
+        width: 200,
+        render: (record) => (
+          <div>
+            <p>{window.common.getDate(record.dateStart, false)}</p>
+            <p>{window.common.getDate(record.dateEnd, false)}</p>
+          </div>
+        )
       },
       {
         title: '活动名称',
@@ -189,10 +210,11 @@ class HavedTask extends Component{
       },
       {
         title: '占比',
-        key: 'price',
+        key: 'ratioRead',
+        dataIndex: 'ratioRead',
         width: 200,
         render: (record) => (
-          <span>{Math.round(record.missionReadCnt / record.adUnitPrice / 100)}%</span>
+          <span>{record}%</span>
         )
       },
       {
@@ -256,14 +278,14 @@ class HavedTask extends Component{
         <h1 className="nav-title">已接单任务</h1>
         <dl className={style.search}>
           <dt style={{width: '100%'}}>
-            活动时间：
-            <DatePicker className="ml10" format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
-            <DatePicker className="ml10" format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />   
+            接单时间：
+            <DatePicker className="ml10" value={search.dateStart === null ? null : moment(search.dateStart)} format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
+            <DatePicker className="ml10" value={search.dateEnd === null ? null : moment(search.dateEnd)} format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateEnd')} />   
           </dt>
           <dd>
             任务状态：
-            <Select defaultValue={search.missionStatus} onChange={this.changeFormEvent.bind(this, 'missionStatus')} className="w180 ml10">
-              <Option value="">全部</Option>
+            <Select value={search.missionStatus} onChange={this.changeFormEvent.bind(this, 'missionStatus')} className="w180 ml10">
+              <Option value={null}>全部</Option>
               {
                 window.common.orderStatus.map((item, index) => (<Option key={index} value={index + 10}>{item}</Option>))
               }
@@ -271,8 +293,8 @@ class HavedTask extends Component{
           </dd>
           <dd>
             广告位置：
-            <Select defaultValue={search.appArticlePosition} onChange={this.changeFormEvent.bind(this, 'appArticlePosition')} className="w180 ml10">
-              <Option value="">全部</Option>
+            <Select value={search.appArticlePosition} onChange={this.changeFormEvent.bind(this, 'appArticlePosition')} className="w180 ml10">
+              <Option value={null}>全部</Option>
               {
                 window.common.advertLocal.map((item, index) => (<Option key={index} value={index + 1}>{item}</Option>))
               }
@@ -286,6 +308,7 @@ class HavedTask extends Component{
           </dd>
           <dd>
             <Button type="primary" onClick={this.searchEvent.bind(this)}>查询</Button>
+            <Button className="ml10" onClick={this.clearEvent.bind(this)}>重置</Button>
           </dd>
         </dl>
         <Table

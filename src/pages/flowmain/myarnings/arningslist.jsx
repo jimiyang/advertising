@@ -173,7 +173,7 @@ class ArningsList extends Component {
           </li>
           <li className="ml30">
             结算单号
-            <Input className="w180 ml10" format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'orderNo')} />
+            <Input className="w180 ml10" onChange={this.changeFormEvent.bind(this, 'orderNo')} />
           </li>
           <li className="ml30">
             <Button type="primary" onClick={this.searchEvent.bind(this)}>查询</Button>

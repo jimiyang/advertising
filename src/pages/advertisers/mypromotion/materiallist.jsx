@@ -164,7 +164,7 @@ class MaterialList extends Component{
     if (redirect) return (<Redirect to="/relogin" />);
     return(
       <div className={style.mypromotion}>
-        <h1 className="nav-title">素材库列表
+        <h1 className="nav-title">素材库
           <Button type="primary" onClick={this.addEvent.bind(this)}>添加素材</Button>
         </h1>
         <ul className={`${style.search} mt40`}>

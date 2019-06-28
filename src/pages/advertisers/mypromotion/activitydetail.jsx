@@ -46,7 +46,6 @@ class ActivityDetail extends Component{
   }
   initForm = (id) => {
     window.api.baseInstance('api/ad/campaign/getById', {id}).then(rs => {
-      console.log(rs);
       const selmediaValData = this.initLabel('media', rs.data.targetMediaCategory);
       const selproviceValData = this.initLabel('province', rs.data.targetArea);
       this.setState({form: rs.data, selmediaValData, selproviceValData});
@@ -120,8 +119,8 @@ class ActivityDetail extends Component{
                       <span className={style.stitle}>男女比例-{window.common.targetGender[Number(form.targetGender)]}</span>
                     </li>
                     <li>
-                      <span className={style.stitle}>选择行业-{form.targetMediaCategory === "" ? '不限(默认)' : '自定义'}</span>
-                      <div className={`${style.tags} ${form.targetMediaCategory === "" ? 'hide' : null}`}>
+                      <span className={style.stitle}>选择行业-{form.targetMediaCategory === '[]' ? '不限(默认)' : '自定义'}</span>
+                      <div className={`${style.tags} ${form.targetMediaCategory === '[]' ? 'hide' : null}`}>
                         {
                           mediaTypeLabel.map((item, index) => (
                             <label key={index} className={Number(item.value) === selmediaValData[index] ? style.active : null}>{item.label}</label>
@@ -130,8 +129,8 @@ class ActivityDetail extends Component{
                       </div>
                     </li>
                     <li>
-                      <span className={style.stitle}>选择地域-{form.targetArea === "" ? '不限(默认)' : '自定义'}</span>
-                      <div className={`${style.tags} ${form.argetArea === "" ? 'hide' : null}`}>
+                      <span className={style.stitle}>选择地域-{form.targetArea === '[]' ? '不限(默认)' : '自定义'}</span>
+                      <div className={`${style.tags} ${form.targetArea === '[]' ? 'hide' : null}`}>
                         {
                           provinceTypeType.map((item, index) => (
                             <label key={index} className={Number(item.value) === selproviceValData[index] ? style.active : null}>{item.label}</label>
@@ -152,7 +151,7 @@ class ActivityDetail extends Component{
                   </a>
                 </div>
               </li>
-              <li>计费方式：<div>{form.billingType === 0 ? 'CPC' : '万粉'}</div></li>
+              <li>计费方式：<div>{form.billingType === 1 ? 'CPC' : '万粉'}</div></li>
             </ul>
             <h2 className="small-title"><em></em>价格信息</h2>
             <ul className={style.detaillist}>

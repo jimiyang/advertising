@@ -4,7 +4,6 @@ import Redirect from 'umi/redirect';
 import Link from 'umi/link';
 import router from 'umi/router';
 import style from './style.less';
-import ReceiveAd from '../../components/receivead'; //确认接此广告模板
 import {isNull} from 'util';
 const Option = Select.Option;
 class MyOrder extends Component{
@@ -59,7 +58,6 @@ class MyOrder extends Component{
   //查询所有公众号
   getListApps = (loginName) => {
     window.api.baseInstance('flow/wechat/listapps', {loginName}).then(rs => {
-      console.log(rs);
       const appsData = rs.data === undefined ? [] : rs.data;
       this.setState({appsData});
     }).catch(err => {
@@ -100,7 +98,7 @@ class MyOrder extends Component{
       case 'appNickName':
         obj = {[type]: value.props.value};
         //detailForm = Object.assign(detailForm, {appId: value.props.value, appNickName: value.props.children});
-        this.setState({appNickName: value.props.children});
+        this.setState({appNickName: value.props.children, appId: value.props.value});
         break;
       default: 
         obj = {[type]: e};
@@ -115,7 +113,7 @@ class MyOrder extends Component{
   }
   //接收此广告
   ReceiveEvent = (item) => {
-    let {search, appNickName} = this.state;
+    let {search, appNickName, appId} = this.state;
     if (!search.appNickName) {
       message.error('请选择公众号');
       return false;
@@ -124,79 +122,30 @@ class MyOrder extends Component{
       pathname: '/main/receivead',
       state: {
         campaignId: item.campaignId,
-        appNickName
+        appNickName,
+        appId
       }
     });
-    /*const params = Object.assign(detailForm, {
-      articlePosition: null,
-      missionReadCnt: null,
-      planPostArticleTime: null
-    });
-    Promise.all([window.api.baseInstance('admin/system/dict/getDictByType', {type: 'mediaType'}), window.api.baseInstance('flow/campaign/detail', {campaignId: item.campaignId}), window.api.baseInstance('admin/system/dict/getDictByType', {type: 'provinceType'})]).then(rs => {
-      detailForm = Object.assign(detailForm, {targetData: rs[0].data}, rs[1].data.campaign, {areaData: rs[2].data});
-      this.setState({isVisible: true, detailForm: params});
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
-    });*/
   }
-  //确定接此广告
-  /*creatEvent = () => {
-    const {detailForm, loginName, creatForm} = this.state;
-    const params = {
-      campaignId: detailForm.campaignId,
-      appId: detailForm.appId,
-      appNickName: detailForm.appNickName,
-      adMerchantCode: detailForm.merchantCode,
-      appMediaTags: detailForm.targetMediaCategory,
-      campaignName: detailForm.campaignName,
-      unitPrice: detailForm.unitPrice,
-      loginName,
-      ...creatForm
-    };
-    if (isNull(creatForm.articlePosition)) {
-      message.error('请选择发文位置');
-      return false
-    }
-    if (isNull(creatForm.missionReadCnt)) {
-      message.error('请填写接单阅读量');
-      return false;
-    }
-    if (isNull(creatForm.planPostArticleTime)) {
-      message.error('请选择预计发文时间');
-      return false;
-    }
-    let reg = /^\+?[1-9][0-9]*$/;
-    if (!reg.test(creatForm.missionReadCnt)) {
-      message.error('只能输入整数');
-      return false;
-    }
-    window.api.baseInstance('flow/mission/add', params).then(rs => {
-      this.setState({isVisible: false});
-      message.success(rs.message);
-      this.loadList();
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
+  clearEvent = () => {
+    let search = this.state.search;
+    search = Object.assign(
+      search,
+      {
+        adType: null,
+        appNickName: null,
+        campaignName: null
       }
-    });
-  }*/
+    );
+    this.setState({search});
+  }
   render() {
     const {
       redirect,
       orderData,
-      isVisible,
       pagination,
       search,
-      appsData,
-      detailForm //查询详情
+      appsData
     } = this.state;
     if (redirect) return (<Redirect to="/relogin" />);
     return(
@@ -204,13 +153,13 @@ class MyOrder extends Component{
         <h1 className="nav-title">接单赚钱 > 可接任务</h1>
         <ul className={style.search}>
           <li>广告类型
-            <Select defaultValue={search.adType} onChange={this.changeFormEvent.bind(this, 'adType')} className="w180 ml10">
+            <Select value={search.adType} onChange={this.changeFormEvent.bind(this, 'adType')} className="w180 ml10">
               <Option value={null}>请选择</Option>
               <Option value={'article'}>公众号推文</Option>
             </Select>
           </li>
           <li>公众号名称
-            <Select defaultValue={search.appNickName} onChange={this.changeFormEvent.bind(this, 'appNickName')} className="w180 ml10">
+            <Select value={search.appNickName} onChange={this.changeFormEvent.bind(this, 'appNickName')} className="w180 ml10">
               <Option value={null}>请选择</Option>
               {
                 appsData.length !== 0 ? 
@@ -225,6 +174,7 @@ class MyOrder extends Component{
           </li>
           <li>
             <Button type="primary" onClick={this.searchEvent.bind(this)}>查询</Button>
+            <Button onClick={this.clearEvent.bind(this)} className="ml10">重置</Button>
           </li>
         </ul>
         <div className={`${style.noData} table ${orderData.length !== 0 ? 'hide' : null}`}>

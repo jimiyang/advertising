@@ -4,6 +4,7 @@ import style from './style.less';
 import Redirect from 'umi/redirect';
 import Link from 'umi/link';
 import router from 'umi/router';
+import moment from 'moment';
 
 const {Option} = Select;
 class MyActivity extends Component{
@@ -24,10 +25,10 @@ class MyActivity extends Component{
         onShowSizeChange: this.onShowSizeChange
       },
       search: {
-        campaignName: '',
-        dateStart: '',
-        dateEnd: '',
-        postStatus: ''
+        campaignName: null,
+        dateStart: null,
+        dateEnd: null,
+        postStatus: null
       },
       draftTotal: 0,
       total: 0
@@ -52,7 +53,6 @@ class MyActivity extends Component{
       limit: pagination.limit
     };
     window.api.baseInstance('api/ad/campaign/list', params).then(rs => {
-      console.log(rs);
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({activityData: rs.data, pagination: p});
     }).catch(err => {
@@ -112,7 +112,7 @@ class MyActivity extends Component{
     let search = this.state.search;
     let obj = {};
     switch (typeof e) {
-      case 'objec':
+      case 'object':
         if (type === 'dateStart' || type === 'dateEnd') {
           obj = {[type]: value};
         } else{
@@ -134,7 +134,20 @@ class MyActivity extends Component{
   }
   //创建活动
   createEvent = () => {
-    router.push('/main/createactivity')
+    router.push('/main/createactivity');
+  }
+  //重置
+  clearEvent = () => {
+    let search = this.state.search;
+    search = Object.assign(
+      search, {
+        campaignName: null,
+        dateStart: null,
+        dateEnd: null,
+        postStatus: null
+      }
+    );
+    this.setState({search});
   }
   render() {
     const {
@@ -154,7 +167,7 @@ class MyActivity extends Component{
       {
         title: '活动周期',
         render: (record) => (
-          <span>{window.common.getDate(record.dateStart, false)}-{window.common.getDate(record.dateStart, false)}</span>
+          <span>{window.common.getDate(record.dateStart, false)}-{window.common.getDate(record.dateEnd, false)}</span>
         )
       },
       {
@@ -192,7 +205,7 @@ class MyActivity extends Component{
       {
         title: '已消耗',
         render: (record) => (
-          <span>{window.common.formatNumber(Math.abs(Math.round(record.postAmtTotal / record.unitPrice) - record.availableCnt))}</span>
+          <span>{window.common.formatNumber(Math.round(record.postAmtTotal / record.unitPrice) - record.availableCnt)}</span>
         )
       },
       {
@@ -260,13 +273,13 @@ class MyActivity extends Component{
         <ul className={style.search}>
           <li>
             <label>活动日期</label>
-            <DatePicker className="w150 radius2" onChange={this.changeFormEvent.bind(this, 'dateStart')} format="YYYY-MM-DD" />
-            <DatePicker className="w150 ml10" onChange={this.changeFormEvent.bind(this, 'dateEnd')} format="YYYY-MM-DD" />
+            <DatePicker className="w150 radius2" value={search.dateStart === null ? null : moment(search.dateStart)} onChange={this.changeFormEvent.bind(this, 'dateStart')} format="YYYY-MM-DD" />
+            <DatePicker className="w150 ml10" value={search.dateEnd === null ? null : moment(search.dateEnd)} onChange={this.changeFormEvent.bind(this, 'dateEnd')} format="YYYY-MM-DD" />
           </li>
           <li>
             <label>活动状态</label>
-            <Select placeholder="请选择" defaultValue={search.postStatus} className="w180 select" onChange={this.changeFormEvent.bind(this, 'postStatus')}>
-              <Option value="">请选择</Option>
+            <Select placeholder="请选择" value={search.postStatus} className="w180 select" onChange={this.changeFormEvent.bind(this, 'postStatus')}>
+              <Option value={null}>请选择</Option>
               {
                 window.common.postStatus.map((item, index) => (
                   <Option key={index} value={20 + index}>{item}</Option>
@@ -280,6 +293,7 @@ class MyActivity extends Component{
           </li>
           <li>
             <Button type="primary" onClick={this.searchEvent.bind(this)}>查询</Button>
+            <Button className="ml10" onClick={this.clearEvent.bind(this)}>重置</Button>
           </li>
         </ul>
         <Table

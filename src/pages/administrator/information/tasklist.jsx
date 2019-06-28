@@ -239,7 +239,7 @@ class TaskList extends Component{
             <Select className="ml10" defaultValue={search.postStatus} onChange={this.changeFormEvent.bind(this, 'postStatus')}>
               <Option value={null}>请选择</Option>
               {
-                window.common.taskStatusData.map((item, index) => (
+                window.common.orderStatus.map((item, index) => (
                   <Option key={index} value={index + 10}>{item}</Option>
                 ))
               }

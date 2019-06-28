@@ -189,7 +189,7 @@ class AdvertDetail extends Component{
             活动名称：<div>{form.adCampaign.campaignName}</div>
           </li>
           <li>
-            活动状态：<div>{window.common.postStatus[20 - Number(form.adCampaign.postStatus)]}</div>
+            活动状态：<div>{window.common.postStatus[Number(form.adCampaign.postStatus) - 23]}</div>
           </li>
           <li>
             活动审核意见：<div className={style.textarea}>{form.adCampaign.auditRemark}</div>

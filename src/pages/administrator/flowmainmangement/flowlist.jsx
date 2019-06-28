@@ -101,6 +101,18 @@ class FlowList extends Component{
   searchEvent = () => {
     this.loadList();
   }
+  clearEvent = () => {
+    let search = this.state.search;
+    search = Object.assign(
+      search,
+      {
+        merchantName: null,
+        merchantCode: null,
+        status: null
+      }
+    );
+    this.setState({search});
+  }
   resetPwdEvent = (item) => {
     const operatorLoginName = this.state.operatorLoginName;
     const params = {
@@ -256,7 +268,7 @@ class FlowList extends Component{
           </li>
           <li>
             流量主状态
-            <Select defaultValue={search.status} className="ml10" onChange={this.changeFormEvent.bind(this, 'status')}>
+            <Select value={search.status} className="ml10" onChange={this.changeFormEvent.bind(this, 'status')}>
               <Option value={null}>请选择</Option>
               <Option value={1}>启用</Option>
               <Option value={2}>停用</Option>
@@ -264,6 +276,7 @@ class FlowList extends Component{
           </li>
           <li>
             <Button type="primary" onClick={this.searchEvent.bind(this)}>查询</Button>
+            <Button className="ml10" onClick={this.clearEvent.bind(this)}>重置</Button>
           </li>
         </ul>
         <Table

@@ -77,8 +77,8 @@ class ViewDetail extends Component {
       if (!rs.data) return false;
       const form = Object.assign(this.state.form, rs.data);
       console.log(form);
-      const selmediaValData = this.initLabel('media', form.adCampaign.targetMediaCategory);
-      const selproviceValData = this.initLabel('province', form.adCampaign.targetArea);
+      const selmediaValData = this.initLabel('media', form.targetMediaCategory);
+      const selproviceValData = this.initLabel('province', form.targetArea);
       const params = Object.assign(this.state.params, {auditRemark: form.auditRemark});
       this.setState({form, selmediaValData, selproviceValData, params});
     }).catch(err => {
@@ -172,8 +172,8 @@ class ViewDetail extends Component {
                   <ul>
                     <li><span className={style.stitle}>男女比例-{window.common.targetGender[Number(form.adCampaign.targetGender)]}</span></li>
                     <li>
-                      <span className={style.stitle}>选择行业-{form.adCampaign.targetMediaCategory === "" ? '不限(默认)' : '自定义'}</span>
-                      <div className={`${style.tags} ${form.adCampaign.targetMediaCategory === "" ? 'hide' : null}`}>
+                      <span className={style.stitle}>选择行业-{form.targetMediaCategory === undefined ? '不限(默认)' : '自定义'}</span>
+                      <div className={`${style.tags} ${form.targetMediaCategory === undefined ? 'hide' : null}`}>
                         {
                           mediaTypeLabel.map((item, index) => (
                             <label key={index} className={Number(item.value) === selmediaValData[index] ? style.active : null}>{item.label}</label>
@@ -182,8 +182,8 @@ class ViewDetail extends Component {
                       </div>
                     </li>
                     <li>
-                        <span className={style.stitle}>选择地域-{form.adCampaign.targetArea === "" ? '不限(默认)' : '自定义'}</span>
-                        <div className={`${style.tags} ${form.adCampaign.targetArea === "" ? 'hide' : null}`}>
+                        <span className={style.stitle}>选择地域-{form.targetArea === '[]' ? '不限(默认)' : '自定义'}</span>
+                        <div className={`${style.tags} ${form.targetArea === '[]' ? 'hide' : null}`}>
                           {
                             provinceTypeType.map((item, index) => (
                               <label key={index} className={Number(item.value) === selproviceValData[index] ? style.active : null}>{item.label}</label>

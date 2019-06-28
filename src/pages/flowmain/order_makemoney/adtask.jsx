@@ -43,6 +43,7 @@ class AdTask extends Component{
       ...search
     };
     window.api.baseInstance('flow/mission/list', params).then(rs => {
+      console.log(rs);
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({pubAccountData: rs.data, pagination: p});
     }).catch(err => {
@@ -82,13 +83,27 @@ class AdTask extends Component{
     });
   }
   changeFormEvent = (type, e) => {
-    let search = this.state;
-    const value = type === 'missionStatus' ? e + 10 : e;
+    let search = this.state.search;
+    console.log(e);
+    const value = type === 'missionStatus' ? (Number(e) + 10) : e;
+    //console.log(value);
     search = Object.assign(search, {[type]: value});
     this.setState({search});
   }
   searchEvent = () => {
+    console.log(this.state.search);
     this.loadList();
+  }
+  clearEvent = () => {
+    let search = this.state.search;
+    search = Object.assign(
+      search,
+      {
+        appNickName: null,
+        missionStatus: null
+      }
+    );
+    this.setState({search});
   }
   render() {
     const {
@@ -105,7 +120,7 @@ class AdTask extends Component{
         dataIndex: 'appNickName'
       },
       {
-        title: '文章标题',
+        title: '活动标题',
         key: 'campaignName',
         dataIndex: 'campaignName'
       },
@@ -123,7 +138,7 @@ class AdTask extends Component{
         key: 'appArticlePosition',
         dataIndex: 'appArticlePosition',
         render: (record) => (
-          <span>{window.common.advertLocal[record]}</span>
+          <span>{window.common.advertLocal[record - 1]}</span>
         )
       },
       {
@@ -191,7 +206,7 @@ class AdTask extends Component{
         <ul className={style.search}>
           <li>
             请选择公众号
-            <Select defaultValue={search.appNickName} className="w180 ml10" onChange={this.changeFormEvent.bind(this, 'appNickName')}>
+            <Select value={search.appNickName} className="w180 ml10" onChange={this.changeFormEvent.bind(this, 'appNickName')}>
               <Option value={null}>请选择</Option>
               {
                 appsData.length !== 0 ? 
@@ -203,7 +218,7 @@ class AdTask extends Component{
           </li>
           <li>
             接单状态
-            <Select defaultValue={search.missionStatus} className="w180 ml10" onChange={this.changeFormEvent.bind(this, 'missionStatus')}>
+            <Select value={search.missionStatus} className="w180 ml10" onChange={this.changeFormEvent.bind(this, 'missionStatus')}>
               <Option value={null}>请选择</Option>
               {
                 window.common.orderStatus.map((item, index) => (
@@ -214,6 +229,7 @@ class AdTask extends Component{
           </li>
           <li>
             <Button type="primary" onClick={this.searchEvent.bind(this)}>查询</Button>
+            <Button onClick={this.clearEvent.bind(this)} className="ml10">重置</Button>
           </li>
         </ul>
         <Table 

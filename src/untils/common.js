@@ -10,9 +10,9 @@ const utils =  {
   postStatus: ['草稿', '审核中', '审核驳回', '待接单', '过期未接单', '活动取消', '接单中', '执行中', '执行完毕', '活动完成'],
   //男女粉丝设置
   targetGender: ['不限', '男粉', '女粉', '男大于女', '女大于男', '男女各半'],
-  //任务状态
-  taskStatusData: ['待审核', '审核驳回', '待执行', '执行中', '任务取消', '待结算', '任务完成'],
-  articleUrl: 'http://www.baidu.com', //文章预览地址
+  //计费方式：
+  billingTypesData: ['CPM', 'CPC', 'CPA', '万粉'],
+  articleUrl: 'http://testadx.liantuo.com/fshstatic/view.html', //文章预览地址
   //删除数组中为空的元素
   removeEmptyArrayEle(arr) {    
     for(var i = 0; i < arr.length; i++) {
@@ -40,6 +40,18 @@ const utils =  {
     second = second < 10 ? (`0${second}`) : second;
     const str = flag ? `${y}-${m}-${d} ${h}:${minute}:${second}` : `${y}-${m}-${d} `;
     return str;
+  },
+  //时间格式化
+  getTime() {
+    let d = new Date();
+    let year = d.getFullYear();
+    let month = d.getMonth() + 1 > 10 ? d.getMonth()+1 : `0${d.getMonth()+1}`;
+    let day = d.getDate() > 10 ? d.getDate() : `0${d.getDate()}`;
+    let hour = d.getHours() > 10 ? d.getHours() : `0${d.getHours()}`;
+    let minute = d.getMinutes() > 10 ? d.getMinutes() : `0${d.getMinutes()}`;
+    let second = d.getSeconds() > 10 ? d.getSeconds() : `0${d.getSeconds()}`;
+    const time = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+    return time;
   },
   dateDiff(sDate1,  sDate2){ // 日期对比，得出天数 
     let oDate1, oDate2, iDays;

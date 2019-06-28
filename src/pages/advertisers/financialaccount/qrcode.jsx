@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {message} from 'antd';
+import {message, notification} from 'antd';
 import style from './style.less';
 import QRCode from 'qrcode.react'; //二维码
 import Redirect from 'umi/redirect';
@@ -13,15 +13,24 @@ class QrCode extends Component{
       operatorLoginName: null,
       qrUrl: null,
       orderNo: null,
-      messageTip: null
+      amount: null,
+      messageTip: null,
+      type: 'WX'
     };
   }
+  
   async componentWillMount() {
     const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
     if (!loginInfo) return false;
     const rechargeInfo = this.props.location.query;
     if (!rechargeInfo) return false;
-    await this.setState({operatorLoginName: loginInfo.data.loginName, qrUrl: rechargeInfo.payUrl, orderNo: rechargeInfo.orderNo});
+    await this.setState({
+      operatorLoginName: loginInfo.data.loginName,
+      qrUrl: rechargeInfo.payUrl,
+      orderNo: rechargeInfo.orderNo,
+      amount: rechargeInfo.amount,
+      type: rechargeInfo.channelType
+    });
     const {operatorLoginName, orderNo} = this.state;
     const params = {
       operatorLoginName,
@@ -29,26 +38,41 @@ class QrCode extends Component{
     };
     //this.getOrderQuery(params);
     //this.orderStatus(params);
-    timer=window.setInterval(this.orderStatus(params), 1000);
+    timer=window.setInterval(this.orderStatus(params), 3000);
+  }
+  openNotification = ()=>{
+    //使用notification.success()弹出一个通知提醒框 
+    notification.success({
+      message:"充值成功",
+      description: (
+        <div>
+          <p>充值金额：{this.state.amount} 元</p>
+          <p>充值时间：{window.common.getTime()}</p>
+          <p>充值单号：{this.state.orderNo}</p>
+        </div>
+      ),
+      duration: 2, //1秒
+    }); 
   }
   orderStatus = (params) => {
     window.api.baseInstance('api/topup/orderQuery', params).then(rs => {
       if (rs.data.status === 1) {
-        console.log(33333);
-        message.success(rs.message);
+        console.log('success');
+        this.openNotification();
         router.push('/main/depositlist');
         clearTimeout(timer);
       } else if(rs.code === 300107 || rs.data.status === 2){
-        console.log(11111);
-        timer=window.setInterval(this.orderStatus(params), 3000);
+         console.log('loading');
+        timer=window.setInterval(this.orderStatus(params), 500);
       }
     }).catch(err => {
       if (err.code === 100000) {
         this.setState({redirect: true});
         window.localStorage.removeItem('login_info');
       } else {
-        console.log('fail');
-        timer=window.setInterval(this.orderStatus(params), 3000);
+        //console.log('fail');
+        //timer=window.setInterval(this.orderStatus(params), 1000);
+        this.orderStatus(params);
         this.setState({messageTip: err.message});
       }
     });
