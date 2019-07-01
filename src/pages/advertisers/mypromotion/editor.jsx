@@ -6,7 +6,8 @@ class Editor extends Component {
     this.state = {
       id: null,
       iframeHeight: 800,
-      employeeId: null
+      employeeId: null,
+      merchantCode: null
     };
   }
   componentWillMount() {
@@ -14,19 +15,25 @@ class Editor extends Component {
       this.setState({id: this.props.location.state.id});
     }
     const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
-    //console.log(loginInfo.data.employeeId);
-    this.setState({iframeHeight: document.documentElement.clientHeight - 130, employeeId: loginInfo.data.employeeId});
+    this.setState({
+      iframeHeight: document.documentElement.clientHeight - 130,
+      employeeId: loginInfo.data.employeeId,
+      merchantCode: loginInfo.data.merchantCode
+    });
+
   }
   render() {
     const {
       id,
       iframeHeight,
-      employeeId
+      employeeId,
+      merchantCode
     } = this.state;
+    console.log(this.state);
     return (
       <div className={style.mypromotion}>
         <div className={style.content}>
-          <iframe className={style.iframe} src={`http://testadx.liantuo.com/fshstatic/#/?key=${id}}&type=ltt&employeeId=${employeeId}`} height={iframeHeight}></iframe>
+          <iframe className={style.iframe} src={`http://testadx.liantuo.com/fshstatic/#/?merchantCode=${merchantCode}&id=${id}&ltt=true&createBy=${employeeId}`} height={iframeHeight}></iframe>
         </div>
       </div>
     );

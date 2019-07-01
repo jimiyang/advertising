@@ -49,6 +49,7 @@ class MaterialList extends Component{
       ...search
     };
     window.api.baseInstance('ad/article/list', params).then(rs => {
+      console.log(rs);
       const p = Object.assign(pagination, {total: rs.data.totalNum});
       this.setState({materiaData: rs.data.items, pagination: p});
     }).catch(err => {
@@ -126,7 +127,7 @@ class MaterialList extends Component{
         key: 'title',
         render: (record) => (
           <div className={style.titleinfo}>
-            <img src={record.contentSourceUrl} />
+            <img src={record.thumbMediaUrl} />
             <div className="g-tl">
               {record.title}
               <p>{window.common.getDate(record.createDate)}</p>

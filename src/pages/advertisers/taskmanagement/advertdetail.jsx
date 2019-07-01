@@ -73,9 +73,9 @@ class AdvertDetail extends Component{
   //初始化数据详情
   initForm = (id) => {
     window.api.baseInstance('api/ad/mission/getById', {id}).then(rs => {
+      console.log(rs);
       if (!rs.data) return false;
       const form = Object.assign(this.state.form, rs.data);
-      console.log(form);
       const selmediaValData = this.initLabel('media', form.adCampaign.targetMediaCategory);
       const selproviceValData = this.initLabel('province', form.adCampaign.targetArea);
       const params = Object.assign(this.state.params, {audit_remark: form.adMissionOrder.auditRemark});
@@ -171,7 +171,7 @@ class AdvertDetail extends Component{
             广告位置：<div>{window.common.advertLocal[form.adMissionOrder.appArticlePosition]}</div>
           </li>
           <li>
-            订单状态：<div>{window.common.orderStatus[Number(form.adMissionOrder.missionStatus) - 10]}</div>
+            任务状态：<div>{window.common.orderStatus[Number(form.adMissionOrder.missionStatus) - 10]}</div>
           </li>
           <li>
             订单审核意见：<div  className={style.textarea}>{form.adMissionOrder.auditRemark}</div>
@@ -189,7 +189,7 @@ class AdvertDetail extends Component{
             活动名称：<div>{form.adCampaign.campaignName}</div>
           </li>
           <li>
-            活动状态：<div>{window.common.postStatus[Number(form.adCampaign.postStatus) - 23]}</div>
+            活动状态：<div>{window.common.postStatus[Number(form.adCampaign.postStatus) - 20]}</div>
           </li>
           <li>
             活动审核意见：<div className={style.textarea}>{form.adCampaign.auditRemark}</div>
@@ -206,8 +206,8 @@ class AdvertDetail extends Component{
                   <span className={style.stitle}>男女比例-{window.common.targetGender[Number(form.adCampaign.targetGender)]}</span>
                 </li>
                 <li>
-                  <span className={style.stitle}>选择行业-{form.adCampaign.targetMediaCategory === "" ? '不限(默认)' : '自定义'}</span>
-                  <div className={`${style.tags} ${form.adCampaign.targetMediaCategory === "" ? 'hide' : null}`}>
+                  <span className={style.stitle}>选择行业-{form.adCampaign.targetMediaCategory === '[]' ? '不限(默认)' : '自定义'}</span>
+                  <div className={`${style.tags} ${form.adCampaign.targetMediaCategory === '[]' ? 'hide' : null}`}>
                     {
                       mediaTypeLabel.map((item, index) => (
                         <label key={index} className={Number(item.value) === selmediaValData[index] ? style.active : null}>{item.label}</label>
@@ -216,8 +216,8 @@ class AdvertDetail extends Component{
                   </div>
                 </li>
                 <li>
-                  <span className={style.stitle}>选择地域-{form.adCampaign.targetArea === "" ? '不限(默认)' : '自定义'}</span>
-                  <div className={`${style.tags} ${form.adCampaign.targetArea === "" ? 'hide' : null}`}>
+                  <span className={style.stitle}>选择地域-{form.adCampaign.targetArea === '[]' ? '不限(默认)' : '自定义'}</span>
+                  <div className={`${style.tags} ${form.adCampaign.targetArea === '[]' ? 'hide' : null}`}>
                     {
                       provinceTypeType.map((item, index) => (
                         <label key={index} className={Number(item.value) === selproviceValData[index] ? style.active : null}>{item.label}</label>

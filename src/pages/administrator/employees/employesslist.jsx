@@ -51,7 +51,6 @@ class EmployessList extends Component{
       operatorLoginName,
       ...search
     };
-    console.log(params);
     window.api.baseInstance('api/employee/list', params).then(rs => {
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({employessData: rs.data, pagination: p});
@@ -101,7 +100,15 @@ class EmployessList extends Component{
     this.loadList();
   }
   clearEvent = () => {
-    console.log('clear');
+    let search = this.state.search;
+    search = Object.assign(
+      search, {
+        name: null,
+        loginName: null,
+        status: null
+      }
+    );
+    this.setState({search});
   }
   addEvent = (type, item) => {
     let addForm = this.state.addForm;
@@ -199,9 +206,7 @@ class EmployessList extends Component{
     });
   }
   closeEvent = () => {
-    this.setState({
-      isAddVisible: false
-    })
+    this.setState({isAddVisible: false});
   }
   render() {
     const {
@@ -209,7 +214,8 @@ class EmployessList extends Component{
       employessData,
       isAddVisible,
       type,
-      addForm
+      addForm,
+      search
     } = this.state;
     const columns = [
       {
@@ -287,15 +293,15 @@ class EmployessList extends Component{
           </li>
           <li>
             状态
-            <Select defaultValue="" className="ml10" onChange={this.changeFormEvent.bind(this, 'status')}>
-              <Option value="">请选择</Option>
+            <Select value={search.status} className="ml10" onChange={this.changeFormEvent.bind(this, 'status')}>
+              <Option value={null}>请选择</Option>
               <Option value={0}>停用</Option>
               <Option value={1}>启用</Option>
             </Select>
           </li>
           <li>
             <Button type="primary" onClick={this.searchEvent.bind(this)}>查询</Button>
-            <Button className="ml10" onClick={this.clearEvent.bind(this)}>清空</Button>
+            <Button className="ml10" onClick={this.clearEvent.bind(this)}>重置</Button>
           </li>
         </ul>
         <Table

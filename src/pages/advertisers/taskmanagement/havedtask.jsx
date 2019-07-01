@@ -76,19 +76,26 @@ class HavedTask extends Component{
   changeFormEvent = (type, e, value2) => {
     let search = this.state.search;
     let obj = {};
-    switch(typeof e) {
-      case 'object':
-        if (type === 'dateStart' || type === 'dateEnd') {
-          obj = {[type]: value2};
-        } else{
-          obj = {[type]: e.target.value};
-        }
+    switch(type) {
+      case 'dateStart':
+        obj = {[type]: value2};
         break;
-      case 'number':
+      case 'dateEnd':
+        obj = {[type]: value2};
+        break;
+      case 'missionStatus':
         obj = {[type]: e};
+        break;
+      case 'appArticlePosition':
+        obj = {[type]: e};
+        break;
+      case 'campaignName':
+        obj = {[type]: e.target.value};
+        break;
+      case 'missionId':
+        obj = {[type]: e.target.value};
         break;
       default:
-        obj = {[type]: e};
         break;
     }
     search = Object.assign(search, obj);

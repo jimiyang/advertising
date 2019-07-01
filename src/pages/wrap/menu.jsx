@@ -28,7 +28,7 @@ class MenuApp extends Component {
             {
               id: 3,
               name: '已接单的任务',
-              ico: 'account-book',
+              ico: 'notification',
               children: [
                 {id: 30, name: '已接单任务', url: '/main/havedtask'}
               ]
@@ -46,7 +46,7 @@ class MenuApp extends Component {
             {
               id: 5,
               name: '接单赚钱',
-              ico: 'money-collect',
+              ico: 'property-safety',
               children: [
                 //{id: 50, name: '我授权的公众号', url: '/main/pubaccount'},
                 {id: 51, name: '可接任务', url: '/main/myorder'},
@@ -56,7 +56,7 @@ class MenuApp extends Component {
             {
               id: 40,
               name: '我的收益',
-              ico: 'money-collect',
+              ico: 'red-envelope',
               children: [
                 {id: 401, name: '结算记录', url: '/main/arningslist'}
               ]
@@ -66,21 +66,21 @@ class MenuApp extends Component {
             {
               id: 6,
               name: '员工管理',
-              ico: 'money-collect',
+              ico: 'contacts',
               url: '/main/employesslist',
               children: []    
             },
             {
               id: 7,
               name: '广告主管理',
-              ico: 'money-collect',
+              ico: 'container',
               url: '/main/adlist',
               children: []    
             },
             {
               id: 8,
               name: '流量主管理',
-              ico: 'money-collect',
+              ico: 'area-chart',
               url: '/main/flowlist',
               children: []    
             },
@@ -94,23 +94,30 @@ class MenuApp extends Component {
             {
               id: 10,
               name: '转账充值审核',
-              ico: 'money-collect',
+              ico: 'security-scan',
               url: '/main/transferlist',
               children: []    
             },
             {
               id: 11,
               name: '信息管理 ',
-              ico: 'money-collect',
+              ico: 'info-circle',
               children: [
                 {id: 111, name: '活动管理', url: '/main/activitylist'},
                 {id: 112, name: '任务管理', url: '/main/tasklist'} 
               ]    
             },
             {
+              id: 13,
+              name: '活动结算审核',
+              ico: 'strikethrough',
+              url: '/main/activitysettlement',
+              children: []
+            },
+            {
               id: 12,
               name: '消息发布 ',
-              ico: 'money-collect',
+              ico: 'message',
               url: '/main/msglist',
               children: []    
             }

@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {DatePicker, Select, Input, Button, Table, message} from 'antd';
 import Redirect from 'umi/redirect';
 import style from '../style.less';
-import Link from 'umi/link';
+import moment from 'moment';
 const Option = Select.Option;
 class TaskList extends Component{
   constructor(props) {
@@ -13,7 +13,7 @@ class TaskList extends Component{
       search: {
         dateStart: null,
         dateEnd: null,
-        postStatus: null,
+        missionStatus: null,
         campaignName: null
       },
       pagination: {
@@ -44,7 +44,6 @@ class TaskList extends Component{
     ...search
    };
    window.api.baseInstance('api/ad/mission/listallMission', params).then(rs => {
-      console.log(rs);
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({activityData: rs.data, pagination: p});
    }).catch(err => {
@@ -78,7 +77,7 @@ class TaskList extends Component{
       case 'dateEnd':
         obj = {[type]: value};
         break;
-      case 'postStatus':
+      case 'missionStatus':
         obj = {[type]: e};
         break;
       case 'campaignName':
@@ -93,6 +92,19 @@ class TaskList extends Component{
   }
   searchEvent = () => {
     this.loadList();
+  }
+  clearEvent = () => {
+    let search = this.state.search;
+    search = Object.assign(
+      search,
+      {
+        dateStart: null,
+        dateEnd: null,
+        missionStatus: null,
+        campaignName: null
+      }
+    );
+    this.setState({search});
   }
   render() {
     const {
@@ -184,7 +196,7 @@ class TaskList extends Component{
         dataIndex: 'missionRealReadCnt',
         width: 200,
         render: (record) => (
-          <span>{window.common.formatNumber(record)}</span>
+          <span>{record === undefined ? 0 : window.common.formatNumber(record)}{record}</span>
         )
       },
       {
@@ -230,13 +242,13 @@ class TaskList extends Component{
         </div>
         <ul className={style.search}>
           <li>
-            活动时间
-            <DatePicker className="ml10" format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
-            <DatePicker className="ml10" format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateEnd')} />
+            任务时间
+            <DatePicker className="ml10" value={search.dateStart === null ? null : moment(search.dateStart)} format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
+            <DatePicker className="ml10" value={search.dateEnd === null ? null : moment(search.dateEnd)} format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateEnd')} />
           </li>
           <li>
-            活动状态
-            <Select className="ml10" defaultValue={search.postStatus} onChange={this.changeFormEvent.bind(this, 'postStatus')}>
+            任务状态
+            <Select className="ml10" value={search.missionStatus} onChange={this.changeFormEvent.bind(this, 'missionStatus')}>
               <Option value={null}>请选择</Option>
               {
                 window.common.orderStatus.map((item, index) => (
@@ -251,6 +263,7 @@ class TaskList extends Component{
           </li>
           <li>
             <Button type="primary" onClick={this.searchEvent.bind(this)}>查询</Button>
+            <Button className="ml10" onClick={this.clearEvent.bind(this)}>重置</Button>
           </li>
         </ul>
         <Table

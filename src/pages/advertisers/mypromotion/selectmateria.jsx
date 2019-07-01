@@ -136,7 +136,7 @@ class SelectMateria extends Component{
         key: 'title',
         render: (record) => (
           <div className={style.titleinfo}>
-            <img src={record.contentSourceUrl} />
+            <img src={record.thumbMediaUrl} />
             <div className="g-tl">
               {record.title}
               <p>{record.digest}</p>

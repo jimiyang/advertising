@@ -147,6 +147,7 @@ class MyOrder extends Component{
       search,
       appsData
     } = this.state;
+    console.log(orderData);
     if (redirect) return (<Redirect to="/relogin" />);
     return(
       <div className={style.pubAccount}>
@@ -189,7 +190,7 @@ class MyOrder extends Component{
                   <dd key={index}>
                     <div className={style.title}>
                       <img src={item.impImage} />
-                      <Link className="blue-color" to="/">{item.campaignName}</Link>
+                      <h1 className="blue-color">{item.campaignName}</h1>
                     </div>
                     <p>阅读单价：{item.unitPrice}元 / 次阅读</p>
                     <p>活动时间：{window.common.getDate(item.dateStart, false)}-{window.common.getDate(item.dateEnd, false)}</p>

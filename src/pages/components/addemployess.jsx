@@ -34,7 +34,7 @@ class AddEmployess extends Component{
       <div>
         {
           type === 'add' ?
-            <ul className={style.add}>
+            <ul className={style.addEm}>
               <li>
                 <em className={style.name}>姓名：</em>
                 <Input placeholder="请输入姓名" onChange={this.changeValueEvent.bind(this, 'name')} value={addForm.name} />
@@ -53,7 +53,7 @@ class AddEmployess extends Component{
               </li>
             </ul>
             :
-            <ul className={style.add}>
+            <ul className={style.addEm}>
               <li>
                 <em className={style.name}>姓名：</em>
                 <Input placeholder="请输入姓名" onChange={this.changeValueEvent.bind(this, 'name')} value={addForm.name} />
@@ -64,7 +64,7 @@ class AddEmployess extends Component{
               </li>
               <li>
                 <em className={style.name}>登录名：</em>
-                <div className="pl20">{addForm.loginName}</div>
+                <div>{addForm.loginName}</div>
               </li>
             </ul>
         }

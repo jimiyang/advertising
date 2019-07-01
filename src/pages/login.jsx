@@ -23,7 +23,8 @@ class Login extends Component {
           data: {
             employeeId: rs.data.employeeId,
             loginName: rs.data.loginName,
-            merchantType: rs.data.merchantType
+            merchantType: rs.data.merchantType,
+            merchantCode: rs.data.merchantCode
           }
         };
         window.localStorage.setItem('login_info', JSON.stringify(params));

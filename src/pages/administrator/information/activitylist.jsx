@@ -3,6 +3,7 @@ import {DatePicker, Select, Input, Button, Table, message, Popconfirm} from 'ant
 import Redirect from 'umi/redirect';
 import style from '../style.less';
 import Link from 'umi/link';
+import moment from 'moment';
 const Option = Select.Option;
 class ActivityList extends Component{
   constructor(props) {
@@ -102,6 +103,19 @@ class ActivityList extends Component{
   }
   searchEvent = () => {
     this.loadList();
+  }
+  clearEvent = () => {
+    let search = this.state.search;
+    search = Object.assign(
+      search,
+      {
+        dateStart: null,
+        dateEnd: null,
+        postStatus: null,
+        campaignName: null
+      }
+    );
+    this.setState({search});
   }
   //取消
   cancelActivityEvent = (item) => {
@@ -224,12 +238,12 @@ class ActivityList extends Component{
         <ul className={style.search}>
           <li>
             活动时间
-            <DatePicker className="ml10" format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
-            <DatePicker className="ml10" format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateEnd')} />
+            <DatePicker className="ml10" value={search.dateStart === null ? null : moment(search.dateStart)} format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
+            <DatePicker className="ml10" value={search.dateEnd === null ? null : moment(search.dateEnd)} format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateEnd')} />
           </li>
           <li>
             活动状态
-            <Select className="ml10" defaultValue={search.postStatus} onChange={this.changeFormEvent.bind(this, 'postStatus')}>
+            <Select className="ml10" value={search.postStatus} onChange={this.changeFormEvent.bind(this, 'postStatus')}>
               <Option value={null}>请选择</Option>
               {
                 window.common.postStatus.map((item, index) => (
@@ -244,6 +258,7 @@ class ActivityList extends Component{
           </li>
           <li>
             <Button type="primary" onClick={this.searchEvent.bind(this)}>查询</Button>
+            <Button className="ml10" onClick={this.clearEvent.bind(this)}>查询</Button>
           </li>
         </ul>
         <Table

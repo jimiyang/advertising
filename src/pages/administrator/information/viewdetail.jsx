@@ -164,16 +164,14 @@ class ViewDetail extends Component {
             <li>所属广告主：<div>{form.advertiserName}</div></li>
             <li>活动名称：<div>{form.campaignName}</div></li>
             <li>活动日期：<div>{window.common.getDate(form.dateStart, false)} 至 {window.common.getDate(form.dateEnd, false)}</div></li>
-            <li>推广时间段限定：<div>{window.common.getDate(form.dateStart, true).split(' ')[1]} - {window.common.getDate(form.dateEnd, true).split(' ')[1]}</div></li>
-            <li>活动形式：<div>{window.common.getAdType(form.adType)}</div></li>
             <li>
                 条件设置：
                 <div>
                   <ul>
                     <li><span className={style.stitle}>男女比例-{window.common.targetGender[Number(form.adCampaign.targetGender)]}</span></li>
                     <li>
-                      <span className={style.stitle}>选择行业-{form.targetMediaCategory === undefined ? '不限(默认)' : '自定义'}</span>
-                      <div className={`${style.tags} ${form.targetMediaCategory === undefined ? 'hide' : null}`}>
+                      <span className={style.stitle}>选择行业-{form.targetMediaCategory === '[]' ? '不限(默认)' : '自定义'}</span>
+                      <div className={`${style.tags} ${form.targetMediaCategory === '[]' ? 'hide' : null}`}>
                         {
                           mediaTypeLabel.map((item, index) => (
                             <label key={index} className={Number(item.value) === selmediaValData[index] ? style.active : null}>{item.label}</label>
@@ -196,11 +194,17 @@ class ViewDetail extends Component {
             </li>
             <li>计费方式：<div>{form.billingType === 0 ? 'CPC' : '万粉'}</div></li>
             <li>活动素材：
-              <div className={style.coverimg}>
-                <p>展示封面标题，点击可查看详情</p>
-                <img src={form.impImage} />
-                <Link to="/">{form.campaignName}</Link>
-              </div>
+              {
+                form.postContent === undefined ? <div className={style.coverimg}><p>暂未绑定活动素材</p></div>
+                :
+                <div className={style.coverimg}>
+                  <p>展示封面标题，点击可查看详情</p>
+                  <a href={`${window.common.articleUrl}?id=${form.postContent}`} target="_blank">
+                    <img src={form.impImage} />
+                    <span>{form.extrendJson}</span>
+                  </a>
+                </div>
+              }
             </li>
             <li>阅读单价：<div>{form.unitPrice}</div></li>
             <li>活动预算：<div>{form.postAmtTotal}元</div></li>

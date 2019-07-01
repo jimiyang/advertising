@@ -55,6 +55,7 @@ class Receivead extends Component{
   }
   initForm = (campaignId) => {
     window.api.baseInstance('flow/campaign/detail', {campaignId}).then(rs => {
+      console.log(rs);
       const form = Object.assign(this.state.form, rs.data.campaign);
       const selmediaValData = this.initLabel('media', form.targetMediaCategory);
       const selprovinceValData = this.initLabel('province', form.targetArea);
@@ -231,13 +232,17 @@ class Receivead extends Component{
             </li>
             <li>
               <em className={style.name}>文章预览：</em>
-              <div className={style.coverimg}>
-                <p>展示封面标题，点击可查看详情</p>
-                <a href={`${window.common.articleUrl}?id=${form.postContent}&index=2`} target="_blank">
-                  <img src={form.impImage} />
-                  <span>{form.extrendJson}</span>
-                </a>
-              </div>
+              {
+                form.postContent === undefined ? <div><p>暂未绑定活动素材</p></div>
+                :
+                <div className={style.coverimg}>
+                  <p>展示封面标题，点击可查看详情</p>
+                  <a href={`${window.common.articleUrl}?id=${form.postContent}`} target="_blank">
+                    <img src={form.impImage} />
+                    <span>{form.extrendJson}</span>
+                  </a>
+                </div>
+              }
             </li>
             <li>
             <em className={style.name}>活动名称：</em><div>{form.campaignName}</div>

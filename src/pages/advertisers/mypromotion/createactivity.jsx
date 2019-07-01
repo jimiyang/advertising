@@ -239,16 +239,14 @@ class CreateAdvertity extends Component {
                         disabledDate={this.disabledEndDate}
                         onOpenChange={this.handleEndOpenChange}
                         className="mr10"
-                        showTime
-                        format="YYYY-MM-DD HH:mm:ss"
+                        format="YYYY-MM-DD"
                         placeholder="请输入开始时间"
                         onChange={this.changeFormEvent.bind(this, 'dateStart')}
                       />至<DatePicker
                         disabledDate={this.disabledEndDate}
                         onOpenChange={this.handleEndOpenChange}
                         className="ml10"
-                        showTime
-                        format="YYYY-MM-DD HH:mm:ss"
+                        format="YYYY-MM-DD"
                         placeholder="请输入结束时间"
                         onChange={this.changeFormEvent.bind(this, 'dateEnd')}
                       /></div>)

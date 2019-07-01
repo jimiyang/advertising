@@ -173,6 +173,8 @@ class EditAdvertity extends Component {
         } else {
           form.targetArea = typeof area === 'string' ? JSON.parse(area) : area;
         }
+        form.dateStart = window.common.getDate(form.dateStart);
+        form.dateEnd = window.common.getDate(form.dateEnd);
         form = Object.assign(form, values);
         const dateLen = window.common.dateDiff(form.dateStart, form.dateEnd);
         if (dateLen > 7) {
@@ -303,8 +305,7 @@ class EditAdvertity extends Component {
                         disabledDate={this.disabledEndDate}
                         onOpenChange={this.handleEndOpenChange}
                         className="mr10"
-                        showTime
-                        format="YYYY-MM-DD HH:mm:ss"
+                        format="YYYY-MM-DD"
                         placeholder="请输入开始时间"
                         value={moment(form.dateStart)}
                         onChange={this.changeFormEvent.bind(this, 'dateStart')}
@@ -312,8 +313,7 @@ class EditAdvertity extends Component {
                         disabledDate={this.disabledEndDate}
                         onOpenChange={this.handleEndOpenChange}
                         className="ml10"
-                        showTime
-                        format="YYYY-MM-DD HH:mm:ss"
+                        format="YYYY-MM-DD"
                         placeholder="请输入结束时间"
                         value={moment(form.dateEnd)}
                         onChange={this.changeFormEvent.bind(this, 'dateEnd')}

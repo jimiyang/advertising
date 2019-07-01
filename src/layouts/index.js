@@ -43,6 +43,7 @@ class BasicLayout extends Component {
     } = this.state;
     return (
       <div className="section">
+        <meta name="referrer" content="never" />
         { window.localStorage.getItem('login_info') === null  ? 
           <Login /> :
           <Layout>

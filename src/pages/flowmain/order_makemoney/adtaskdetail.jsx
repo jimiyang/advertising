@@ -127,8 +127,8 @@ class AdTaskDetail extends Component{
           <dd>
             <em className={style.name}>行业标签</em>
             <div>
-              <span className={style.stitle}>选择行业-{form.targetMediaCategory === "" ? '不限(默认)' : '自定义'}</span>
-              <div className={`${style.tags} ${form.targetMediaCategory === "" ? 'hide' : null}`}>
+              <span className={style.stitle}>选择行业-{form.targetMediaCategory === '[]' ? '不限(默认)' : '自定义'}</span>
+              <div className={`${style.tags} ${form.targetMediaCategory === '[]' ? 'hide' : null}`}>
                 {
                   mediaTypeLabel.map((item, index) => (
                     <label key={index} className={Number(item.value) === selmediaValData[index] ? style.active : null}>{item.label}</label>
@@ -144,8 +144,8 @@ class AdTaskDetail extends Component{
           <dd>
             <em className={style.name}>所在区域</em>
             <div>
-              <span className={style.stitle}>选择行业-{form.targetArea === "" ? '不限(默认)' : '自定义'}</span>
-              <div className={`${style.tags} ${form.targetArea === "" ? 'hide' : null}`}>
+              <span className={style.stitle}>选择行业-{form.targetArea === '[]' ? '不限(默认)' : '自定义'}</span>
+              <div className={`${style.tags} ${form.targetArea === '[]' ? 'hide' : null}`}>
                 {
                   provinceLabelType.map((item, index) => (
                     <label key={index} className={Number(item.value) === selproviceValData[index] ? style.active : null}>{item.label}</label>

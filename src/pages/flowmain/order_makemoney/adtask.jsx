@@ -12,6 +12,7 @@ class AdTask extends Component{
       loginName: '',
       pubAccountData: [],
       appsData: [], //公众号列表
+      status: null,
       search: {
         appNickName: null,
         missionStatus: null
@@ -84,14 +85,17 @@ class AdTask extends Component{
   }
   changeFormEvent = (type, e) => {
     let search = this.state.search;
-    console.log(e);
-    const value = type === 'missionStatus' ? (Number(e) + 10) : e;
-    //console.log(value);
+    let value;
+    if (type === 'missionStatus') {
+      value = Number(e) + 10;
+      this.setState({status: e});
+    } else {
+      value = e;
+    }
     search = Object.assign(search, {[type]: value});
     this.setState({search});
   }
   searchEvent = () => {
-    console.log(this.state.search);
     this.loadList();
   }
   clearEvent = () => {
@@ -111,7 +115,8 @@ class AdTask extends Component{
       pubAccountData,
       appsData,
       search,
-      pagination
+      pagination,
+      status
     } = this.state;
     const columns = [
       {
@@ -218,7 +223,7 @@ class AdTask extends Component{
           </li>
           <li>
             接单状态
-            <Select value={search.missionStatus} className="w180 ml10" onChange={this.changeFormEvent.bind(this, 'missionStatus')}>
+            <Select value={status} className="w180 ml10" onChange={this.changeFormEvent.bind(this, 'missionStatus')}>
               <Option value={null}>请选择</Option>
               {
                 window.common.orderStatus.map((item, index) => (
