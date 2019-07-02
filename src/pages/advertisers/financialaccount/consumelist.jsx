@@ -82,21 +82,20 @@ class ConsumeList extends Component{
   changeFormEvent = (type, e, value) => {
     let search = this.state.search;
     let obj = {};
-    switch (typeof e) {
-      case 'object':
-        if (type === 'dateStart' || type === 'dateEnd') {
-          obj = {[type]: value};
-        } else {
-          obj = {[type]: e.target.value};
-        }
+    switch (type) {
+      case 'dateStart':
+        obj = {[type]: value};
         break;
-      case 'number':
+      case 'dateEnd':
+        obj = {[type]: value};
+        break;
+      case 'orderNo':
+        obj = {[type]: e.target.value};
+        break;
+      case 'orderStatus':
         obj = {[type]: e};
         break;
-      default:
-        obj = {[type]: e};
-        break;
-    };
+    }
     search = Object.assign(search, obj);
     this.setState({search});
   }
@@ -153,7 +152,10 @@ class ConsumeList extends Component{
       {
         title: '状态',
         key: 'orderStatus',
-        dataIndex: 'orderStatus'
+        dataIndex: 'orderStatus',
+        render: (record) => (
+          <span>{window.common.payOrderStatus[record - 10]}</span>
+        )
       }
     ];
     if (redirect) return (<Redirect to="/relogin" />);

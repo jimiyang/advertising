@@ -46,7 +46,6 @@ class ActivityDetail extends Component{
   }
   initForm = (id) => {
     window.api.baseInstance('api/ad/campaign/getById', {id}).then(rs => {
-      console.log(rs);
       const selmediaValData = this.initLabel('media', rs.data.targetMediaCategory);
       const selproviceValData = this.initLabel('province', rs.data.targetArea);
       this.setState({form: rs.data, selmediaValData, selproviceValData});
@@ -103,7 +102,6 @@ class ActivityDetail extends Component{
   render() {
     const {form, mediaTypeLabel, provinceTypeType, selmediaValData, selproviceValData, redirect} = this.state;
     if (redirect) return (<Redirect to="/relogin" />);
-    console.log(form);
     return (
       <div className={style.mypromotion}>
         <h1 className="nav-title">我的推广活动 > 活动详情</h1>
@@ -165,7 +163,7 @@ class ActivityDetail extends Component{
               <li>活动预算：<div>{form.postAmtTotal}元</div></li>
               <li>
                 活动效果：
-                <div>预计您的广告将实现<em className="red-color m5">{form.availableCnt}</em>次有效阅读</div>
+                <div>预计您的广告将实现<em className="red-color m5">{window.common.formatNumber(Math.round(form.postAmtTotal / form.unitPrice))}</em>次有效阅读</div>
               </li>
               <li className="mt30"><Button onClick={this.goBackEvent.bind(this)}>返回</Button></li>
             </ul>

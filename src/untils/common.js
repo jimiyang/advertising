@@ -12,6 +12,7 @@ const utils =  {
   targetGender: ['不限', '男粉', '女粉', '男大于女', '女大于男', '男女各半'],
   //计费方式：
   billingTypesData: ['CPM', 'CPC', 'CPA', '万粉'],
+  payOrderStatus: ['未支付', '支付中', '支付完成', '支付失败'],
   articleUrl: 'http://testadx.liantuo.com/fshstatic/view.html', //文章预览地址
   //删除数组中为空的元素
   removeEmptyArrayEle(arr) {    

@@ -7,33 +7,39 @@ class Editor extends Component {
       id: null,
       iframeHeight: 800,
       employeeId: null,
-      merchantCode: null
+      merchantCode: null,
+      type: 'materiallist',
+      loginName: null,
+      activityId: null
     };
   }
   componentWillMount() {
-    if (this.props.location.state) {
-      this.setState({id: this.props.location.state.id});
+    const state = this.props.location.state;
+    if (state) {
+      this.setState({id: state.id, type: state.type, activityId: state.activityId});
     }
     const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
     this.setState({
       iframeHeight: document.documentElement.clientHeight - 130,
       employeeId: loginInfo.data.employeeId,
-      merchantCode: loginInfo.data.merchantCode
+      merchantCode: loginInfo.data.merchantCode,
+      loginName: loginInfo.data.loginName
     });
-
   }
   render() {
     const {
       id,
       iframeHeight,
       employeeId,
-      merchantCode
+      merchantCode,
+      type,
+      loginName,
+      activityId
     } = this.state;
-    console.log(this.state);
     return (
       <div className={style.mypromotion}>
         <div className={style.content}>
-          <iframe className={style.iframe} src={`http://testadx.liantuo.com/fshstatic/#/?merchantCode=${merchantCode}&id=${id}&ltt=true&createBy=${employeeId}`} height={iframeHeight}></iframe>
+          <iframe className={style.iframe} src={`http://testadx.liantuo.com/fshstatic/#/?merchantCode=${merchantCode}&id=${id}&ltt=true&createBy=${employeeId}&lttType=${type}&loginName=${loginName}&activityId=${activityId}`} height={iframeHeight}></iframe>
         </div>
       </div>
     );

@@ -49,6 +49,7 @@ class HavedTask extends Component{
       ...search
     };
     window.api.baseInstance('api/ad/mission/list', params).then(rs => {
+      console.log(rs);
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({orderData: rs.data, pagination: p});
     }).catch(err => {
@@ -106,24 +107,6 @@ class HavedTask extends Component{
     console.log(this.state.search);
     this.loadList();
   }
-  //结算
-  settleEvent = (id) => {
-    const params = {
-      missionId: id,
-      loginName: this.state.loginName
-    };
-    window.api.baseInstance('flow/mission/settle', params).then(rs => {
-      message.success(rs.message);
-      this.loadList();
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
-    });
-  }
   clearEvent = () => {
     let search = this.state.search;
     search = Object.assign(
@@ -151,12 +134,6 @@ class HavedTask extends Component{
         key: 'id',
         dataIndex: 'id',
         width: 100
-      },
-      {
-        title: '任务号',
-        key: 'missionId',
-        dataIndex: 'missionId',
-        width: 200
       },
       {
         title: '活动时间',
@@ -192,12 +169,14 @@ class HavedTask extends Component{
         )
       },
       {
-        title: (<div>预计发文时间<p>点&段</p></div>),
+        title: (<div>预计发文时间<p>实际发文时间</p></div>),
         key: 'planPostArticleTime',
-        dataIndex: 'planPostArticleTime',
         width: 200,
         render: (record) => (
-          <span>{record}</span>
+          <div>
+            <p>{window.common.getDate(record.planPostArticleTime, false)}</p>
+            <p>{record.realPostArticleTime === undefined ? '--' : window.common.getDate(record.realPostArticleTime, false)}</p>
+          </div>
         )
       },
       {
@@ -225,24 +204,24 @@ class HavedTask extends Component{
         )
       },
       {
+        title: '预期支出金额',
+        key: 'adEstimateCost',
+        width: 200,
+        render: (record) => (
+          <span>{(record.missionReadCnt * record.adUnitPrice).toFixed(2)}</span>
+        )
+      },
+      {
         title: '实际阅读',
         key: 'missionRealReadCnt',
         dataIndex: 'missionRealReadCnt',
         width: 200
       },
       {
-        title: '预期支出金额',
-        key: 'adEstimateCost',
-        dataIndex: 'adEstimateCost',
+        title: '结算金额',
+        key: 'price',
+        dataIndex: 'price',
         width: 200
-      },
-      {
-        title: '预估支出金额',
-        key: 'C',
-        width: 200,
-        render: (record) => (
-          <span>{record.missionRealReadCnt !== undefined &&  record.adUnitPrice !== undefined ? record.missionRealReadCnt * record.adUnitPrice : null}</span>
-        )
       },
       {
         title: '任务状态',
@@ -263,17 +242,6 @@ class HavedTask extends Component{
             {
               record.missionStatus === 10 ? 
                 <Link className="blue-color ml10" to={{pathname: '/main/advertdetail', state: {id: record.id, type: 1}}}>审核接单</Link> : null
-            }
-            {
-              record.missionStatus === 13 ?
-                <Popconfirm
-                  title="是否要进行结算?"
-                  onConfirm={this.settleEvent.bind(this, record.id)}
-                  okText="是"
-                  cancelText="否"
-                >
-                <span>结算</span>
-              </Popconfirm> : null
             }
           </div>
         )

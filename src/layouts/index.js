@@ -1,7 +1,8 @@
 import styles from './index.css';
 import React, {Component} from 'react';
 import router from 'umi/router';
-import {Layout} from 'antd';
+import Redirect from 'umi/redirect';
+import {Layout, message} from 'antd';
 import common from '../untils/common';
 import Menu from  '../pages/wrap/menu'; //左侧菜单
 import Header from '../pages/wrap/header'; //头部
@@ -28,10 +29,22 @@ class BasicLayout extends Component {
           loginName: query.loginName,
         }
       };
-      this.setState({type: query.type});
-      window.localStorage.setItem('login_info', JSON.stringify(params));
+      window.api.baseInstance('/checkLogin', {loginName: query.loginName}).then(rs => {
+        if (rs.success === true) {
+          this.setState({type: query.type});
+          window.localStorage.setItem('login_info', JSON.stringify(params));
+        }
+      }).catch(err => {
+        if (err.code === 100000) {
+          this.setState({redirect: true});
+          window.localStorage.removeItem('login_info');
+        } else {
+          message.error(err.message);
+        }
+      });
     } else {
-      //console.log(window.localStorage.getItem('login_info'));
+      const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
+      if (!loginInfo) return false;
     }
   }
   handleClick = (pane) => {
@@ -39,8 +52,10 @@ class BasicLayout extends Component {
   }
   render() {
     const {
-      type
+      type,
+      redirect
     } = this.state;
+    if (redirect) return (<Redirect to="/relogin" />);
     return (
       <div className="section">
         <meta name="referrer" content="never" />

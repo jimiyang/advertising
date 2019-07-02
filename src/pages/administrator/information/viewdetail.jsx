@@ -192,7 +192,7 @@ class ViewDetail extends Component {
                     </ul>
                 </div>
             </li>
-            <li>计费方式：<div>{form.billingType === 0 ? 'CPC' : '万粉'}</div></li>
+            <li>计费方式：<div>{window.common.billingTypesData[form.billingType]}</div></li>
             <li>活动素材：
               {
                 form.postContent === undefined ? <div className={style.coverimg}><p>暂未绑定活动素材</p></div>

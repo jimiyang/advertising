@@ -195,7 +195,7 @@ class Receivead extends Component{
       <div className={style.pubAccount}>
         <ul className={style.receiveAd}>
             <li><em className={style.name}>接单公众号：</em><div>{form.appNickName}</div></li>
-            <li><em className={style.name}>行业标签：</em><div>{window.common.removeEmptyArrayEle(selmediaValData).join('、')}</div></li>
+            <li><em className={style.name}>行业标签：</em><div>{form.targetMediaCategory === '[]' ? '不限(默认)' : window.common.removeEmptyArrayEle(selmediaValData).join('、')}</div></li>
             <li>
               <em className={style.name}>发文位置：</em>
               <div>
@@ -255,8 +255,8 @@ class Receivead extends Component{
             <em className={style.name}>条件设置：</em>
             <div>
               <p>男女比例-{window.common.targetGender[Number(form.targetGender)]}</p>
-              <p>媒体标签-{window.common.removeEmptyArrayEle(selmediaValData).join('、')}</p>
-              <p>所在区域-{window.common.removeEmptyArrayEle(selprovinceValData).join('、')}</p>
+              <p>媒体标签-{form.targetMediaCategory === '[]' ? '不限(默认)' : window.common.removeEmptyArrayEle(selmediaValData).join('、')}</p>
+              <p>所在区域-{form.targetArea === '[]' ? '不限(默认)' : window.common.removeEmptyArrayEle(selprovinceValData).join('、')}</p>
             </div>
             </li>
             <li><em className={style.name}>计费方式：</em><div>{window.common.billingTypesData[form.billingType]}</div></li>

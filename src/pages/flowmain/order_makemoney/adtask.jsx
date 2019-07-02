@@ -14,7 +14,7 @@ class AdTask extends Component{
       appsData: [], //公众号列表
       status: null,
       search: {
-        appNickName: null,
+        appId: null,
         missionStatus: null
       },
       pagination: {
@@ -44,7 +44,6 @@ class AdTask extends Component{
       ...search
     };
     window.api.baseInstance('flow/mission/list', params).then(rs => {
-      console.log(rs);
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({pubAccountData: rs.data, pagination: p});
     }).catch(err => {
@@ -96,6 +95,7 @@ class AdTask extends Component{
     this.setState({search});
   }
   searchEvent = () => {
+    console.log(this.state.search);
     this.loadList();
   }
   clearEvent = () => {
@@ -165,9 +165,8 @@ class AdTask extends Component{
       {
         title: '预计收入',
         key: 'flowEstimateIncome',
-        dataIndex: 'flowEstimateIncome',
         render: (record) => (
-          <span>{record !== undefined ? window.common.formatNumber(record) : null}</span>
+          <span>{record !== undefined ? (record.missionReadCnt * record.flowUnitPrice).toFixed(2) : null}</span>
         )
       },
       {
@@ -211,12 +210,12 @@ class AdTask extends Component{
         <ul className={style.search}>
           <li>
             请选择公众号
-            <Select value={search.appNickName} className="w180 ml10" onChange={this.changeFormEvent.bind(this, 'appNickName')}>
+            <Select value={search.appId} className="w180 ml10" onChange={this.changeFormEvent.bind(this, 'appId')}>
               <Option value={null}>请选择</Option>
               {
                 appsData.length !== 0 ? 
                   appsData.map((item, index) => (
-                    <Option key={index} value={item.appNickName}>{item.appNickName}</Option>
+                    <Option key={index} value={item.appId}>{item.appNickName}</Option>
                   )) : null
               }
             </Select>

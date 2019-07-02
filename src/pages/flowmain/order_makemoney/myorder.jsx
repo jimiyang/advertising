@@ -99,6 +99,7 @@ class MyOrder extends Component{
         obj = {[type]: value.props.value};
         //detailForm = Object.assign(detailForm, {appId: value.props.value, appNickName: value.props.children});
         this.setState({appNickName: value.props.children, appId: value.props.value});
+        this.loadList();
         break;
       default: 
         obj = {[type]: e};
@@ -147,7 +148,6 @@ class MyOrder extends Component{
       search,
       appsData
     } = this.state;
-    console.log(orderData);
     if (redirect) return (<Redirect to="/relogin" />);
     return(
       <div className={style.pubAccount}>

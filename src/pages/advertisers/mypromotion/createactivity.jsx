@@ -112,7 +112,6 @@ class CreateAdvertity extends Component {
         form.targetArea = area === '' ? [] : area;
         form = Object.assign(form, values);
         const dateLen = window.common.dateDiff(form.dateStart, form.dateEnd);
-        console.log(dateLen);
         if (dateLen > 7) {
           message.warning('活动周期最多7天！');
           return false;

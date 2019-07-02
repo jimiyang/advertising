@@ -44,6 +44,7 @@ class SelectMateria extends Component{
   async componentWillMount() {
     const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
     const state = this.props.location.state;
+    console.log(this.props.location);
     if (state) {
       this.setState({type: state.type, id: state.id});
     }
@@ -82,18 +83,18 @@ class SelectMateria extends Component{
     this.setState({form});
   }
   promoteSaveEvent = (status) => {
-    const {loginName, form, id} = this.state;
+    let {loginName, form, id} = this.state;
     if (!form.postContent) {
       message.error('请选择素材');
       return false;
     }
+    id = id === null ? this.props.location.query.activityId : id;
     const params = {
       ...form,
       id,
       loginName,
       postStatus: status, //21提交审核中，20活动草稿
     };
-    //console.log(params);
     window.api.baseInstance('api/ad/campaign/updatePostContentById', params).then(rs => {
       message.success(rs.message);
       router.push('/main/myactivity');
@@ -107,7 +108,13 @@ class SelectMateria extends Component{
     });
   }
   selectEvent = () => {
-    router.push('/main/editor');
+    router.push({
+      pathname: '/main/editor',
+      state: {
+        activityId: this.state.id,
+        type: 'selectmateria'
+      }
+    });
   }
   //上一步
   goPrevEvent = () => {
@@ -149,7 +156,7 @@ class SelectMateria extends Component{
         key: 'createDate',
         dataIndex: 'createDate',
         render: (record) => (
-          <span>{window.common.getDate(record, true)}{}</span>
+          <span>{window.common.getDate(record, true)}</span>
         )
       }
     ];

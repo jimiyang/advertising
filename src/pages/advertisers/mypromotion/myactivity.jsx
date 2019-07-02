@@ -111,19 +111,20 @@ class MyActivity extends Component{
   changeFormEvent = (type, e, value) => {
     let search = this.state.search;
     let obj = {};
-    switch (typeof e) {
-      case 'object':
-        if (type === 'dateStart' || type === 'dateEnd') {
-          obj = {[type]: value};
-        } else{
-          obj = {[type]: e.target.value};
-        }
+    switch (type) {
+      case 'dateStart':
+        obj = {[type]: value};
         break;
-      case 'number':
+      case 'dateEnd':
+        obj = {[type]: value};
+        break;
+      case 'postStatus':
         obj = {[type]: e};
+        break;
+      case 'campaignName':
+        obj = {[type]: e.target.value};
         break;
       default:
-        obj = {[type]: e};
         break;
     }
     search = Object.assign(search, obj);
@@ -278,8 +279,8 @@ class MyActivity extends Component{
           </li>
           <li>
             <label>活动状态</label>
-            <Select placeholder="请选择" value={search.postStatus} className="w180 select" onChange={this.changeFormEvent.bind(this, 'postStatus')}>
-              <Option value={null}>请选择</Option>
+            <Select placeholder="全部" value={search.postStatus} className="w180 select" onChange={this.changeFormEvent.bind(this, 'postStatus')}>
+              <Option value={null}>全部</Option>
               {
                 window.common.postStatus.map((item, index) => (
                   <Option key={index} value={20 + index}>{item}</Option>

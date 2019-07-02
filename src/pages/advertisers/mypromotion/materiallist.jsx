@@ -49,7 +49,6 @@ class MaterialList extends Component{
       ...search
     };
     window.api.baseInstance('ad/article/list', params).then(rs => {
-      console.log(rs);
       const p = Object.assign(pagination, {total: rs.data.totalNum});
       this.setState({materiaData: rs.data.items, pagination: p});
     }).catch(err => {
@@ -110,7 +109,9 @@ class MaterialList extends Component{
     });
   }
   addEvent = () => {
-    router.push('/main/editor');
+    router.push({
+      pathname: '/main/editor'
+    });
   }
   render() {
     const {
@@ -130,17 +131,17 @@ class MaterialList extends Component{
             <img src={record.thumbMediaUrl} />
             <div className="g-tl">
               {record.title}
-              <p>{window.common.getDate(record.createDate)}</p>
+              <p>{record.digest}</p>
             </div>
           </div>
         )
       },
       {
-        title: '文章类型',
-        key: 'articleType',
-        dataIndex: 'articleType',
+        title: '创建时间',
+        key: 'createDate',
+        dataIndex: 'createDate',
         render: (record) => (
-          <span>{articletypeData[record - 1]}</span>
+          <span>{window.common.getDate(record, true)}</span>
         )
       },
       {
@@ -149,7 +150,7 @@ class MaterialList extends Component{
         dataIndex: '',
         render: (record) => (
           <div className="opeartion-items">
-            <Link className="blue-color" to={{pathname: '/main/editor', state: {id: record.id}}}>编辑</Link>
+            <Link className="blue-color" to={{pathname: '/main/editor', state: {id: record.id, type: 'materiallist'}}}>编辑</Link>
             <Popconfirm
               title="是否要删除素材?"
               onConfirm={this.delEvent.bind(this, record.id)}

@@ -73,7 +73,6 @@ class AdvertDetail extends Component{
   //初始化数据详情
   initForm = (id) => {
     window.api.baseInstance('api/ad/mission/getById', {id}).then(rs => {
-      console.log(rs);
       if (!rs.data) return false;
       const form = Object.assign(this.state.form, rs.data);
       const selmediaValData = this.initLabel('media', form.adCampaign.targetMediaCategory);
@@ -248,7 +247,7 @@ class AdvertDetail extends Component{
           </li>
           <li>
             活动效果：
-            <div>预计您的广告将实现<em className="red-color m5">{form.adCampaign.availableCnt}</em>次有效阅读</div>
+            <div>预计您的广告将实现<em className="red-color m5">{window.common.formatNumber(Math.round(form.adCampaign.postAmtTotal / form.adCampaign.unitPrice))}</em>次有效阅读</div>
           </li>
           {
             type === 1 ? <li>审核状态：<div>
