@@ -3,6 +3,10 @@ import {Button, Table, message, Select} from 'antd';
 import Redirect from 'umi/redirect';
 import Link from 'umi/link';
 import style from './style.less';
+import {
+  flowMissionList,
+  listApps
+} from '../../../api/api';
 const Option = Select.Option;
 class AdTask extends Component{
   constructor(props) {
@@ -43,16 +47,9 @@ class AdTask extends Component{
       loginName,
       ...search
     };
-    window.api.baseInstance('flow/mission/list', params).then(rs => {
+    flowMissionList(params).then(rs => {
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({pubAccountData: rs.data, pagination: p});
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   changePage = (page) => {
@@ -70,16 +67,9 @@ class AdTask extends Component{
   }
   //查询所有公众号
   getListApps = (loginName) => {
-    window.api.baseInstance('flow/wechat/listapps', {loginName}).then(rs => {
+    listApps({loginName}).then(rs => {
       const appsData = rs.data === undefined ? [] : rs.data;
       this.setState({appsData});
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   changeFormEvent = (type, e) => {
@@ -95,7 +85,6 @@ class AdTask extends Component{
     this.setState({search});
   }
   searchEvent = () => {
-    console.log(this.state.search);
     this.loadList();
   }
   clearEvent = () => {

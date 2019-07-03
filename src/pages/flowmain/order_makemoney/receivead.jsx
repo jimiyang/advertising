@@ -4,6 +4,11 @@ import style from './style.less';
 import moment from 'moment';
 import Redirect from 'umi/redirect';
 import {isNull} from 'util';
+import {
+  detail,
+  getDictByType,
+  flowMissionAdd
+} from '../../../api/api';
 const Option = Select.Option;
 class Receivead extends Component{
   constructor(props) {
@@ -30,7 +35,7 @@ class Receivead extends Component{
     };
   }
   componentWillMount() {
-    Promise.all([window.api.baseInstance('admin/system/dict/getDictByType', {type: 'mediaType'}), window.api.baseInstance('admin/system/dict/getDictByType', {type: 'provinceType'})]).then(rs => {
+    Promise.all([getDictByType({type: 'mediaType'}), getDictByType({type: 'provinceType'})]).then(rs => {
       this.initForm(this.props.location.state.campaignId);
       let form = this.state.form;
       form = Object.assign(form, this.props.location.state);
@@ -44,29 +49,14 @@ class Receivead extends Component{
         form,
         loginName: loginInfo.data.loginName
       });
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   initForm = (campaignId) => {
-    window.api.baseInstance('flow/campaign/detail', {campaignId}).then(rs => {
-      console.log(rs);
+    detail({campaignId}).then(rs => {
       const form = Object.assign(this.state.form, rs.data.campaign);
       const selmediaValData = this.initLabel('media', form.targetMediaCategory);
       const selprovinceValData = this.initLabel('province', form.targetArea);
       this.setState({form, selmediaValData, selprovinceValData});
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
    //初始化标签
@@ -156,16 +146,9 @@ class Receivead extends Component{
       message.error('只能输入整数');
       return false;
     }
-    window.api.baseInstance('flow/mission/add', params).then(rs => {
+    flowMissionAdd(params).then(rs => {
       message.success(rs.message);
       window.history.go(-1);
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   goBackEvent = () => {

@@ -4,6 +4,11 @@ import Redirect from 'umi/redirect';
 import style from '../style.less';
 import Link from 'umi/link';
 import moment from 'moment';
+import {
+  checkAdCampaignList,
+  getAdCampaignCountByPostStatus,
+  updatePostStatusById
+} from '../../../api/api';
 const Option = Select.Option;
 class ActivityList extends Component{
   constructor(props) {
@@ -48,15 +53,9 @@ class ActivityList extends Component{
     limit: pagination.limit,
     ...search
    };
-   window.api.baseInstance('api/ad/campaign/checkAdCampaignList', params).then(rs => {
+   checkAdCampaignList(params).then(rs => {
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({activityData: rs.data, pagination: p});
-   }).catch(err => {
-    if (err.code === 100000) {
-      this.setState({redirect: true});
-      window.localStorage.removeItem('login_info');
-    }
-    message.error(err.message);
    });
   }
   changePage = (page) => {
@@ -74,7 +73,7 @@ class ActivityList extends Component{
   }
   //获取活动统计数
   getAdCount = () => {
-    window.api.baseInstance('api/ad/campaign/getAdCampaignCountByPostStatus', {loginName: this.state.loginName}).then(rs => {
+    getAdCampaignCountByPostStatus({loginName: this.state.loginName}).then(rs => {
       this.setState({activityTotal: rs.data.total, draftTotal: rs.data.draftTotal});
     });
   }
@@ -124,16 +123,9 @@ class ActivityList extends Component{
       loginName: this.state.loginName,
       postStatus: 25
     };
-    window.api.baseInstance('api/ad/campaign/updatePostStatusById', params).then(rs => {
+    updatePostStatusById(params).then(rs => {
       message.success(rs.message);
       this.loadList();
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   render() {
@@ -238,8 +230,8 @@ class ActivityList extends Component{
         <ul className={style.search}>
           <li>
             活动时间
-            <DatePicker className="ml10" value={search.dateStart === null ? null : moment(search.dateStart)} format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
-            <DatePicker className="ml10" value={search.dateEnd === null ? null : moment(search.dateEnd)} format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateEnd')} />
+            <DatePicker className="ml10" value={search.dateStart === null || search.dateStart === '' ? null : moment(search.dateStart)} format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
+            <DatePicker className="ml10" value={search.dateEnd === null || search.dateEnd === '' ? null : moment(search.dateEnd)} format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateEnd')} />
           </li>
           <li>
             活动状态

@@ -49,7 +49,7 @@ class AddEmployess extends Component{
               </li>
               <li>
                 <em className={style.name}>密码：</em>
-                <Input placeholder="请输入密码格式为数字+字母" onChange={this.changeValueEvent.bind(this, 'password')} />
+                <Input type="password" placeholder="请输入密码格式为数字+字母" onChange={this.changeValueEvent.bind(this, 'password')} />
               </li>
             </ul>
             :

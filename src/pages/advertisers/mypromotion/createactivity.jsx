@@ -1,15 +1,27 @@
 import React, {Component} from 'react';
-import {Input, DatePicker, Form, Radio, Button, message, Breadcrumb} from 'antd';
+import {Input, DatePicker, Form, Radio, Button, message, Modal} from 'antd';
 import moment from 'moment';
 import style from './style.less';
 import Redirect from 'umi/redirect';
 import router from 'umi/router';
+import {
+  getDictByType,
+  caQuery,
+  add,
+  native
+} from '../../../api/api';//接口地址
+import RechargeModel from '../../components/rechargeModel'; //充值modal
 class CreateAdvertity extends Component {
   constructor(props) {
     super(props);
     this.state = {
       redirect: false,
       currentTime: null,
+      isVisible: false, //是否显示充值弹层
+      topup:{
+        amount: null,
+        channelType: 'WX'
+      },
       form: {
         loginName: '', //登录名
         campaignName: '', //活动名称
@@ -30,26 +42,28 @@ class CreateAdvertity extends Component {
       mediaTypeLabel: [], //新媒体行业
       provinceTypeType: [], //省
       selmediaValData: [], //选中的行业标签
-      selproviceValData: [] //选中的地域标签
+      selproviceValData: [], //选中的地域标签
+      availableBalance: 0 //账户可用余额
     };
   }
   componentWillMount() {
     const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
     if (!loginInfo) return false;
     const form = Object.assign(this.state.form, {loginName: loginInfo.data.loginName});
-    Promise.all([window.api.baseInstance('admin/system/dict/getDictByType', {type: 'mediaType'}), window.api.baseInstance('admin/system/dict/getDictByType', {type: 'provinceType'})]).then(rs => {
+    Promise.all([getDictByType({type: 'mediaType'}), getDictByType({type: 'provinceType'})]).then(rs => {
       this.setState({
         mediaTypeLabel: rs[0].data,
         selmediaValData: new Array(rs[0].data.length),
         provinceTypeType: rs[1].data,
         selproviceValData: new Array(rs[1].data.length)
       });
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      }
-      message.error(err.message);
+      this.getCaQuery();
+    });
+  }
+  //获取可用余额和冻结余额
+  getCaQuery = () => {
+    caQuery({operatorLoginName: this.state.form.loginName}).then(rs => {
+      this.setState({availableBalance: rs.data.available_balance});
     });
   }
   //form 表单改变
@@ -116,7 +130,7 @@ class CreateAdvertity extends Component {
           message.warning('活动周期最多7天！');
           return false;
         }
-        window.api.baseInstance('api/ad/campaign/add', form).then(rs => {
+        add(form).then(rs => {
           message.success(rs.message);
           router.push({
             pathname: '/main/selectmateria',
@@ -124,12 +138,6 @@ class CreateAdvertity extends Component {
               id: rs.data.id
             }
           });
-        }).catch(err => {
-          if (err.code === 100000) {
-            this.setState({redirect: true});
-            window.localStorage.removeItem('login_info');
-          }
-          message.error(err.message);
         });
       }
     })
@@ -170,6 +178,38 @@ class CreateAdvertity extends Component {
     }
     this.setState({currentTime: moment()});
   }
+  //显示充值弹层
+  saveMoneyEvent = () => {
+    let topup = this.state.topup;
+    topup = Object.assign(topup, {amount: ''});
+    this.setState({isVisible: true, topup});
+  }
+  //关闭充值弹层
+  closeEvent = () => {
+    this.setState({isVisible: false});
+  }
+  //调用子组件的表单事件
+  bindValue = (type, e) => {
+    let topup = this.state.topup;
+    topup = Object.assign(topup, {[type]: e.target.value});
+    this.setState({topup});
+  }
+  //确定要充值
+  rechargeEvent = () => {
+    const params = {
+      ...this.state.topup,
+      operatorLoginName: this.state.form.loginName
+    };
+    const reg = /^[0-9]+([.]{1}[0-9]{1,2})?$/;
+    if (!reg.test(params.amount)) {
+      message.error('请输入整数或小数(保留后两位)');
+      return false;
+    }
+    native(params).then(rs => {
+      this.setState({qrUrl: rs.data.payUrl});
+      router.push({pathname: '/main/qrcode', query: rs.data});
+    });
+  }
   render() {
     const {
       redirect,
@@ -180,7 +220,10 @@ class CreateAdvertity extends Component {
       selmediaValData,
       selproviceValData,
       categoryType,
-      areaType
+      areaType,
+      availableBalance,
+      isVisible,
+      topup
     } = this.state;
     const {getFieldDecorator} = this.props.form;
     const formItemLayout = {
@@ -208,6 +251,16 @@ class CreateAdvertity extends Component {
     if (redirect) return (<Redirect to="/relogin" />);
     return(
       <div className={style.mypromotion}>
+        <Modal
+          visible={isVisible}
+          width={510}
+          onCancel={this.closeEvent}
+          footer={
+            <Button type="primary" onClick={this.rechargeEvent.bind(this)}>确定</Button>
+          }
+        >
+          <RechargeModel changeFormEvent={this.bindValue.bind(this)} amount={topup.amount} />
+        </Modal>
         <h1 className="nav-title">新建活动</h1>
         <div className={style.createBlocks}>
             <h2 className="small-title"><em></em>基本信息</h2>
@@ -393,8 +446,12 @@ class CreateAdvertity extends Component {
                               {pattern: /^[0-9]+([.]{1}[0-9]{1,2})?$/, message: '只能输入整数或小数(保留后两位)'}
                             ]
                           }
-                        )(<Input className={style.ipttxt} onChange={this.changeFormEvent.bind(this, 'postAmtTotal')} />)
-                      }元
+                        )(<div className={style.planCount}>
+                            <Input className={style.ipttxt} onChange={this.changeFormEvent.bind(this, 'postAmtTotal')} />
+                            元<span>可用余额<em>{availableBalance}</em>元</span>
+                            <Button onClick={this.saveMoneyEvent.bind(this)}>充值</Button>
+                          </div>)
+                      }
                     </Form.Item>
                   </li>
                 </ul>          

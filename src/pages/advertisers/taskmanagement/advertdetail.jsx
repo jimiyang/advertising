@@ -2,6 +2,11 @@ import React, {Component} from 'react';
 import {Button, Radio, Input, message} from 'antd';
 import style from './style.less';
 import Redirect from 'umi/redirect';
+import {
+  missiongetById,
+  getDictByType,
+  checkMissionOrderById
+} from '../../../api/api';//接口地址
 const {TextArea} = Input;
 class AdvertDetail extends Component{
   constructor(props) {
@@ -49,7 +54,7 @@ class AdvertDetail extends Component{
   componentWillMount() {
     const state = this.props.location.state;
     if (!state.id) return false;
-    Promise.all([window.api.baseInstance('admin/system/dict/getDictByType', {type: 'mediaType'}), window.api.baseInstance('admin/system/dict/getDictByType', {type: 'provinceType'})]).then(rs => {
+    Promise.all([getDictByType({type: 'mediaType'}), getDictByType({type: 'provinceType'})]).then(rs => {
       this.initForm(state.id);
       const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
       if (!loginInfo) return false;
@@ -62,30 +67,17 @@ class AdvertDetail extends Component{
         provinceTypeType: rs[1].data,
         selproviceValData: new Array(rs[1].data.length)
       });
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      }
-      message.error(err.message);
     });
   }
   //初始化数据详情
   initForm = (id) => {
-    window.api.baseInstance('api/ad/mission/getById', {id}).then(rs => {
+    missiongetById({id}).then(rs => {
       if (!rs.data) return false;
       const form = Object.assign(this.state.form, rs.data);
       const selmediaValData = this.initLabel('media', form.adCampaign.targetMediaCategory);
       const selproviceValData = this.initLabel('province', form.adCampaign.targetArea);
       const params = Object.assign(this.state.params, {audit_remark: form.adMissionOrder.auditRemark});
       this.setState({form, selmediaValData, selproviceValData, params});
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   initLabel = (type, data) => {
@@ -128,16 +120,9 @@ class AdvertDetail extends Component{
       message.error('请填写审核意见');
       return false;
     }
-    window.api.baseInstance('api/ad/mission/checkMissionOrderById', this.state.params).then(rs => {
+    checkMissionOrderById(this.state.params).then(rs => {
       message.success(rs.message);
       window.history.go(-1);
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   //返回
@@ -158,7 +143,7 @@ class AdvertDetail extends Component{
     if (redirect) return (<Redirect to="/relogin" />);
     return(
       <div className={style.task}>
-        <h1 className="nav-title">已接单的任务 > 查看推广活动</h1>
+        <h1 className="nav-title">已接单的任务 > 查看任务详情</h1>
         <ul className={style.detaillist}>
           <li>
             订单号：<div>{form.adMissionOrder.missionId}</div>

@@ -2,6 +2,9 @@ import React, {Component} from 'react';
 import {DatePicker, Table, Select, Input, Button, message, Popconfirm} from 'antd';
 import Link from 'umi/link';
 import Redirect from 'umi/redirect';
+import {
+  missionList
+} from '../../../api/api';//接口地址
 import style from './style.less';
 import moment from 'moment';
 
@@ -48,17 +51,9 @@ class HavedTask extends Component{
       limit: pagination.limit,
       ...search
     };
-    window.api.baseInstance('api/ad/mission/list', params).then(rs => {
-      console.log(rs);
+    missionList(params).then(rs => {
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({orderData: rs.data, pagination: p});
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   changePage = (page) => {
@@ -104,7 +99,6 @@ class HavedTask extends Component{
   }
   //搜索
   searchEvent = () => {
-    console.log(this.state.search);
     this.loadList();
   }
   clearEvent = () => {
@@ -254,8 +248,8 @@ class HavedTask extends Component{
         <dl className={style.search}>
           <dt style={{width: '100%'}}>
             接单时间：
-            <DatePicker className="ml10" value={search.dateStart === null ? null : moment(search.dateStart)} format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
-            <DatePicker className="ml10" value={search.dateEnd === null ? null : moment(search.dateEnd)} format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateEnd')} />   
+            <DatePicker className="ml10" value={search.dateStart === null || search.dateStart === '' ? null : moment(search.dateStart)} format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
+            <DatePicker className="ml10" value={search.dateEnd === null || search.dateEnd === '' ? null : moment(search.dateEnd)} format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateEnd')} />   
           </dt>
           <dd>
             任务状态：

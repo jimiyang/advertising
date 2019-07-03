@@ -3,6 +3,9 @@ import {DatePicker, Table, Select, Input, Button, message} from 'antd';
 import style from './style.less';
 import Redirect from 'umi/redirect';
 import moment from 'moment';
+import {
+  financeList
+} from '../../../api/api';//接口地址
 const {Option} = Select; 
 class ConsumeList extends Component{
   constructor(props) {
@@ -41,16 +44,9 @@ class ConsumeList extends Component{
       limit: pagination.limit,
       ...search
     };
-    window.api.baseInstance('admin/ad/finance/list', params).then(rs => {
+    financeList(params).then(rs => {
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({depositData: rs.data, pagination: p});
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   changePage = (page) => {
@@ -164,8 +160,8 @@ class ConsumeList extends Component{
         <ul className={style.search}>
           <li>
             创建时间
-            <DatePicker className="w150 ml10" value={search.dateStart === null ? null : moment(search.dateStart)} formate="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
-            <DatePicker className="ml10 w150" value={search.dateEnd === null ? null : moment(search.dateEnd)} formate="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateEnd')} />
+            <DatePicker className="w150 ml10" value={search.dateStart === null || search.dateStart === '' ? null : moment(search.dateStart)} formate="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
+            <DatePicker className="ml10 w150" value={search.dateEnd === null || search.dateEnd === '' ? null : moment(search.dateEnd)} formate="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateEnd')} />
           </li>
           <li>
             充值单号

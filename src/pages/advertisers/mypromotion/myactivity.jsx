@@ -5,7 +5,11 @@ import Redirect from 'umi/redirect';
 import Link from 'umi/link';
 import router from 'umi/router';
 import moment from 'moment';
-
+import {
+  list,
+  getAdCampaignCountByPostStatus,
+  updatePostStatusById
+} from '../../../api/api';//接口地址
 const {Option} = Select;
 class MyActivity extends Component{
   constructor(props) {
@@ -52,29 +56,15 @@ class MyActivity extends Component{
       currentPage: pagination.currentPage,
       limit: pagination.limit
     };
-    window.api.baseInstance('api/ad/campaign/list', params).then(rs => {
+    list(params).then(rs => {
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({activityData: rs.data, pagination: p});
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   //获取统计总数
   getCount = (loginName) => {
-    window.api.baseInstance('api/ad/campaign/getAdCampaignCountByPostStatus', {loginName}).then(rs => {
+    getAdCampaignCountByPostStatus({loginName}).then(rs => {
       this.setState({total: rs.data.total, draftTotal: rs.data.draftTotal});
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   changePage = (page) => {
@@ -96,16 +86,9 @@ class MyActivity extends Component{
       loginName: this.state.loginName,
       postStatus: 25
     };
-    window.api.baseInstance('api/ad/campaign/updatePostStatusById', params).then(rs => {
+    updatePostStatusById(params).then(rs => {
       message.success(rs.message);
       this.loadList();
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   changeFormEvent = (type, e, value) => {
@@ -274,8 +257,8 @@ class MyActivity extends Component{
         <ul className={style.search}>
           <li>
             <label>活动日期</label>
-            <DatePicker className="w150 radius2" value={search.dateStart === null ? null : moment(search.dateStart)} onChange={this.changeFormEvent.bind(this, 'dateStart')} format="YYYY-MM-DD" />
-            <DatePicker className="w150 ml10" value={search.dateEnd === null ? null : moment(search.dateEnd)} onChange={this.changeFormEvent.bind(this, 'dateEnd')} format="YYYY-MM-DD" />
+            <DatePicker className="w150 radius2" value={search.dateStart === null || search.dateStart === '' ? null : moment(search.dateStart)} onChange={this.changeFormEvent.bind(this, 'dateStart')} format="YYYY-MM-DD" />
+            <DatePicker className="w150 ml10" value={search.dateEnd === null || search.dateEnd === '' ? null : moment(search.dateEnd)} onChange={this.changeFormEvent.bind(this, 'dateEnd')} format="YYYY-MM-DD" />
           </li>
           <li>
             <label>活动状态</label>

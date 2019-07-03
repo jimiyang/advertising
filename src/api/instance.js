@@ -1,8 +1,17 @@
 import axios from 'axios';
 import {message} from 'antd';
+import router from 'umi/router';
+let baserUrl;
+if (window.location.hostname === 'localhost') {
+  baserUrl = ''; 
+} else if (window.location.hostname === '192.168.19.173') {
+  baserUrl = 'http://192.168.19.173:8000';
+} else {
+  baserUrl = 'http://www.liantuotui.com';
+}
+const url = window.location.hostname === 'localhost' ? `/base/` : '/';
 const instance = axios.create({
-  baseURL: '',
-  //baseURL: 'http://192.168.19.173:8000',
+  baseURL: baserUrl,
   timeout: 50000,
   withCredentials: true
 });
@@ -12,7 +21,15 @@ instance.interceptors.response.use(
       if (res.status === 200 && res.data.success === true) {
         resolve(res.data);
       } else {
-        reject(res.data);
+        
+        if (res.data.code === 100000) {
+          router.push('/relogin');
+          window.localStorage.removeItem('login_info');
+        } else if (res.config.url === `${url}api/topup/orderQuery`){
+          reject(res.data);
+        } else {
+          message.error(res.data.message);
+        }
       }
     });
     return promise;

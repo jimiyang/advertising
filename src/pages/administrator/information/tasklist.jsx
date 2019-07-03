@@ -3,6 +3,9 @@ import {DatePicker, Select, Input, Button, Table, message} from 'antd';
 import Redirect from 'umi/redirect';
 import style from '../style.less';
 import moment from 'moment';
+import {
+  listallMission
+} from '../../../api/api';
 const Option = Select.Option;
 class TaskList extends Component{
   constructor(props) {
@@ -43,15 +46,9 @@ class TaskList extends Component{
     limit: pagination.limit,
     ...search
    };
-   window.api.baseInstance('api/ad/mission/listallMission', params).then(rs => {
+   listallMission(params).then(rs => {
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({activityData: rs.data, pagination: p});
-   }).catch(err => {
-    if (err.code === 100000) {
-      this.setState({redirect: true});
-      window.localStorage.removeItem('login_info');
-    }
-    message.error(err.message);
    });
   }
   changePage = (page) => {
@@ -121,12 +118,6 @@ class TaskList extends Component{
         width: 100,
       },
       {
-        title: '任务号',
-        key: 'missionId',
-        dataIndex: 'missionId',
-        width: 150
-      },
-      {
         title: '任务时间',
         width: 200,
         render: (record) => (
@@ -167,10 +158,15 @@ class TaskList extends Component{
         )
       },
       {
-        title: (<div>预计发文时间<p>点 & 段</p></div>),
+        title: (<div>预计发文时间<p>实际发文时间</p></div>),
         key: 'planPostArticleTime',
-        dataIndex: 'planPostArticleTime',
-        width: 300
+        width: 300,
+        render: (record) => (
+          <div>
+            <p>{window.common.getDate(record.planPostArticleTime, false)}</p>
+            <p>{record.realPostArticleTime === undefined ? '--' : window.common.getDate(record.realPostArticleTime, false)}</p>
+          </div>
+        )
       },
       {
         title: '广告位置',
@@ -191,21 +187,20 @@ class TaskList extends Component{
         )
       },
       {
+        title: '预期支出金额',
+        key: 'adEstimateCost',
+        width: 200,
+        render: (record) => (
+          <span>{(record.missionReadCnt * record.adUnitPrice).toFixed(2)}</span>
+        )
+      },
+      {
         title: '实际结算阅读',
         key: 'missionRealReadCnt',
         dataIndex: 'missionRealReadCnt',
         width: 200,
         render: (record) => (
           <span>{record === undefined ? 0 : window.common.formatNumber(record)}{record}</span>
-        )
-      },
-      {
-        title: '预期支出金额',
-        key: 'adEstimateCost',
-        dataIndex: 'adEstimateCost',
-        width: 200,
-        render: (record) => (
-          <span>{window.common.formatNumber(record)}</span>
         )
       },
       {
@@ -243,8 +238,8 @@ class TaskList extends Component{
         <ul className={style.search}>
           <li>
             任务时间
-            <DatePicker className="ml10" value={search.dateStart === null ? null : moment(search.dateStart)} format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
-            <DatePicker className="ml10" value={search.dateEnd === null ? null : moment(search.dateEnd)} format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateEnd')} />
+            <DatePicker className="ml10" value={search.dateStart === null || search.dateStart === '' ? null : moment(search.dateStart)} format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
+            <DatePicker className="ml10" value={search.dateEnd === null || search.dateEnd === '' ? null : moment(search.dateEnd)} format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateEnd')} />
           </li>
           <li>
             任务状态

@@ -1,6 +1,10 @@
 import React, {Component} from 'react';
 import {Button, message} from 'antd';
 import Redirect from 'umi/redirect';
+import {
+  getDictByType,
+  getById
+} from '../../../api/api';//接口地址
 import style from './style.less';
 class ActivityDetail extends Component{
   constructor(props) {
@@ -28,7 +32,7 @@ class ActivityDetail extends Component{
   }
   componentWillMount() {
     if (!this.props.location.state.id) return false;
-    Promise.all([window.api.baseInstance('admin/system/dict/getDictByType', {type: 'mediaType'}), window.api.baseInstance('admin/system/dict/getDictByType', {type: 'provinceType'})]).then(rs => {
+    Promise.all([getDictByType({type: 'mediaType'}), getDictByType({type: 'provinceType'})]).then(rs => {
       this.setState({
         mediaTypeLabel: rs[0].data,
         selmediaValData: new Array(rs[0].data.length),
@@ -36,16 +40,10 @@ class ActivityDetail extends Component{
         selproviceValData: new Array(rs[1].data.length)
       });
       this.initForm(this.props.location.state.id);
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      }
-      message.error(err.message);
     });
   }
   initForm = (id) => {
-    window.api.baseInstance('api/ad/campaign/getById', {id}).then(rs => {
+    getById({id}).then(rs => {
       const selmediaValData = this.initLabel('media', rs.data.targetMediaCategory);
       const selproviceValData = this.initLabel('province', rs.data.targetArea);
       this.setState({form: rs.data, selmediaValData, selproviceValData});
@@ -86,13 +84,6 @@ class ActivityDetail extends Component{
     return new Promise((resolve, reject) => {
       window.api.baseInstance('admin/system/dict/getDictByType', {type}).then(rs => {
         resolve(rs.data);
-      }).catch(err => {
-        if (err.code === 100000) {
-          this.setState({redirect: true});
-          window.localStorage.removeItem('login_info');
-        } else {
-          message.error(err.message);
-        }
       });
     });
   }

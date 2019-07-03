@@ -3,6 +3,10 @@ import {Button, message} from 'antd';
 import Redirect from 'umi/redirect';
 import {isNull} from 'util';
 import style from './style.less';
+import {
+  detail,
+  getDictByType
+} from '../../../api/api';
 class AdTaskDetail extends Component{
   constructor(props){
     super(props);
@@ -35,7 +39,7 @@ class AdTaskDetail extends Component{
   async componentWillMount() {
     if (isNull(this.props.location.state)) return false;
     await this.setState({campaignId: this.props.location.state.id});
-    Promise.all([window.api.baseInstance('admin/system/dict/getDictByType', {type: 'mediaType'}), window.api.baseInstance('admin/system/dict/getDictByType', {type: 'provinceType'})]).then(rs => {
+    Promise.all([getDictByType({type: 'mediaType'}), getDictByType({type: 'provinceType'})]).then(rs => {
       this.setState({
         mediaTypeLabel: rs[0].data,
         selmediaValData: new Array(rs[0].data.length),
@@ -43,12 +47,6 @@ class AdTaskDetail extends Component{
         selproviceValData: new Array(rs[1].data.length)
       });
       this.initForm(this.props.location.state.id);
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      }
-      message.error(err.message);
     });
     this.initForm();
   }
@@ -56,17 +54,10 @@ class AdTaskDetail extends Component{
     const params = {
       campaignId: this.state.campaignId
     };
-    window.api.baseInstance('flow/campaign/detail', params).then(rs => {
+    detail(params).then(rs => {
       const selmediaValData = this.initLabel('media', rs.data.campaign.targetMediaCategory);
       const selproviceValData = this.initLabel('province', rs.data.campaign.targetArea);
       this.setState({form: rs.data.campaign, selmediaValData, selproviceValData});
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   initLabel = (type, data) => {

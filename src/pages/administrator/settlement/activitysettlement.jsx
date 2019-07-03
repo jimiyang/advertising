@@ -37,17 +37,10 @@ class ActivitySettlement extends Component {
       currentPage: pagination.currentPage,
       limit: pagination.limit
     };
-    window.api.baseInstance('api/ad/mission/listallMission', params).then(rs => {
+    /*window.api.baseInstance('/flow/mission/settle', params).then(rs => {
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({settlementData: rs.data, pagination: p});
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
-    });
+    });*/
   }
   changePage = (page) => {
     page = page === 0 ? 1 : page;

@@ -2,6 +2,11 @@ import React, {Component} from 'react';
 import {DatePicker, Input, Table, Button, message} from 'antd';
 import Redirect from 'umi/redirect';
 import style from './style.less';
+import moment from 'moment';
+import {
+  caQuery,
+  flowFinanceList
+} from '../../../api/api';
 class ArningsList extends Component {
   constructor(props) {
     super(props);
@@ -36,14 +41,8 @@ class ArningsList extends Component {
   }
   //获取可用余额和冻结余额
   getCaQuery = () => {
-    window.api.baseInstance('api/merchant/caQuery', {operatorLoginName: this.state.loginName}).then(rs => {
+    caQuery({operatorLoginName: this.state.loginName}).then(rs => {
       this.setState({available_balance: rs.data.available_balance, freezen_balance: rs.data.freezen_balance});
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      }
-      message.error(err.message);
     });
   }
   loadList = () => {
@@ -54,15 +53,9 @@ class ArningsList extends Component {
       loginName,
       ...search
     };
-    window.api.baseInstance('admin/flow/finance/list', params).then(rs => {
+    flowFinanceList(params).then(rs => {
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({earningsData: rs.data, pagination: p});
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      }
-      message.error(err.message);
     });
   }
   changePage = (page) => {
@@ -100,6 +93,19 @@ class ArningsList extends Component {
   searchEvent = () => {
     this.loadList();
   }
+  clearEvent = () => {
+    let search = this.state.search;
+    search = Object.assign(
+      search,
+      {
+        dateStart: null,
+        dateEnd: null,
+        orderNo: null,
+        orderStatus: null
+      }
+    );
+    this.setState({search});
+  }
   //提现弹窗
   widthdrawEvent = () => {
     //this.setState({isDrawVisible: true});
@@ -111,7 +117,8 @@ class ArningsList extends Component {
       available_balance,
       freezen_balance,
       earningsData,
-      pagination
+      pagination,
+      search
     } = this.state;
     const columns = [
       {
@@ -168,15 +175,16 @@ class ArningsList extends Component {
         <ul className={style.search}>
           <li>
             创建时间
-            <DatePicker className="ml10" formate="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
-            <DatePicker className="ml10" formate="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateEnd')} />
+            <DatePicker className="ml10" value={search.dateStart === null || search.dateStart === '' ? null : moment(search.dateStart)} formate="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
+            <DatePicker className="ml10" value={search.dateEnd === null || search.dateEnd === '' ? null : moment(search.dateEnd)} formate="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateEnd')} />
           </li>
           <li className="ml30">
             结算单号
-            <Input className="w180 ml10" onChange={this.changeFormEvent.bind(this, 'orderNo')} />
+            <Input className="w180 ml10" value={search.orderNo} onChange={this.changeFormEvent.bind(this, 'orderNo')} />
           </li>
           <li className="ml30">
             <Button type="primary" onClick={this.searchEvent.bind(this)}>查询</Button>
+            <Button onClick={this.clearEvent.bind(this)} className="ml10">重置</Button>
           </li>
         </ul>
         <Table

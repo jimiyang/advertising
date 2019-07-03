@@ -4,6 +4,9 @@ import style from './style.less';
 import QRCode from 'qrcode.react'; //二维码
 import Redirect from 'umi/redirect';
 import router from 'umi/router';
+import {
+  orderQuery
+} from '../../../api/api';//接口地址
 let timer;
 class QrCode extends Component{
   constructor(props) {
@@ -55,51 +58,20 @@ class QrCode extends Component{
     }); 
   }
   orderStatus = (params) => {
-    window.api.baseInstance('api/topup/orderQuery', params).then(rs => {
+    orderQuery(params).then(rs => {
+      console.log(rs);
       if (rs.data.status === 1) {
-        console.log('success');
         this.openNotification();
         router.push('/main/depositlist');
         clearTimeout(timer);
       } else if(rs.code === 300107 || rs.data.status === 2){
-         console.log('loading');
         timer=window.setInterval(this.orderStatus(params), 500);
       }
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        //console.log('fail');
-        //timer=window.setInterval(this.orderStatus(params), 1000);
-        this.orderStatus(params);
-        this.setState({messageTip: err.message});
-      }
+    }).catch(error => {
+      this.setState({messageTip: error.message});
     });
   }
-  /*getOrderQuery = (params) => {
-    window.api.baseInstance('api/topup/orderQuery', params).then(rs => {
-      if (rs.data.status === 1) {
-        console.log(rs);
-        message.success(rs.message);
-        router.push('/main/depositlist');
-        clearTimeout(timer);
-      } else if(rs.code === 300107 || rs.data.status === 2){
-        timer =  setTimeout(()=>{this.getOrderQuery(params)}, 1000);
-      }
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        console.log('fail');
-        timer =  setTimeout(()=>{this.getOrderQuery(params)}, 1000);
-        this.setState({messageTip: err.message});
-      }
-    });
-  }*/
   componentWillUnmount() {
-    //clearTimeout(timer);
     clearInterval(timer);
   }
   render() {
@@ -119,7 +91,7 @@ class QrCode extends Component{
             fgColor="#000000"  //二维码的颜色
           />
         </div>
-        <div style={{marginTop: '20px'}}>{messageTip}</div>
+        <div style={{marginTop: '20px'}}>温馨提示：{messageTip}</div>
       </div>
     )
   }  

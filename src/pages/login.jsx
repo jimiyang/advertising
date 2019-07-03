@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import {Input, Button, message} from 'antd';
 import router from 'umi/router';
 import Link from 'umi/link';
+import {login} from '../api/api';
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -16,7 +17,7 @@ class Login extends Component {
     router.push('/main');
   }
   login = () => {
-    window.api.baseInstance('login', this.state).then(rs => {
+    login(this.state).then(rs => {
       if (rs.success === true) {
         message.success(rs.message);
         const params = {
@@ -30,9 +31,7 @@ class Login extends Component {
         window.localStorage.setItem('login_info', JSON.stringify(params));
         router.push('/main');
       }
-    }).catch(err => {
-      message.error(err.message);
-    })
+    });
   }
   ChangeFormEvent = (type, e) => {
     let text = '';

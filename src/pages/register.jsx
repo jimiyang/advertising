@@ -19,7 +19,7 @@ class Register extends Component{
     }
   }
   componentWillMount() {
-    const form = Object.assign(this.state.form, {type: Number(this.props.location.query.type)});
+    const form = Object.assign(this.state.form, {type: Number(this.props.location.state.type)});
     this.setState({form});
   }
   RegisterEvent = (e) => {
@@ -30,12 +30,6 @@ class Register extends Component{
         window.api.baseInstance('api/merchant/add', form).then(rs => {
           message.success(rs.message);
           router.push('/');
-        }).catch(err => {
-          if (err.code === 100000) {
-            this.setState({redirect: true});
-            window.localStorage.removeItem('login_info');
-          }
-          message.error(err.message);
         });
       }
     });
@@ -158,6 +152,7 @@ class Register extends Component{
                     ]
                   }
                 )(<Input
+                  type="password"
                   className="ipttxt"
                   placeholder="请输入登录密码"
                   prefix={<Icon component={() => (

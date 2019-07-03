@@ -111,7 +111,7 @@ class MenuApp extends Component {
               id: 13,
               name: '活动结算审核',
               ico: 'strikethrough',
-              url: '/main/activitysettlement',
+              url: '/main/viewactivity',
               children: []
             },
             {

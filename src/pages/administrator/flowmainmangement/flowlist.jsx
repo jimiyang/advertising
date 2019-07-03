@@ -3,6 +3,12 @@ import {Table, Input, Button, Select, message, Modal} from 'antd';
 import Redirect from 'umi/redirect';
 import style from '../style.less';
 import AddFlowMain from '../../components/addflowmain'; //添加流量主
+import {
+  merchantList,
+  merchantEdit,
+  employeeEdit,
+  merchantAdd
+} from '../../../api/api';
 const Option = Select.Option;
 class FlowList extends Component{
   constructor(props) {
@@ -51,16 +57,9 @@ class FlowList extends Component{
       limit: pagination.limit,
       ...search
     };
-    window.api.baseInstance('api/merchant/list', params).then(rs => {
+    merchantList(params).then(rs => {
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({adData: rs.data, pagination: p});
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   changePage = (page) => {
@@ -87,7 +86,6 @@ class FlowList extends Component{
         obj = {[type]: e.target.value};
         break;
       case 'status':
-        console.log(e);
         obj = {[type]: e};
         break;
       default:
@@ -120,16 +118,9 @@ class FlowList extends Component{
       employeeId: item.employeeId,
       operatorLoginName
     };
-    window.api.baseInstance('api/employee/edit', params).then(rs => {
+    employeeEdit(params).then(rs => {
       message.success(rs.message);
       this.loadList();
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   statusEvent = (item) => {
@@ -140,16 +131,9 @@ class FlowList extends Component{
       merchantId: item.merchantId,
       operatorLoginName: this.state.operatorLoginName
     };
-    window.api.baseInstance('api/merchant/edit', params).then(rs => {
+    merchantEdit(params).then(rs => {
       message.success(rs.message);
       this.loadList();
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   //添加流量主
@@ -166,17 +150,10 @@ class FlowList extends Component{
       if (!err) {
         let addForm = this.state.addForm;
         addForm = Object.assign(addForm, {type: 2}, values); //2是添加流量主
-        window.api.baseInstance('api/merchant/add', addForm).then(rs => {
+        merchantAdd(addForm).then(rs => {
           message.success(rs.message);
           this.setState({isAddVisible: false});
           this.loadList();
-        }).catch(err => {
-          if (err.code === 100000) {
-            this.setState({redirect: true});
-            window.localStorage.removeItem('login_info');
-          } else {
-            message.error(err.message);
-          }
         });
       }
     });

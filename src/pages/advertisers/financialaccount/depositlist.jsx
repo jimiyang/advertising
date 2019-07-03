@@ -4,6 +4,12 @@ import style from './style.less';
 import Redirect from 'umi/redirect';
 import router from 'umi/router';
 import moment from 'moment';
+import {
+  caQuery,
+  topupList,
+  native,
+  getByOrderNo
+} from '../../../api/api';//接口地址
 import WithdrawList from './withdrawallist'; //提现记录
 import ConsumeList from './consumelist'; //消费记录
 import RechargeModel from '../../components/rechargeModel'; //充值modal
@@ -70,15 +76,9 @@ class DepositList extends Component{
       ...search
     };
     //console.log(params);
-    window.api.baseInstance('/api/topup/list', params).then(rs => {
+    topupList(params).then(rs => {
       const pagination = Object.assign(this.state.pagination, {total: rs.total});
       this.setState({depositData: rs.data, pagination});
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      }
-      message.error(err.message);
     });
   }
   changePage = (page) => {
@@ -96,16 +96,10 @@ class DepositList extends Component{
   }
   //获取可用余额和冻结余额
   getCaQuery = () => {
-    window.api.baseInstance('api/merchant/caQuery', {operatorLoginName: this.state.loginName}).then(rs => {
+    caQuery({operatorLoginName: this.state.loginName}).then(rs => {
       //console.log(rs);
       this.setState({available_balance: rs.data.available_balance, freezen_balance: rs.data.freezen_balance});
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      }
-      message.error(err.message);
-    });;
+    });
   }
   //切换记录列表
   accountTypeEvent = (index) => {
@@ -172,17 +166,9 @@ class DepositList extends Component{
       message.error('请输入整数或小数(保留后两位)');
       return false;
     }
-    window.api.baseInstance('api/topup/native', params).then(rs => {
-      console.log(rs);
+    native(params).then(rs => {
       this.setState({qrUrl: rs.data.payUrl});
       router.push({pathname: '/main/qrcode', query: rs.data});
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   //查看订单详情
@@ -191,15 +177,8 @@ class DepositList extends Component{
       operatorLoginName: this.state.loginName,
       orderNo: id
     };
-    window.api.baseInstance('api/topup/getByOrderNo', params).then(rs => {
+    getByOrderNo(params).then(rs => {
       this.setState({detailData: rs.data, isDetailVisible: true});
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   clearEvent = () => {
@@ -283,7 +262,6 @@ class DepositList extends Component{
     
     return(
       <div className={style.financialModel}>
-        
         <Modal
           visible={isVisible}
           width={510}
@@ -345,8 +323,8 @@ class DepositList extends Component{
           <ul className={style.search}>
             <li>
               创建时间
-              <DatePicker className="w150 ml10" value={search.dateStart === null ? null : moment(search.dateStart)} format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
-              <DatePicker className="ml10 w150" value={search.dateEnd === null ? null : moment(search.dateEnd)} format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateEnd')} />
+              <DatePicker className="w150 ml10" value={search.dateStart === null  || search.dateStart === '' ? null : moment(search.dateStart)} format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
+              <DatePicker className="ml10 w150" value={search.dateEnd === null  || search.dateEnd === '' ? null : moment(search.dateEnd)} format="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateEnd')} />
             </li>
             <li>
               充值单号

@@ -3,6 +3,10 @@ import {Popconfirm, Input, Button, Table, message} from 'antd';
 import Redirect from 'umi/redirect';
 import Link from 'umi/link';
 import router from 'umi/router';
+import {
+  articleList,
+  deleteArticleById
+} from '../../../api/api';//接口地址
 import style from './style.less';
 class MaterialList extends Component{
   constructor(props) {
@@ -48,16 +52,9 @@ class MaterialList extends Component{
       limit: pagination.limit,
       ...search
     };
-    window.api.baseInstance('ad/article/list', params).then(rs => {
+    articleList(params).then(rs => {
       const p = Object.assign(pagination, {total: rs.data.totalNum});
       this.setState({materiaData: rs.data.items, pagination: p});
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   changePage = (page) => {
@@ -95,17 +92,9 @@ class MaterialList extends Component{
       loginName,
       employeeId
     };
-    //console.log(params);
-    window.api.baseInstance('ad/article/deleteArticleById', params).then(rs => {
+    deleteArticleById(params).then(rs => {
       message.success(rs.message);
       this.loadList();
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   addEvent = () => {

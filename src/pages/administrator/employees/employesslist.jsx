@@ -3,8 +3,14 @@ import {Table, Popconfirm, message, Button, Input, Select, Modal} from 'antd';
 import Redirect from 'umi/redirect';
 import style from './style.less';
 import AddEmployess from '../../components/addemployess';
-import ReDrawer from 'rc-drawer';
+import {
+  employeeList,
+  employeeGetById,
+  employeeEdit,
+  employeeAdd
+} from '../../../api/api';
 const Option = Select.Option;
+const aas =employeeAdd;
 class EmployessList extends Component{
   constructor(props) {
     super(props);
@@ -51,16 +57,9 @@ class EmployessList extends Component{
       operatorLoginName,
       ...search
     };
-    window.api.baseInstance('api/employee/list', params).then(rs => {
+    employeeList(params).then(rs => {
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({employessData: rs.data, pagination: p});
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   changePage = (page) => {
@@ -117,15 +116,8 @@ class EmployessList extends Component{
         id: item.id,
         operatorLoginName: this.state.operatorLoginName
       };
-      window.api.baseInstance('api/employee/getById', params).then(rs => {
+      employeeGetById(params).then(rs => {
         this.setState({addForm: rs.data});
-      }).catch(err => {
-        if (err.code === 100000) {
-          this.setState({redirect: true});
-          window.localStorage.removeItem('login_info');
-        } else {
-          message.error(err.message);
-        }
       });
     } else {
       addForm = Object.assign(addForm, {name: null, mobile: null});
@@ -146,26 +138,18 @@ class EmployessList extends Component{
       operatorLoginName,
       ...addForm
     };
-    //type === 'add' ?
-    let url = 'api/employee/add';
+    let employee;
     if (type === 'add') {
-      url = 'api/employee/add';
+      employee = employeeAdd;
       delete params.id;
     } else {
-      url = 'api/employee/edit';
+      employee = employeeEdit;
       params = Object.assign(params, {employeeId: params.id});
     }
-    window.api.baseInstance(url, params).then(rs => {
+    employee(params).then(rs => {
       message.success(rs.message);
       this.setState({isAddVisible: false});
       this.loadList();
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   resetPwdEvent = (item) => {
@@ -174,19 +158,13 @@ class EmployessList extends Component{
       employeeId: item.id,
       operatorLoginName: this.state.operatorLoginName
     };
-    window.api.baseInstance('api/employee/edit', params).then(rs => {
+    employeeEdit(params).then(rs => {
       message.success(rs.message);
       this.loadList();
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   confirm = (item) => {
+    console.log(item);
     const status = item.status === 1 ? 2 : 1; //1启用，2停用
     const params = {
       status,
@@ -196,13 +174,6 @@ class EmployessList extends Component{
     window.api.baseInstance('api/employee/edit', params).then(rs => {
       message.success(rs.message);
       this.loadList();
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   closeEvent = () => {
@@ -253,14 +224,16 @@ class EmployessList extends Component{
             >
               <span className="ml10 blue-color">重置密码</span>
             </Popconfirm>
-            <Popconfirm
-              title={`是否要${Number(record.status) === 1 ? '停用' : '启用'}此员工账号`}
-              onConfirm={this.confirm.bind(this, record)}
-              okText="是"
-              cancelText="否"
-            >
-              <span className="ml10 blue-color">{Number(record.status) === 1 ? '停用' : '启用'}</span>
-            </Popconfirm>
+            {
+              /*<Popconfirm
+                title={`是否要${Number(record.status) === 1 ? '停用' : '启用'}此员工账号`}
+                onConfirm={this.confirm.bind(this, record)}
+                okText="是"
+                cancelText="否"
+              >
+                <span className="ml10 blue-color">{Number(record.status) === 1 ? '停用' : '启用'}</span>
+              </Popconfirm>*/
+            }
           </div>
         )
       }
@@ -295,7 +268,7 @@ class EmployessList extends Component{
             状态
             <Select value={search.status} className="ml10" onChange={this.changeFormEvent.bind(this, 'status')}>
               <Option value={null}>请选择</Option>
-              <Option value={0}>停用</Option>
+              <Option value={2}>停用</Option>
               <Option value={1}>启用</Option>
             </Select>
           </li>

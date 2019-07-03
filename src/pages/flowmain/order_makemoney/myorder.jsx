@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
 import {Button, Select, Input, Modal, message, Pagination} from 'antd';
 import Redirect from 'umi/redirect';
-import Link from 'umi/link';
 import router from 'umi/router';
 import style from './style.less';
-import {isNull} from 'util';
+import {
+  campaignList,
+  listApps
+} from '../../../api/api';
 const Option = Select.Option;
 class MyOrder extends Component{
   constructor(props) {
@@ -24,7 +26,7 @@ class MyOrder extends Component{
       appNickName: null,
       search: {
         adType: null,
-        appNickName: null,
+        appId: null,
         campaignName: null
       }
     };
@@ -43,30 +45,16 @@ class MyOrder extends Component{
       limit: pagination.limit,
       ...search
     };
-    window.api.baseInstance('flow/campaign/list', params).then(rs => {
+    campaignList(params).then(rs => {
       const p = Object.assign(pagination, {total: Number(rs.total)});
       this.setState({orderData: rs.data, pagination: p});
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   //查询所有公众号
   getListApps = (loginName) => {
-    window.api.baseInstance('flow/wechat/listapps', {loginName}).then(rs => {
+    listApps({loginName}).then(rs => {
       const appsData = rs.data === undefined ? [] : rs.data;
       this.setState({appsData});
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   changePage = (page) => {
@@ -95,11 +83,10 @@ class MyOrder extends Component{
         break;
       case 'adType':
         obj = {[type]: e};
-      case 'appNickName':
+      case 'appId':
         obj = {[type]: value.props.value};
         //detailForm = Object.assign(detailForm, {appId: value.props.value, appNickName: value.props.children});
-        this.setState({appNickName: value.props.children, appId: value.props.value});
-        this.loadList();
+        this.setState({appNickName: value.props.children});
         break;
       default: 
         obj = {[type]: e};
@@ -107,6 +94,9 @@ class MyOrder extends Component{
     }
     search = Object.assign(search, obj);
     this.setState({search});
+    if (type === 'appId') {
+      this.loadList();
+    }
   }
   //搜索
   searchEvent = () => {
@@ -114,8 +104,8 @@ class MyOrder extends Component{
   }
   //接收此广告
   ReceiveEvent = (item) => {
-    let {search, appNickName, appId} = this.state;
-    if (!search.appNickName) {
+    let {search, appNickName} = this.state;
+    if (!search.appId) {
       message.error('请选择公众号');
       return false;
     }
@@ -124,7 +114,7 @@ class MyOrder extends Component{
       state: {
         campaignId: item.campaignId,
         appNickName,
-        appId
+        appId: search.appId
       }
     });
   }
@@ -134,7 +124,7 @@ class MyOrder extends Component{
       search,
       {
         adType: null,
-        appNickName: null,
+        appId: null,
         campaignName: null
       }
     );
@@ -160,7 +150,7 @@ class MyOrder extends Component{
             </Select>
           </li>
           <li>公众号名称
-            <Select value={search.appNickName} onChange={this.changeFormEvent.bind(this, 'appNickName')} className="w180 ml10">
+            <Select value={search.appId} onChange={this.changeFormEvent.bind(this, 'appId')} className="w180 ml10">
               <Option value={null}>请选择</Option>
               {
                 appsData.length !== 0 ? 

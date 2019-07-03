@@ -34,13 +34,6 @@ class BasicLayout extends Component {
           this.setState({type: query.type});
           window.localStorage.setItem('login_info', JSON.stringify(params));
         }
-      }).catch(err => {
-        if (err.code === 100000) {
-          this.setState({redirect: true});
-          window.localStorage.removeItem('login_info');
-        } else {
-          message.error(err.message);
-        }
       });
     } else {
       const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));

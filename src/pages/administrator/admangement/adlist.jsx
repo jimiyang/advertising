@@ -3,7 +3,12 @@ import {Table, Input, Button, Select, message, Modal} from 'antd';
 import Redirect from 'umi/redirect';
 import style from '../style.less';
 import AddFlowMain from '../../components/addflowmain'; //添加广告主
-import { isNull } from 'util';
+import {
+  merchantList,
+  merchantEdit,
+  employeeEdit,
+  merchantAdd
+} from '../../../api/api';
 const Option = Select.Option;
 class AdList extends Component{
   constructor(props) {
@@ -52,16 +57,9 @@ class AdList extends Component{
       limit: pagination.limit,
       ...search
     };
-    window.api.baseInstance('api/merchant/list', params).then(rs => {
+    merchantList(params).then(rs => {
       const p = Object.assign(pagination, {total: rs.total});
       this.setState({adData: rs.data, pagination: p});
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   changePage = (page) => {
@@ -120,16 +118,9 @@ class AdList extends Component{
       employeeId: item.employeeId,
       operatorLoginName
     };
-    window.api.baseInstance('api/employee/edit', params).then(rs => {
+    employeeEdit(params).then(rs => {
       message.success(rs.message);
       this.loadList();
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   statusEvent = (item) => {
@@ -140,16 +131,9 @@ class AdList extends Component{
       merchantId: item.merchantId,
       operatorLoginName: this.state.operatorLoginName
     };
-    window.api.baseInstance('api/merchant/edit', params).then(rs => {
+    merchantEdit(params).then(rs => {
       message.success(rs.message);
       this.loadList();
-    }).catch(err => {
-      if (err.code === 100000) {
-        this.setState({redirect: true});
-        window.localStorage.removeItem('login_info');
-      } else {
-        message.error(err.message);
-      }
     });
   }
   addEvent = () => {
@@ -165,17 +149,10 @@ class AdList extends Component{
       if (!err) {
         let addForm = this.state.addForm;
         addForm = Object.assign(addForm, {type: 1}, values); //1是添加广告主
-        window.api.baseInstance('api/merchant/add', addForm).then(rs => {
+        merchantAdd(addForm).then(rs => {
           message.success(rs.message);
           this.setState({isAddVisible: false});
           this.loadList();
-        }).catch(err => {
-          if (err.code === 100000) {
-            this.setState({redirect: true});
-            window.localStorage.removeItem('login_info');
-          } else {
-            message.error(err.message);
-          }
         });
       }
     });
