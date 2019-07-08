@@ -58,7 +58,8 @@ class MenuApp extends Component {
               name: '我的收益',
               ico: 'red-envelope',
               children: [
-                {id: 401, name: '结算记录', url: '/main/arningslist'}
+                {id: 401, name: '结算记录', url: '/main/arningslist'},
+                {id: 402, name: '提现记录', url: '/main/putlist'}
               ]
             }
           ],
@@ -80,7 +81,7 @@ class MenuApp extends Component {
             {
               id: 8,
               name: '流量主管理',
-              ico: 'area-chart',
+              ico: 'sliders',
               url: '/main/flowlist',
               children: []    
             },
@@ -106,13 +107,6 @@ class MenuApp extends Component {
                 {id: 111, name: '活动管理', url: '/main/activitylist'},
                 {id: 112, name: '任务管理', url: '/main/tasklist'} 
               ]    
-            },
-            {
-              id: 13,
-              name: '活动结算审核',
-              ico: 'strikethrough',
-              url: '/main/viewactivity',
-              children: []
             },
             {
               id: 12,

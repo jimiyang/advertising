@@ -13,7 +13,7 @@ const utils =  {
   //计费方式：
   billingTypesData: ['CPM', 'CPC', 'CPA', '万粉'],
   payOrderStatus: ['未支付', '支付中', '支付完成', '支付失败'],
-  articleUrl: 'http://test.fensihui.com/fshstatic/view.html', //文章预览地址
+  articleUrl: 'http://test.fensihui.com/', //文章预览地址
   //删除数组中为空的元素
   removeEmptyArrayEle(arr) {    
     for(var i = 0; i < arr.length; i++) {
@@ -54,7 +54,8 @@ const utils =  {
     const time = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
     return time;
   },
-  dateDiff(sDate1,  sDate2){ // 日期对比，得出天数 
+  // 日期对比，得出天数 
+  dateDiff(sDate1,  sDate2){
     let oDate1, oDate2, iDays;
     oDate1 = new Date(sDate1);     
     oDate2 = new Date(sDate2);  

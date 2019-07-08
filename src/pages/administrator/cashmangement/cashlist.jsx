@@ -1,9 +1,8 @@
 import React, {Component} from 'react';
-import {Button, Input, DatePicker, Table, Modal} from 'antd';
+import {Button, Input, DatePicker, Select, Table, Modal} from 'antd';
 import Link from 'umi/link';
-import style from './style.less';
-import AuditModel from '../../components/auditModel'; //审核弹层
-import PayModel from '../../components/payModel'; //付款
+import style from '../style.less';
+const Option = Select.Option;
 class CashList extends Component{
   constructor(props) {
     super(props);
@@ -103,7 +102,29 @@ class CashList extends Component{
     return (
       <div>
         <h1 className="nav-title">提现管理</h1>
-        <div>开发中.....</div>
+        <div className={style.administrator}>
+          <div className={style.cash}>
+            <ul className={style.search}>
+              <li>商户名称：<Input className="iptxt"/></li>
+              <li>商户编码：<Input /></li>
+              <li>提现单号：<Input /></li>
+              <li>提现状态：
+                <Select defaultValue={null}>
+                  <Option value={null}>请选择</Option>
+                  <Option value={1}>待审核</Option>
+                  <Option value={2}>待付款</Option>
+                  <Option value={3}>付款成功</Option>
+                  <Option value={4}>提现驳回</Option>
+                </Select>
+              </li>
+              <li style={{width: '100%'}}>提现时间：<DatePicker />至<DatePicker /></li>
+              <li>
+                <Button type="primary">查询</Button>
+                <Button>清空</Button>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     );
   }

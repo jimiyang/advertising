@@ -17,22 +17,11 @@ const instance = axios.create({
 });
 instance.interceptors.response.use(
   res => {
-    const promise = new Promise((resolve, reject) => {
-      if (res.status === 200 && res.data.success === true) {
-        resolve(res.data);
-      } else {
-        
-        if (res.data.code === 100000) {
-          router.push('/relogin');
-          window.localStorage.removeItem('login_info');
-        } else if (res.config.url === `${url}api/topup/orderQuery`){
-          reject(res.data);
-        } else {
-          message.error(res.data.message);
-        }
-      }
-    });
-    return promise;
+    if (res.data.code === 100000) {
+      router.push('/relogin');
+      window.localStorage.removeItem('login_info');
+    } 
+    return res.data;
   },
   err => {
     //const {data: {err: errnum, error}} = (err || {}).response;

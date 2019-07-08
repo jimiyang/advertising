@@ -1,4 +1,13 @@
 .administrator{
+  .tags{
+    width: 450px;
+    label{
+      display: inline-block;border: 1px solid #E0E0E0;padding:0 12px; height: 30px; line-height: 30px;
+      border-radius: 2px;color: #3B4754;font-size: 13px;margin-right: 10px;margin-top: 10px;
+      white-space: normal;
+    }
+    label.active{border: 1px solid #498DFF;color: #498DFF;}
+  }
   .accountAmount{
     display: flex;
     text-align: center;
@@ -44,7 +53,6 @@
         width: 180px;
         height: 36px;
         line-height: 36px;
-
       }
     }
   }
@@ -69,14 +77,7 @@
           overflow: hidden;text-overflow: ellipsis;white-space: nowrap;
         }
       }
-      .tags{
-        width: 450px;
-        label{
-          display: inline-block;border: 1px solid #E0E0E0;padding:0 12px; height: 30px; line-height: 30px;
-          border-radius: 2px;color: #3B4754;font-size: 13px;margin-right: 10px;margin-top: 10px;
-        }
-        label.active{border: 1px solid #498DFF;color: #498DFF;}
-      }
+      
       
     }
     .btnitems{
@@ -87,12 +88,52 @@
     }
   }
   .settlementItems{
-    ul{
-      display: flex;align-items: center;flex-wrap: wrap;
+    ul.detail{
+      display: flex;align-items: flex-start;flex-wrap: wrap;
       li{
-        display: flex;align-items: center;width: 50%;padding:20px 0;
-        span{
+        display: flex;align-items: flex-start;width: 50%;padding:20px 0  0 0;
+        em.number{
           color: #f00;display: inline-block;padding: 0 5px;
+        }
+        .conditions{
+          width: 100%;
+        }
+      }
+    }
+  }
+  .listTab{
+    th,td{
+      text-align: center;font-weight: normal;padding: 14px;
+    }
+    
+    .header{
+      background: #EEF6FD 100%;
+      font-size: 13px;
+      font-weight: normal;
+      th{
+        text-align: center;
+        color: #686E76;
+        
+        font-weight: normal;
+        background: transparent;
+        border-bottom: 1px solid #e8e8e8;
+        transition: background 0.3s ease;
+      }
+      
+    }
+    td{
+      border-bottom: 1px solid #e8e8e8;
+      .ipttxt{width: 80px;text-align:center;}
+    }
+  }
+  /*提现管理*/
+  .cash{
+    
+    .detail{
+      li{
+        display: flex; align-items: center;font-size: 13px;color: #657280;margin: 40px 0;
+        label{
+          display: block;width: 180px;
         }
       }
     }

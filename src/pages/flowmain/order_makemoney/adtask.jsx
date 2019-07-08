@@ -85,6 +85,8 @@ class AdTask extends Component{
     this.setState({search});
   }
   searchEvent = () => {
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1});
+    this.setState(pagination);
     this.loadList();
   }
   clearEvent = () => {
@@ -92,11 +94,11 @@ class AdTask extends Component{
     search = Object.assign(
       search,
       {
-        appNickName: null,
+        appId: null,
         missionStatus: null
       }
     );
-    this.setState({search});
+    this.setState({search, status: null});
   }
   render() {
     const {

@@ -286,9 +286,17 @@ input, .radius2, .ant-input, .ant-select-selection{border-radius: 2px;}
   font-weight: normal;
   
 }
+.table .list li{
+  display: flex;justify-content:flex-start; background: transparent;border-bottom: 1px solid #e8e8e8;transition: background 0.3s ease;
+  text-align: center;color: #686E76;padding: 14px;font-weight: normal;
+}
+.table .list li.header {
+  background: #EEF6FD 100%;font-size: 13px;font-weight: normal;text-align: center;
+}
+.table .list li div{width: 10%;}
 .ant-table-thead > tr > th{text-align: center;color:#686E76; padding: 14px;font-weight: normal;}
 .ant-table-tbody > tr > td{cursor: pointer;padding: 10px 0;font-size: 12px;color: #3B4754;text-align: center;font-weight: normal;}
-.table .opeartion-items span{color: #498DFF;margin:0 13px;display: inline-block;cursor: pointer;}
+.table .opeartion-items span, .table .opeartion-items a{color: #498DFF;margin:0 5px;display: inline-block;cursor: pointer;}
 .clickRowStyl{
   background-color: #e8e8e8;
 }

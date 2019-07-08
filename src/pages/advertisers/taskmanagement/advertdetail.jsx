@@ -220,7 +220,7 @@ class AdvertDetail extends Component{
             活动素材：
             <div className={style.coverimg}>
               <p>展示封面标题，点击可查看详情</p>
-              <a href={`${window.common.articleUrl}?id=${form.adCampaign.postContent}`} target="_blank">
+              <a href={`${window.common.articleUrl}fshstatic/view.html?id=${form.adCampaign.postContent}`} target="_blank">
                 <img src={form.adCampaign.impImage} />
                 <span>{form.adCampaign.extrendJson}</span>
               </a>

@@ -129,6 +129,8 @@ class DepositList extends Component{
     this.setState({search});
   }
   searchEvent = () => {
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1});
+    this.setState(pagination);
     this.loadList();
   }
   //充值弹窗
@@ -167,8 +169,12 @@ class DepositList extends Component{
       return false;
     }
     native(params).then(rs => {
-      this.setState({qrUrl: rs.data.payUrl});
-      router.push({pathname: '/main/qrcode', query: rs.data});
+      if (!rs.qrUrl) {
+        this.setState({qrUrl: rs.data.payUrl});
+        router.push({pathname: '/main/qrcode', query: rs.data});
+      } else {
+        message.error(rs.message);
+      }
     });
   }
   //查看订单详情
@@ -202,7 +208,6 @@ class DepositList extends Component{
       isVisible,
       isDrawVisible,
       isDetailVisible,
-      redirect,
       search,
       available_balance,
       freezen_balance,
@@ -258,8 +263,6 @@ class DepositList extends Component{
         )
       }
     ];
-    if (redirect) return (<Redirect to="/relogin" />);
-    
     return(
       <div className={style.financialModel}>
         <Modal

@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Button} from 'antd';
-import style from './style.less';
+import style from '../style.less';
 class CashDetail extends Component{
   render() {
     return(

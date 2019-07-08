@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import {Popconfirm, Input, Button, Table, message} from 'antd';
 import Redirect from 'umi/redirect';
-import Link from 'umi/link';
 import router from 'umi/router';
 import {
   articleList,
-  deleteArticleById
+  deleteArticleById,
+  judgeArticleUseById
 } from '../../../api/api';//接口地址
 import style from './style.less';
 class MaterialList extends Component{
@@ -76,6 +76,8 @@ class MaterialList extends Component{
     this.setState({search});
   }
   searchEvent = () => {
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1});
+    this.setState(pagination);
     this.loadList();
   }
   clearEvent = () => {
@@ -99,17 +101,31 @@ class MaterialList extends Component{
   }
   addEvent = () => {
     router.push({
-      pathname: '/main/editor'
+      pathname: '/main/editor',
+      state: {
+        type: 'materiallist'
+      }
+    });
+  }
+  editEvent = (id) => {
+    const params = {
+      id,
+      loginName: this.state.loginName
+    };
+    judgeArticleUseById(params).then(rs => {
+      //console.log(rs.data);
+      if (rs.data) {
+        message.error(rs.data);
+      } else {
+        router.push({pathname: '/main/editor', state: {id, type: 'materiallist'}});
+      }
     });
   }
   render() {
     const {
       redirect,
-      articletypeData,
-      materiaData,
       pagination,
-      search,
-      type,
+      search
     } = this.state;
     const columns = [
       {
@@ -139,7 +155,7 @@ class MaterialList extends Component{
         dataIndex: '',
         render: (record) => (
           <div className="opeartion-items">
-            <Link className="blue-color" to={{pathname: '/main/editor', state: {id: record.id, type: 'materiallist'}}}>编辑</Link>
+            <span onClick={this.editEvent.bind(this, record.id)}>编辑</span>
             <Popconfirm
               title="是否要删除素材?"
               onConfirm={this.delEvent.bind(this, record.id)}

@@ -100,6 +100,8 @@ class MyOrder extends Component{
   }
   //搜索
   searchEvent = () => {
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1});
+    this.setState(pagination);
     this.loadList();
   }
   //接收此广告

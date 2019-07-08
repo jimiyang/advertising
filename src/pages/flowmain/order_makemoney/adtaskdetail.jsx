@@ -146,6 +146,20 @@ class AdTaskDetail extends Component{
             </div>
           </dd>
           <dd>
+            活动素材：
+              {
+                form.postContent === undefined ? <div className={style.coverimg}><p>暂未绑定活动素材</p></div>
+                :
+                <div className={style.coverimg}>
+                  <p>展示封面标题，点击可查看详情</p>
+                  <a href={`${window.common.articleUrl}fshstatic/view.html?id=${form.postContent}`} target="_blank">
+                    <img src={form.impImage} />
+                    <span>{form.extrendJson}</span>
+                  </a>
+                </div>
+              }
+          </dd>
+          <dd>
             <em className={style.name}>时间范围</em>
             <div>{window.common.getDate(form.dateStart, true)}至{window.common.getDate(form.dateEnd, true)}</div>
           </dd>

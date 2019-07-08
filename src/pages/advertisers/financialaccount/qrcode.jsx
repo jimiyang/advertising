@@ -12,16 +12,14 @@ class QrCode extends Component{
   constructor(props) {
     super(props);
     this.state = {
-      redirect: false,
       operatorLoginName: null,
       qrUrl: null,
       orderNo: null,
       amount: null,
-      messageTip: null,
+      messageTip: '充值订单支付中',
       type: 'WX'
     };
   }
-  
   async componentWillMount() {
     const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
     if (!loginInfo) return false;
@@ -39,9 +37,27 @@ class QrCode extends Component{
       operatorLoginName,
       orderNo
     };
-    //this.getOrderQuery(params);
-    //this.orderStatus(params);
-    timer=window.setInterval(this.orderStatus(params), 3000);
+    this.orderStatus(params);
+  }
+  orderStatus = (params) => {
+    timer = setTimeout(() => {
+      orderQuery(params).then(rs => {
+        this.setState({messageTip: rs.message});
+        console.log(rs);
+        if(rs.success) {
+          if (rs.data.status === 1) {
+            this.openNotification();
+          } else {
+            message.error(rs.data.msg);
+          }
+          router.push('/main/depositlist');
+          clearTimeout(timer);
+          return false;
+        } else {
+          this.orderStatus(params);
+        }
+      })
+    }, 2000);
   }
   openNotification = ()=>{
     //使用notification.success()弹出一个通知提醒框 
@@ -57,30 +73,14 @@ class QrCode extends Component{
       duration: 2, //1秒
     }); 
   }
-  orderStatus = (params) => {
-    orderQuery(params).then(rs => {
-      console.log(rs);
-      if (rs.data.status === 1) {
-        this.openNotification();
-        router.push('/main/depositlist');
-        clearTimeout(timer);
-      } else if(rs.code === 300107 || rs.data.status === 2){
-        timer=window.setInterval(this.orderStatus(params), 500);
-      }
-    }).catch(error => {
-      this.setState({messageTip: error.message});
-    });
-  }
   componentWillUnmount() {
-    clearInterval(timer);
+    clearTimeout(timer);
   }
   render() {
     const {
-      redirect,
       qrUrl,
       messageTip
     } = this.state;
-    if (redirect) return (<Redirect to="/relogin" />);
     return (
       <div className={style.financialModel}>
         <h1 className="nav-title">扫码充值</h1>

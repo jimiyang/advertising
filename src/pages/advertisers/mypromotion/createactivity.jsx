@@ -90,14 +90,23 @@ class CreateAdvertity extends Component {
         break;
       case 'unitPrice':
         form = Object.assign(form, {unitPrice: e.target.value});
-        if (form.postAmtTotal !== 0) {
-          this.setState({validReading: Math.round(form.postAmtTotal / e.target.value)});
+        if (form.postAmtTotal > 0) {
+          console.log(form.postAmtTotal / e.target.value);
+          if (parseInt(form.postAmtTotal / e.target.value) === 0) {
+            message.error('您的推广次数须大于0次');
+            return false;
+          }
+          this.setState({validReading: parseInt(form.postAmtTotal / e.target.value)});
         }
         break;
       case 'postAmtTotal':
         form = Object.assign(form, {postAmtTotal: e.target.value});
-        if (form.unitPrice !== 0) {
-          this.setState({validReading: Math.round(e.target.value / form.unitPrice)});
+        if (form.unitPrice > 0) {
+          if (parseInt(form.postAmtTotal / e.target.value) === 0) {
+            message.error('您的推广次数须大于0次');
+            return false;
+          }
+          this.setState({validReading: parseInt(e.target.value / form.unitPrice)});
         }
         break;
       case 'categoryType':
@@ -130,7 +139,11 @@ class CreateAdvertity extends Component {
           message.warning('活动周期最多7天！');
           return false;
         }
-        add(form).then(rs => {
+        if (this.state.validReading === 0) {
+          message.error('必须大于0');
+        }
+        console.log(form);
+        /*add(form).then(rs => {
           message.success(rs.message);
           router.push({
             pathname: '/main/selectmateria',
@@ -138,7 +151,7 @@ class CreateAdvertity extends Component {
               id: rs.data.id
             }
           });
-        });
+        });*/
       }
     })
     //router.push('/main/selectmateria');
@@ -427,7 +440,8 @@ class CreateAdvertity extends Component {
                             initialValue: form.unitPrice || '',
                             rules: [
                               {required: true, message: '请输入阅读单价'},
-                              {pattern: /^[0-9]+([.]{1}[0-9]{1,2})?$/, message: '只能输入整数或小数(保留后两位)'}
+                              {pattern: /^([1-9][0-9]*){1,3}|(^[0-9][.][0-9]{1}$)|(^[0-9][.][0-9]{2}$)$/, message: '请输入大于0的整数或小数(保留后两位)'}
+                              //{pattern: /(^[1-9]{1}[0-9]*$)|(^[0-9]*\.[0-9]{1}$)|(^[0-9]*\.[0-9]{2}$)/, message: '请输入大于0的整数或小数(保留后两位)'}
                             ]
                           }
                         )(<div><Input className={style.ipttxt} onChange={this.changeFormEvent.bind(this, 'unitPrice')} />元/次阅读</div>)
@@ -443,7 +457,7 @@ class CreateAdvertity extends Component {
                             initialValue: form.postAmtTotal || '',
                             rules: [
                               {required: true, message: '请输入活动预算'},
-                              {pattern: /^[0-9]+([.]{1}[0-9]{1,2})?$/, message: '只能输入整数或小数(保留后两位)'}
+                              {pattern: /^([1-9][0-9]*){1,3}|(^[0-9][.][0-9]{1}$)|(^[0-9][.][0-9]{2}$)$/, message: '请输入大于0的整数或小数(保留后两位)'}
                             ]
                           }
                         )(<div className={style.planCount}>

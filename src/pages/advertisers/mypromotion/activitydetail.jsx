@@ -139,7 +139,7 @@ class ActivityDetail extends Component{
                     :
                     <div className={style.coverimg}>
                       <p>展示封面标题，点击可查看详情</p>
-                      <a href={`${window.common.articleUrl}?id=${form.postContent}`} target="_blank">
+                      <a href={`${window.common.articleUrl}fshstatic/view.html?id=${form.postContent}`} target="_blank">
                         <img src={form.impImage} />
                         <span>{form.extrendJson}</span>
                       </a>

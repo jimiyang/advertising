@@ -51,7 +51,7 @@ class RechargeDetailModel extends Component{
           <em className={style.name}>订单状态：</em><div>{status[form.orderStatus]}</div>
         </li>
         <li>
-          <em className={style.name}>充值方式：</em><div>{form.topupType === 'WX' ? '微信' : '支付宝'}</div>
+          <em className={style.name}>充值方式：</em><div>{form.topupType === 1 ? '微信' : '支付宝'}</div>
         </li>
       </ul>
     );

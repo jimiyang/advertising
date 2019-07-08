@@ -511,7 +511,8 @@ class EditAdvertity extends Component {
                             ]
                           }
                         )(<div className={style.planCount}>
-                          <Input className={style.ipttxt} onChange={this.changeFormEvent.bind(this, 'postAmtTotal')} />
+                          
+                          <Input value={form.postAmtTotal} className={style.ipttxt} onChange={this.changeFormEvent.bind(this, 'postAmtTotal')} />
                           元<span>可用余额<em>{availableBalance}</em>元</span>
                           <Button onClick={this.saveMoneyEvent.bind(this)}>充值</Button>
                         </div>)

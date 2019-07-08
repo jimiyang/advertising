@@ -39,7 +39,7 @@ class Editor extends Component {
     return (
       <div className={style.mypromotion}>
         <div className={style.content}>
-          <iframe className={style.iframe} src={`http://test.fensihui.com/fshstatic/#/?merchantCode=${merchantCode}&id=${id}&ltt=true&createBy=${employeeId}&lttType=${type}&loginName=${loginName}&activityId=${activityId}`} height={iframeHeight}></iframe>
+          <iframe className={style.iframe} src={`${window.common.articleUrl}/fshstatic/#/?merchantCode=${merchantCode}&id=${id}&ltt=true&createBy=${employeeId}&lttType=${type}&loginName=${loginName}&activityId=${activityId}`} height={iframeHeight}></iframe>
         </div>
       </div>
     );

@@ -101,6 +101,8 @@ class ActivityList extends Component{
     this.setState({search});
   }
   searchEvent = () => {
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1});
+    this.setState(pagination);
     this.loadList();
   }
   clearEvent = () => {
@@ -132,7 +134,6 @@ class ActivityList extends Component{
     const {
       search,
       activityData,
-      redirect,
       pagination,
       activityTotal,
       draftTotal
@@ -196,7 +197,7 @@ class ActivityList extends Component{
         width: 250,
         render: (record) => (
           <div className="opeartion-items">
-            <Link className="blue-color" to={{pathname: '/main/viewdetail', state: {id: record.id, type: 0}}}>查看</Link>
+            <Link to={{pathname: '/main/viewdetail', state: {id: record.id, type: 0}}}>查看</Link>
             {record.postStatus === 21 ? <Link className="blue-color ml10" to={{pathname: '/main/viewdetail', state: {id: record.id, type: 1}}}>审核</Link> : null}
             {record.postStatus === 23 ? 
               <Popconfirm
@@ -207,11 +208,11 @@ class ActivityList extends Component{
               >
                 <span className="ml10">取消</span>
               </Popconfirm> : null}
+            {window.common.getDate(new Date().getTime()) > (window.common.getDate(record.dateEnd, false)) ? <Link to={{pathname: '/main/viewactivity', state: {campaignId: record.campaignId}}}>结算</Link> : null}
           </div>
         )
       }
     ];
-    if (redirect) return (<Redirect to="/relogin" />);
     return(
       <div className={style.administrator}>
         <h1 className="nav-title">活动管理</h1>
@@ -259,7 +260,6 @@ class ActivityList extends Component{
           pagination={pagination}
           rowKey={record => record.id}
           className="table"
-          scroll={{x: 1200}}
         />
       </div>
     );

@@ -8,10 +8,9 @@ import Menu from  '../pages/wrap/menu'; //左侧菜单
 import Header from '../pages/wrap/header'; //头部
 import Main from '../pages/wrap/main'; //主页面
 import Login from '../pages/login'; //登录页
-import api from '../api/api';
+import {checkLogin} from '../api/api';
 const {Sider, Content} = Layout;
 window.common = common; //公共方法
-window.api = api; //公共接口方法
 class BasicLayout extends Component {
   constructor(props) {
     super(props);
@@ -29,12 +28,13 @@ class BasicLayout extends Component {
           loginName: query.loginName,
         }
       };
-      window.api.baseInstance('/checkLogin', {loginName: query.loginName}).then(rs => {
-        if (rs.success === true) {
+      //checkLogin({loginName: query.loginName}).then(rs => {
+       // console.log(rs);
+        //if (rs.success === true) {
           this.setState({type: query.type});
           window.localStorage.setItem('login_info', JSON.stringify(params));
-        }
-      });
+        //}
+      //});
     } else {
       const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
       if (!loginInfo) return false;
