@@ -208,7 +208,6 @@ class ActivityList extends Component{
               >
                 <span className="ml10">取消</span>
               </Popconfirm> : null}
-            {window.common.getDate(new Date().getTime()) > (window.common.getDate(record.dateEnd, false)) ? <Link to={{pathname: '/main/viewactivity', state: {campaignId: record.campaignId}}}>结算</Link> : null}
           </div>
         )
       }

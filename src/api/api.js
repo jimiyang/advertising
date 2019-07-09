@@ -10,8 +10,12 @@ export default {baseInstance};*/
 const url = window.location.hostname === 'localhost' ? `/base/` : '/';
 //登录
 export const login = params => axios.post(`${url}login`, params);
+//退出登录
+export const logout = params => axios.post(`${url}logout`, params);
 //检测登录
 export const checkLogin = params => axios.post(`${url}checkLogin`, params);
+//注册
+export const register = params => axios.post(`${url}api/merchant/add`, params);
 //获取对应字典标签
 export const getDictByType = params => axios.post(`${url}admin/system/dict/getDictByType`, params);
 //获取可用余额和冻结余额
@@ -98,4 +102,3 @@ export const withdrawDetail = params => axios.post(`${url}api/withdraw/withdrawD
 export const withdrawAudit = params => axios.post(`${url}api/withdraw/withdrawAudit`, params);
 //提现支付(管理员)
 export const withdrawPay = params => axios.post(`${url}api/withdraw/withdrawPay`, params);
-

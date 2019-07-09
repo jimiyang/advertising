@@ -160,8 +160,8 @@ class AdTaskDetail extends Component{
               }
           </dd>
           <dd>
-            <em className={style.name}>时间范围</em>
-            <div>{window.common.getDate(form.dateStart, true)}至{window.common.getDate(form.dateEnd, true)}</div>
+            <em className={style.name}>活动时间</em>
+            <div>{window.common.getDate(form.dateStart)}至{window.common.getDate(form.dateEnd)}</div>
           </dd>
           <dd>
             <em className={style.name}>计费方式</em>

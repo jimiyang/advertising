@@ -3,6 +3,7 @@ import {Form, Input, Icon, message, Button} from 'antd';
 import router from 'umi/router';
 import Link from 'umi/link';
 import Redirect from 'umi/redirect';
+import {register} from '../api/api';
 class Register extends Component{
   constructor(props) {
     super(props);
@@ -27,7 +28,7 @@ class Register extends Component{
     this.props.form.validateFields((err, values) => {
       if (!err) {
         const form = Object.assign(this.state.form, values);
-        window.api.baseInstance('api/merchant/add', form).then(rs => {
+        register(form).then(rs => {
           message.success(rs.message);
           router.push('/');
         });

@@ -149,7 +149,7 @@ class AdvertDetail extends Component{
             订单号：<div>{form.adMissionOrder.missionId}</div>
           </li>
           <li>
-            接单时间：<div>{window.common.getDate(form.adMissionOrder.createDate, false)}</div>
+            接单时间：<div>{window.common.getDate(form.adMissionOrder.createDate, true)}</div>
           </li>
           <li>
             广告位置：<div>{window.common.advertLocal[form.adMissionOrder.appArticlePosition]}</div>

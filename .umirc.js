@@ -57,7 +57,8 @@ export default {
         {path: '/main/receivead', component: './flowmain/order_makemoney/receivead'}, //接此广告(流量主)
         {path: '/main/adtaskdetail', component: './flowmain/order_makemoney/adtaskdetail'}, //已接广告任务详情(流量主)
         {path: '/main/arningslist', component: './flowmain/myarnings/arningslist'}, //我的收益（结算记录）流量主
-        {path: '/main/putlist', component: './flowmain/myarnings/putlist'}, //提现记录（结算记录）流量主
+        {path: '/main/putlist', component: './flowmain/myarnings/putlist'}, //提现记录(流量主)
+        {path: '/main/getcash', component: './flowmain/myarnings/getcash'}, //提现申请(流量主)
         {path: '/main/employesslist', component: './administrator/employees/employesslist'}, //员工列表(天目管理员)
         {path: '/main/adlist', component: './administrator/admangement/adlist'}, //广告主管理列表(天目管理员)
         {path: '/main/flowlist', component: './administrator/flowmainmangement/flowlist'}, //流量主管理列表(天目管理员)

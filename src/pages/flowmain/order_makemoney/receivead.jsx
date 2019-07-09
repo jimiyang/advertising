@@ -244,7 +244,7 @@ class Receivead extends Component{
             </li>
             <li><em className={style.name}>计费方式：</em><div>{window.common.billingTypesData[form.billingType]}</div></li>
             <li><em className={style.name}>阅读单价：</em><div>{form.unitPrice}元/次阅读</div></li>
-            <li><em className={style.name}>发文时段</em><div>{window.common.getDate(form.createDate, false)}</div></li>
+            <li><em className={style.name}>发文时段</em><div>{window.common.getDate(form.createDate, true)}</div></li>
             <li>
               <Button type="primary" onClick={this.createEvent.bind(this)}>确定</Button>
               <Button className="ml30" onClick={this.goBackEvent.bind(this)}>返回</Button>

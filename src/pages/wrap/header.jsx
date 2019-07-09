@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
-import {Button} from 'antd';
+import {Button, message} from 'antd';
 import router from 'umi/router';
+import {logout} from '../../api/api';
 class Header extends Component{
   constructor(props) {
     super(props);
@@ -15,8 +16,14 @@ class Header extends Component{
     this.setState({loginInfo});
   }
   LoginOutEvent = () => {
-    window.localStorage.removeItem('login_info');
-    router.push('/');
+    const loginInfo = this.state.loginInfo;
+    logout({loginName: loginInfo.data.loginName}).then(rs => {
+      if (rs.success) {
+        message.success(rs.data.returnCode);
+        window.localStorage.removeItem('login_info');
+        router.push('/');
+      }
+    })
   }
   render() {
     const {

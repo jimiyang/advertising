@@ -34,7 +34,6 @@ class ArningsList extends Component {
   }
   async componentWillMount() {
     const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
-    if (!loginInfo) return false;
     await this.setState({loginName: loginInfo.data.loginName});
     this.loadList();
     this.getCaQuery();
@@ -151,7 +150,7 @@ class ArningsList extends Component {
         key: 'createDate',
         dataIndex: 'createDate',
         render: (record) => (
-          <span>{window.common.getDate(record, false)}</span>
+          <span>{window.common.getDate(record, true)}</span>
         )
       }
     ];

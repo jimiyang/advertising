@@ -161,7 +161,7 @@ class HavedTask extends Component{
         dataIndex: 'createDate',
         width: 200,
         render: (record) => (
-          <span>{window.common.getDate(record)}</span>
+          <span>{window.common.getDate(record, true)}</span>
         )
       },
       {
@@ -170,8 +170,8 @@ class HavedTask extends Component{
         width: 200,
         render: (record) => (
           <div>
-            <p>{window.common.getDate(record.planPostArticleTime, false)}</p>
-            <p>{record.realPostArticleTime === undefined ? '--' : window.common.getDate(record.realPostArticleTime, false)}</p>
+            <p>{record.planPostArticleTime === undefined ? '--' : window.common.getDate(record.planPostArticleTime, true)}</p>
+            <p>{record.realPostArticleTime === undefined ? '--' : window.common.getDate(record.realPostArticleTime, true)}</p>
           </div>
         )
       },

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {DatePicker, Select, Input, Button, Table, message} from 'antd';
+import {DatePicker, Select, Input, Button, Table, message, Checkbox, Popconfirm} from 'antd';
 import Redirect from 'umi/redirect';
 import style from '../style.less';
 import moment from 'moment';
@@ -28,7 +28,10 @@ class TaskList extends Component{
         onChange: this.changePage,
         onShowSizeChange: this.onShowSizeChange
       },
-      activityData: []
+      activityData: [],
+      selectedRowKeys: [],
+      allchk: false,
+      ischecked: false
     };
   }
   async componentWillMount() {
@@ -46,22 +49,36 @@ class TaskList extends Component{
     limit: pagination.limit,
     ...search
    };
+   
    listallMission(params).then(rs => {
+      //console.log(rs.data);
       const p = Object.assign(pagination, {total: rs.total});
-      this.setState({activityData: rs.data, pagination: p});
+      const rowKeys = this.getSettleData(rs.data);
+      this.setState({activityData: rs.data, pagination: p, selectedRowKeys: rowKeys});
    });
   }
+  getSettleData = (data) => {
+    let arr = [];
+    if (data !== '' || data.length !== 0) {
+      data.map((item) => {
+        if (item.missionStatus === 13) {
+          arr.push(item);
+        }
+      });
+    }
+    return arr;
+  } 
   changePage = (page) => {
     page = page === 0 ? 1 : page;
     const pagination = Object.assign(this.state.pagination, {currentPage: page});
-    this.setState({pagination});
+    this.setState({pagination, ischecked: false, allchk: false});
     this.loadList();
   }
   //改变每页条数事件
   onShowSizeChange = (current, size) => {
     let p = this.state.pagination;
     p = Object.assign(p, {currentPage: current, limit: size});
-    this.setState({pagination: p});
+    this.setState({pagination: p, ischecked: false, allchk: false});
     this.loadList();
   }
   changeFormEvent = (type, e, value) => {
@@ -105,123 +122,151 @@ class TaskList extends Component{
     );
     this.setState({search});
   }
+  //全选反选
+  onSelectChange = (e) => {
+    this.setState({allchk: e.target.checked, ischecked: e.target.checked});
+    console.log(this.state.selectedRowKeys);
+  }
+  //单条结算
+  settleEvent = (record) => {
+    console.log(record);
+  }
+  //批量结算
+  batchSettleEvent = () => {
+    console.log(1);
+  }
   render() {
     const {
       search,
       activityData,
-      redirect,
-      pagination
+      pagination,
+      selectedRowKeys,
+      allchk,
+      ischecked
     } = this.state;
     const columns = [
       {
-        title: '序号',
-        key: 'id',
-        dataIndex: 'id',
-        width: 100,
-      },
-      {
-        title: '任务时间',
-        width: 200,
-        render: (record) => (
-          <span>{window.common.getDate(record.planPostArticleTime, false)}</span>
-        )
-      },
-      {
-        title: '广告主账户',
-        key: 'adMerchantCode',
-        dataIndex: 'adMerchantCode',
-        width: 200
-      },
-      {
-        title: '活动名称',
-        key: 'campaignName',
-        dataIndex: 'campaignName',
-        width: 200
-      },
-      {
-        title: '流量主账户',
-        key: 'flowMerchantCode',
-        dataIndex: 'flowMerchantCode',
-        width: 200
-      },
-      {
-        title: (<div>接单公众号<p>分类 & 标签</p></div>),
-        key: 'appNickName',
-        dataIndex: 'appNickName',
-        width: 300
-      },
-      {
-        title: '接单时间',
-        key: 'createDate',
-        dataIndex: 'createDate',
-        width: 200,
-        render: (record) => (
-          <span>{window.common.getDate(record, false)}</span>
-        )
-      },
-      {
-        title: (<div>预计发文时间<p>实际发文时间</p></div>),
-        key: 'planPostArticleTime',
-        width: 300,
+        title: (<div><Checkbox checked={allchk} onChange={this.onSelectChange.bind(this)}/></div>),
+        key: 'status',
         render: (record) => (
           <div>
-            <p>{window.common.getDate(record.planPostArticleTime, false)}</p>
-            <p>{record.realPostArticleTime === undefined ? '--' : window.common.getDate(record.realPostArticleTime, false)}</p>
+            {record.missionStatus === 13 ? <Checkbox checked={ischecked} /> : null}
           </div>
         )
       },
       {
-        title: '广告位置',
-        key: 'appArticlePosition',
-        dataIndex: 'appArticlePosition',
-        width: 200,
+        title: (<div><p>活动名称</p><p>活动时间</p><p>广告主名称</p></div>),
+        key: 'campaignName',
+        width: 400,
         render: (record) => (
-          <span>{window.common.advertLocal[record]}</span>
+          <div>
+            <p>{record.campaignName}</p>
+            <p>{record.dateStart !== undefined ? window.common.getDate(record.dateStart) : '--'}至{record.dateEnd !== undefined ? window.common.getDate(record.dateEnd) : '--'}</p>
+            <p>{record.advertiserName === undefined ? '--' : record.advertiserName}</p>
+          </div>
         )
       },
       {
-        title: '接单阅读数',
+        title: (<div><p>公众号名称</p><p>广告位置</p><p>流量主名称</p></div>),
+        key: 'appNickName',
+        width: 300,
+        render: (record) => (
+          <div>
+            <p>{record.appNickName}</p>
+            <p>{window.common.advertLocal[record.appArticlePosition]}</p>
+            <p>{record.flowMerchantName}</p>
+          </div>
+        )
+      },
+      {
+        title: (<div><p>活动cpc单价</p><p>任务cpc单价</p></div>),
+        key: 'adUnitPrice',
+        width: 200,
+        render: (record) => (
+          <div>
+            <p>{record.adUnitPrice}</p>
+            <p>{record.flowUnitPrice}</p>
+          </div>
+        )
+      },
+      {
+        title: (<div><p>接单时间</p><p>预计发文时间</p><p>实际发文时间</p></div>),
+        key: 'createDate',
+        width: 300,
+        render: (record) => (
+          <div>
+            <p>{record.createDate !== undefined ? window.common.getDate(record.createDate, true) : '--'}</p>
+            <p>{record.planPostArticleTime !== undefined ? window.common.getDate(record.planPostArticleTime, true) : '--'}</p>
+            <p>{record.realPostArticleTime !== undefined ? window.common.getDate(record.realPostArticleTime, true) : '--'}</p>
+          </div>
+        )
+      },
+      {
+        title: (<div><p>接单阅读量</p><p>实际完成阅读量</p></div>),
         key: 'missionReadCnt',
-        dataIndex: 'missionReadCnt',
         width: 200,
         render: (record) => (
-          <span>{window.common.formatNumber(record)}</span>
+          <div>
+            <p>{record.missionReadCnt}</p>
+            <p>{record.missionRealReadCnt}</p>
+          </div>
         )
       },
       {
-        title: '预期支出金额',
+        title: '结算阅读量',
+        key: 'settleReadCnt',
+        dataIndex: 'settleReadCnt',
+        width: 200,
+        render: (record) => (
+          <Input disabled={true} value={record} style={{width: '80px'}} />
+        )
+      },
+      {
+        title: (<div><p>广告主支出</p><p>流量主收入</p></div>),
         key: 'adEstimateCost',
         width: 200,
         render: (record) => (
-          <span>{(record.missionReadCnt * record.adUnitPrice).toFixed(2)}</span>
+          <div>
+            <p>{record.adCost}</p>
+            <p>{record.flowIncome}</p>
+          </div>
         )
       },
       {
-        title: '实际结算阅读',
-        key: 'missionRealReadCnt',
-        dataIndex: 'missionRealReadCnt',
-        width: 200,
-        render: (record) => (
-          <span>{record === undefined ? 0 : window.common.formatNumber(record)}{record}</span>
-        )
-      },
-      {
-        title: '结算金额',
-        key: 'adRealCost',
-        dataIndex: 'adRealCost',
+        title: '平台利润',
+        key: 'tmProfit',
+        dataIndex: 'tmProfit',
         width: 200
       },
       {
         title: '任务状态',
         key: 'missionStatus',
-        dataIndex: 'missionStatus',
         width: 200,
         render: (record) => (
-          <span>{window.common.orderStatus[Number(record) - 10]}</span>
+          <div>
+            <span>{window.common.orderStatus[Number(record.missionStatus) - 10]}</span>
+            {record.missionStatus === 13 ?
+              <Popconfirm
+                title="是否要结算此任务?"
+                onConfirm={this.settleEvent.bind(this, record)}
+                okText="是"
+                cancelText="否"
+              >
+                <span className="blue-color ml10">结算</span> 
+              </Popconfirm>
+              : null
+            }
+          </div>
         )
       }
     ];
-    if (redirect) return (<Redirect to="/relogin" />);
+    const rowSelection = null;/*{
+      onChange: this.onSelectChange,
+      selectedRowKeys: this.state.selectedRowKeys,
+      getCheckboxProps: (record) => ({
+        defaultChecked: selectedRowKeys.includes(`${record.goods_id}`)
+      }),
+    };*/
     return(
       <div className={style.administrator}>
         <h1 className="nav-title">活动管理</h1>
@@ -263,13 +308,15 @@ class TaskList extends Component{
             <Button className="ml10" onClick={this.clearEvent.bind(this)}>重置</Button>
           </li>
         </ul>
+        <div className={style.all}><Button type="primary" onClick={this.batchSettleEvent.bind(this)}>批量结算</Button></div>
         <Table
           dataSource={activityData}
           columns={columns}
           pagination={pagination}
           rowKey={record => record.id}
+          rowSelection={rowSelection}
+          scroll={{x: 1500}}
           className="table"
-          scroll={{x: 2800}}
         />
       </div>
     );

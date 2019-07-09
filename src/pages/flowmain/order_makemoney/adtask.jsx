@@ -124,8 +124,8 @@ class AdTask extends Component{
         title: (<div><p>预计发文时间</p><p>实际发文时间</p></div>),
         render: (record) => (
           <div>
-            <p>{window.common.getDate(record.planPostArticleTime, false)}</p>
-            <p>{record.realPostArticleTime !== undefined ? window.common.getDate(record.realPostArticleTime, false) : '--'}</p>
+            <p>{window.common.getDate(record.planPostArticleTime, true)}</p>
+            <p>{record.realPostArticleTime !== undefined ? window.common.getDate(record.realPostArticleTime, true) : '--'}</p>
           </div>
         )
       },
