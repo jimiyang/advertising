@@ -93,7 +93,7 @@ export const listallMission = params => axios.post(`${url}api/ad/mission/listall
 //结算详情
 export const list4Settle = params => axios.post(`${url}manager/campaign/list4Settle`, params);
 //活动结算审核(管理员)
-export const settleCampaign = params => axios.post(`${url}manager/campaign/settleCampaign`, params);
+export const settleCampaign = params => axios.post(`${url}flow/mission/settle`, params);
 //管理员查询提现列表(管理员)
 export const queryWithdrawManager = params => axios.post(`${url}api/withdraw/queryWithdrawManager`, params);
 //账户提现详情(管理员)

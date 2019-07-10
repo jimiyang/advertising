@@ -142,8 +142,8 @@ class CreateAdvertity extends Component {
         if (this.state.validReading === 0) {
           message.error('必须大于0');
         }
-        console.log(form);
-        /*add(form).then(rs => {
+        //console.log(form);
+        add(form).then(rs => {
           message.success(rs.message);
           router.push({
             pathname: '/main/selectmateria',
@@ -151,7 +151,7 @@ class CreateAdvertity extends Component {
               id: rs.data.id
             }
           });
-        });*/
+        });
       }
     })
     //router.push('/main/selectmateria');
@@ -261,7 +261,6 @@ class CreateAdvertity extends Component {
         }
       },
     };
-    if (redirect) return (<Redirect to="/relogin" />);
     return(
       <div className={style.mypromotion}>
         <Modal

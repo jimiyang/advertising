@@ -28,7 +28,7 @@ class Enter extends Component {
             <h1>流量主</h1>
             <p>广告丰富品相好，价格可观收入多</p>
             <img src={require('../../assets/media-ico.jpg')} style={{marginBottom: '47px'}} />
-            <Link to={{pathname: '/register', state: {type: 2}}}>入住联拓推</Link>
+            <Link to={{pathname: '/register', state: {type: 2}}}>入驻联拓推</Link>
           </li>
         </ul>
       </div>

@@ -258,6 +258,7 @@ class ActivityList extends Component{
           columns={columns}
           pagination={pagination}
           rowKey={record => record.id}
+          scroll={{x: 1500}}
           className="table"
         />
       </div>

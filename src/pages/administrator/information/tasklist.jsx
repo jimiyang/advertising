@@ -1,12 +1,14 @@
 import React, {Component} from 'react';
-import {DatePicker, Select, Input, Button, Table, message, Checkbox, Popconfirm} from 'antd';
+import {DatePicker, Select, Input, Button, Table, message, Checkbox, Popconfirm, notification} from 'antd';
 import Redirect from 'umi/redirect';
 import style from '../style.less';
 import moment from 'moment';
 import {
-  listallMission
+  listallMission,
+  settleCampaign
 } from '../../../api/api';
 const Option = Select.Option;
+let rowKeys = [];
 class TaskList extends Component{
   constructor(props) {
     super(props);
@@ -31,7 +33,9 @@ class TaskList extends Component{
       activityData: [],
       selectedRowKeys: [],
       allchk: false,
-      ischecked: false
+      ischecked: [],
+      isDisabled: false,
+      isSubmit: false
     };
   }
   async componentWillMount() {
@@ -51,15 +55,15 @@ class TaskList extends Component{
    };
    
    listallMission(params).then(rs => {
-      //console.log(rs.data);
       const p = Object.assign(pagination, {total: rs.total});
-      const rowKeys = this.getSettleData(rs.data);
-      this.setState({activityData: rs.data, pagination: p, selectedRowKeys: rowKeys});
+      const data = rs.data === undefined ? [] : rs.data;
+      //const rowKeys = this.getSettleData(data);
+      this.setState({activityData: data, pagination: p});
    });
   }
   getSettleData = (data) => {
     let arr = [];
-    if (data !== '' || data.length !== 0) {
+    if (data !== undefined || data.length !== 0) {
       data.map((item) => {
         if (item.missionStatus === 13) {
           arr.push(item);
@@ -106,7 +110,7 @@ class TaskList extends Component{
   }
   searchEvent = () => {
     const pagination = Object.assign(this.state.pagination, {currentPage: 1});
-    this.setState(pagination);
+    this.setState({pagination});
     this.loadList();
   }
   clearEvent = () => {
@@ -120,37 +124,124 @@ class TaskList extends Component{
         campaignName: null
       }
     );
-    this.setState({search});
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1});
+    this.setState({search, pagination});
+    this.loadList();
   }
   //全选反选
   onSelectChange = (e) => {
-    this.setState({allchk: e.target.checked, ischecked: e.target.checked});
-    console.log(this.state.selectedRowKeys);
+    let {activityData} = this.state;
+    let rowKeys = [];
+    if (e.target.checked === true) {
+      rowKeys =  this.getSettleData(activityData);
+    } else {
+      rowKeys = [];
+    }
+    this.setState({allchk: e.target.checked, ischecked: e.target.checked, selectedRowKeys: rowKeys});
+  }
+  openNotification = (str)=>{
+    //使用notification.success()弹出一个通知提醒框 
+    notification.info({
+      message:"结算状态",
+      description: (str),
+      duration: 10, //1秒
+    }); 
   }
   //单条结算
-  settleEvent = (record) => {
-    console.log(record);
+  settleEvent = (item) => {
+    const loginName = this.state.loginName;
+    const params = {
+      settleMissions: [
+        {
+          missionId: item.missionId,
+          settleReadCnt: item.settleReadCnt
+        }
+      ],
+      loginName
+    };
+    this.setState({isSubmit: true});
+    if (this.state.isSubmit === true) {
+      message.error('请勿重复结算!');
+      return false;
+    }
+    settleCampaign(params).then(rs => {
+      let color='';
+      let msg;
+      if(rs.data[0].code === 1) {
+        color = 'red-color';
+        msg = '结算失败';
+      } else {
+        color = 'green-color';
+        msg = rs.data[0].data;
+      }
+      this.openNotification(<div><p className={`${color}`}>{msg}</p></div>);
+      const pagination = Object.assign(this.state.pagination, {currentPage: 1});
+      this.setState({pagination, isSubmit: false});
+      this.loadList();
+    });
+  }
+  singleEvent = (item, index, e) => {
+    let ischecked = this.state.ischecked;
+    if (e.target.checked === true) {
+      rowKeys[index] = item;
+      ischecked[index] = true;
+    } else {
+      rowKeys.splice(index, 1);
+      ischecked[index] = false;
+    }
+    this.setState({ischecked, selectedRowKeys: rowKeys});
   }
   //批量结算
   batchSettleEvent = () => {
-    console.log(1);
+    let {selectedRowKeys, loginName} = this.state;
+    let settleMissions = [];
+    selectedRowKeys.map((item) => {
+      settleMissions.push({missionId: item.missionId, settleReadCnt: item.settleReadCnt, title: item.adCampaign.advertiserName});
+    });
+    if (selectedRowKeys.length === 0) {
+      message.error('请选择需要结算的数据');
+      return false;
+    }
+    this.setState({isDisabled: true});
+    const params = {
+      loginName,
+      settleMissions
+    };
+    console.log(params);
+    let arr = [];
+    settleCampaign(params).then(rs => {
+      this.setState({isDisabled: false});
+      rs.data.map((item, index) => {
+        if (item.data === undefined) {
+          arr.push(<p key={index}>结算失败</p>);
+        } else {
+          arr.push(<p key={index}>{item.data}</p>);
+        }
+      });
+      this.openNotification(<div>{arr}</div>);
+      const pagination = Object.assign(this.state.pagination, {currentPage: 1});
+      this.setState({pagination});
+      this.loadList();
+    });
   }
   render() {
     const {
       search,
       activityData,
       pagination,
-      selectedRowKeys,
       allchk,
-      ischecked
+      ischecked,
+      selectedRowKeys,
+      isDisabled
     } = this.state;
     const columns = [
       {
-        title: (<div><Checkbox checked={allchk} onChange={this.onSelectChange.bind(this)}/></div>),
+        title: (<div>{<Checkbox checked={allchk} onChange={this.onSelectChange.bind(this)}/>}</div>),
         key: 'status',
-        render: (record) => (
+        render: (text, record, index) => (
           <div>
-            {record.missionStatus === 13 ? <Checkbox checked={ischecked} /> : null}
+            <p>{record.id}</p>
+            {record.missionStatus === 13 ? <Checkbox checked={ischecked[index]} onChange={this.singleEvent.bind(this, record, index)} /> : null}
           </div>
         )
       },
@@ -161,8 +252,8 @@ class TaskList extends Component{
         render: (record) => (
           <div>
             <p>{record.campaignName}</p>
-            <p>{record.dateStart !== undefined ? window.common.getDate(record.dateStart) : '--'}至{record.dateEnd !== undefined ? window.common.getDate(record.dateEnd) : '--'}</p>
-            <p>{record.advertiserName === undefined ? '--' : record.advertiserName}</p>
+            <p>{record.adCampaign.dateStart !== undefined ? window.common.getDate(record.adCampaign.dateStart) : '--'}至{record.adCampaign.dateEnd !== undefined ? window.common.getDate(record.adCampaign.dateEnd) : '--'}</p>
+            <p>{record.adCampaign.advertiserName === undefined ? '--' : record.adCampaign.advertiserName}</p>
           </div>
         )
       },
@@ -218,7 +309,7 @@ class TaskList extends Component{
         dataIndex: 'settleReadCnt',
         width: 200,
         render: (record) => (
-          <Input disabled={true} value={record} style={{width: '80px'}} />
+          <Input disabled={true} value={record} style={{width: '80px', textAlign: 'center'}} />
         )
       },
       {
@@ -260,13 +351,6 @@ class TaskList extends Component{
         )
       }
     ];
-    const rowSelection = null;/*{
-      onChange: this.onSelectChange,
-      selectedRowKeys: this.state.selectedRowKeys,
-      getCheckboxProps: (record) => ({
-        defaultChecked: selectedRowKeys.includes(`${record.goods_id}`)
-      }),
-    };*/
     return(
       <div className={style.administrator}>
         <h1 className="nav-title">活动管理</h1>
@@ -308,13 +392,12 @@ class TaskList extends Component{
             <Button className="ml10" onClick={this.clearEvent.bind(this)}>重置</Button>
           </li>
         </ul>
-        <div className={style.all}><Button type="primary" onClick={this.batchSettleEvent.bind(this)}>批量结算</Button></div>
+        <div className={style.all}><Button type="primary" disabled={isDisabled} onClick={this.batchSettleEvent.bind(this)}>批量结算</Button></div>
         <Table
           dataSource={activityData}
           columns={columns}
           pagination={pagination}
           rowKey={record => record.id}
-          rowSelection={rowSelection}
           scroll={{x: 1500}}
           className="table"
         />

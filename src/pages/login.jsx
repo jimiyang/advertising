@@ -7,7 +7,7 @@ class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loginName: 'hahahahah1111', //流量主：hahahahah1111 //广告主：topup20190520 //管理员：SHcszfwx
+      loginName: 'SHcszfwx', //流量主：hahahahah1111 //广告主：topup20190520 //管理员：SHcszfwx
       password: '111qqq'
     }
   }

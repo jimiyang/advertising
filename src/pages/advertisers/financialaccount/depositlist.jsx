@@ -243,7 +243,10 @@ class DepositList extends Component{
         key: 'orderStatus',
         dataIndex: 'orderStatus',
         render: (record) => (
-          <span>{status[record]}</span>
+          <div>
+            <span>{status[record]}</span>
+            {record === 2 ? <a href="">重新检测</a> : null}
+          </div>
         )
       },
       {
@@ -259,7 +262,7 @@ class DepositList extends Component{
         key: 'successTime',
         dataIndex: 'successTime',
         render: (record) => (
-          <span>{record === undefined ? '-' : window.common.getDate(record, true)}</span>
+          <span>{record === undefined ? '--' : window.common.getDate(record, true)}</span>
         )
       }
     ];

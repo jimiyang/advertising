@@ -31,6 +31,7 @@ input, .radius2, .ant-input, .ant-select-selection{border-radius: 2px;}
 .blue-color{color: #498DFF;}
 .orange-color{color: #FD9188;}
 .red-color{color: #f00;}
+.green-color{color: #228B22;}
 .ant-btn.btn-orange{background: #FD9188;color: #fff;border:1px solid rgba(253, 145, 136, 1)}
 .relogin-blocks{text-align: center;font-size: 16px;position: absolute; left: 50%;top: 50%;margin-top: -135px;margin-left: -140px;}
 .relogin-blocks img{width: 280px;height: 250px;}

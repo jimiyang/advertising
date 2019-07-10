@@ -67,12 +67,15 @@
   .receiveAd{
     padding: 50px 0 10px 0;
     li{
-      display: flex;align-items: flex-start;margin-bottom: 20px;font-size: 13px;
+      display: flex;align-items: flex-start;font-size: 13px;min-height:70px;
       em.name{
         display: block;width: 150px;
       }
       div{
-        input, >div{height: 36px;line-height: 36px;}
+        input, >div{height: 36px;line-height: 36px;width: 260px;}
+        .ipttxt{
+          -webkit-appearance: none; -moz-appearance: textfield;
+        }
       }
       .coverimg{
         position: relative;

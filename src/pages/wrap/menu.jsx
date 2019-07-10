@@ -38,7 +38,7 @@ class MenuApp extends Component {
               name: '我的财务支出',
               ico: 'money-collect',
               children: [
-                {id: 40, name: '财务支出记录', url: '/main/depositlist'}
+                {id: 40, name: '财务记录', url: '/main/depositlist'}
               ]
             }
           ],

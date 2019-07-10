@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Select, DatePicker, Input, message, Button} from 'antd';
+import {Select, DatePicker, Input, message, Button, Form} from 'antd';
 import style from './style.less';
 import moment from 'moment';
 import Redirect from 'umi/redirect';
@@ -103,6 +103,7 @@ class Receivead extends Component{
         break;
       case 'missionReadCnt':
         obj = {[type]: e.target.value};
+        
         break;
       case 'planPostArticleTime':
         obj = {[type]: value};
@@ -114,41 +115,35 @@ class Receivead extends Component{
     this.setState({form});
   }
   //确定接广告提交事件
-  createEvent = () => {
-    const {form, loginName} = this.state;
-    const params = {
-      campaignId: form.campaignId,
-      appId: form.appId,
-      appNickName: form.appNickName,
-      adMerchantCode: form.merchantCode,
-      appMediaTags: form.targetMediaCategory,
-      campaignName: form.campaignName,
-      unitPrice: form.unitPrice,
-      loginName,
-      articlePosition: form.articlePosition,
-      missionReadCnt: form.missionReadCnt,
-      planPostArticleTime: form.planPostArticleTime
-    };
-    if (isNull(form.articlePosition)) {
-      message.error('请选择发文位置');
-      return false
-    }
-    if (isNull(form.missionReadCnt)) {
-      message.error('请填写接单阅读量');
-      return false;
-    }
-    if (isNull(form.planPostArticleTime) || form.planPostArticleTime === undefined) {
-      message.error('请选择预计发文时间');
-      return false;
-    }
-    let reg = /^\+?[1-9][0-9]*$/;
-    if (!reg.test(form.missionReadCnt)) {
-      message.error('只能输入整数');
-      return false;
-    }
-    flowMissionAdd(params).then(rs => {
-      message.success(rs.message);
-      window.history.go(-1);
+  createEvent = (e) => {
+    e.preventDefault();
+    this.props.form.validateFields((err, values) => {
+      if (!err) {
+        let {form, loginName} = this.state;
+        //form = Object.assign(form, values);
+        console.log(form);
+        const params = {
+          campaignId: form.campaignId,
+          appId: form.appId,
+          appNickName: form.appNickName,
+          adMerchantCode: form.merchantCode,
+          appMediaTags: form.targetMediaCategory,
+          campaignName: form.campaignName,
+          unitPrice: form.unitPrice,
+          loginName,
+          articlePosition: form.articlePosition,
+          missionReadCnt: form.missionReadCnt,
+          planPostArticleTime: form.planPostArticleTime
+        };
+        flowMissionAdd(params).then(rs => {
+          if (rs.success) {
+            message.success(rs.message);
+            window.history.go(-1);
+          } else {
+            message.error(rs.message);
+          }
+        });
+      }
     });
   }
   goBackEvent = () => {
@@ -170,47 +165,96 @@ class Receivead extends Component{
     const {
       form,
       selmediaValData,
-      selprovinceValData,
-      redirect
+      selprovinceValData
     } = this.state;
-    if (redirect) return (<Redirect to="/relogin" />);
+    const {getFieldDecorator} = this.props.form;
+    const passwordValidator = (rule, value, callback) => {
+      //const { getFieldValue } = this.props.form;
+      if (value > form.availableCnt) {
+        callback('建议接单数量不能大于最大阅读数');
+      } // 必须总是返回一个 callback，否则 validateFields 无法响应
+      let reg = /^[1-9]\d*$/;
+      if (reg.test(/^[1-9]\d*$/ )) {
+        callback('只能输入整数');
+      }
+      callback(); 
+    };
     return (
       <div className={style.pubAccount}>
         <ul className={style.receiveAd}>
+          <Form onSubmit={this.createEvent}>
             <li><em className={style.name}>接单公众号：</em><div>{form.appNickName}</div></li>
             <li><em className={style.name}>行业标签：</em><div>{form.targetMediaCategory === '[]' ? '不限(默认)' : window.common.removeEmptyArrayEle(selmediaValData).join('、')}</div></li>
             <li>
               <em className={style.name}>发文位置：</em>
-              <div>
-                <Select value={form.articlePosition} className="w260" onChange={this.changeValueEvent.bind(this, 'articlePosition')}>
-                <Option value={null}>请选择</Option>
-                {
-                    window.common.advertLocal.map((item, index) => (
-                    <Option key={index + 1} value={index + 1}>{item}</Option>
-                    ))
-                }
-                </Select>
-              </div>
+              <Form.Item>
+                <div>
+                  {
+                    getFieldDecorator(
+                      'articlePosition',
+                      {
+                        initialValue: form.articlePosition || null,
+                        rules: [
+                          {required: true, message: '请选择发文位置'}
+                        ]
+                      }
+                    )(<Select className="w260" onChange={this.changeValueEvent.bind(this, 'articlePosition')}>
+                      <Option value={null}>请选择</Option>
+                      {
+                          window.common.advertLocal.map((item, index) => (
+                          <Option key={index + 1} value={index + 1}>{item}</Option>
+                          ))
+                      }
+                      </Select>)
+                  }
+                </div>
+              </Form.Item>
             </li>
             <li><em className={style.name}>最大接单阅读量(阅读)：</em><div>{window.common.formatNumber(form.availableCnt)}</div></li>
             <li>
               <em className={style.name}>建议接单数量(阅读)：</em>
-              <div>
-                <Input className="w260" value={form.missionReadCnt} onChange={this.changeValueEvent.bind(this, 'missionReadCnt')} />
-              </div>
+              <Form.Item>
+                {
+                  getFieldDecorator(
+                    'missionReadCnt',
+                    {
+                      initialValue: form.missionReadCnt || '',
+                      rules: [
+                        {required: true, message: '请输入接单阅读数'},
+                        {pattern: /^[1-9]\d*$/ , message: '请输入大于0的整数'},
+                        {validator: passwordValidator}
+                      ]
+                    }
+                  )(<div>
+                    <Input className={`w260 ${style.ipttxt}`} onChange={this.changeValueEvent.bind(this, 'missionReadCnt')} />
+                  </div>)
+                }
+              </Form.Item>
             </li>
             <li>
               <em className={style.name}>预计发文时间：</em>
               <div>
-                <DatePicker
-                  disabledDate={this.disabledEndDate}
-                  onOpenChange={this.handleEndOpenChange}
-                  className="mr10 w260"
-                  showTime
-                  format="YYYY-MM-DD HH:mm:ss"
-                  placeholder="请输入开始时间"
-                  onChange={this.changeValueEvent.bind(this, 'planPostArticleTime')}
-                />
+                <Form.Item>
+                {
+                  getFieldDecorator(
+                    'planPostArticleTime',
+                    {
+                      initialValue: form.planPostArticleTime,
+                      rules: [
+                        {required: true, message: '请输入发文时间'}
+                      ]
+                    }
+                  )(<DatePicker
+                    disabledDate={this.disabledEndDate}
+                    onOpenChange={this.handleEndOpenChange}
+                    className="mr10 w260"
+                    showTime
+                    format="YYYY-MM-DD HH:mm:ss"
+                    placeholder="请输入开始时间"
+                    onChange={this.changeValueEvent.bind(this, 'planPostArticleTime')}
+                  />)
+                }
+                </Form.Item>
               </div>
             </li>
             <li>
@@ -246,12 +290,15 @@ class Receivead extends Component{
             <li><em className={style.name}>阅读单价：</em><div>{form.unitPrice}元/次阅读</div></li>
             <li><em className={style.name}>发文时段</em><div>{window.common.getDate(form.createDate, true)}</div></li>
             <li>
-              <Button type="primary" onClick={this.createEvent.bind(this)}>确定</Button>
-              <Button className="ml30" onClick={this.goBackEvent.bind(this)}>返回</Button>
+              <Form.Item>
+                <Button type="primary"  htmlType="submit">确定</Button>
+                <Button className="ml30" onClick={this.goBackEvent.bind(this)}>返回</Button>
+              </Form.Item>
             </li>
+            </Form>
         </ul>
       </div>
     )
   }
 }
-export default Receivead;
+export default Form.create()(Receivead);;
