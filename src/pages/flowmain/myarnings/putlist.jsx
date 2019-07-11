@@ -4,6 +4,7 @@ import moment from 'moment';
 import style from './style.less';
 import {historyList, caQuery} from '../../../api/api';
 import router from "umi/router";
+import Link from "umi/link";
 const Option = Select.Option;
 class PutList extends Component {
   constructor(props) {
@@ -35,6 +36,7 @@ class PutList extends Component {
     const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
     await this.setState({loginName: loginInfo.data.loginName});
     this.loadList();
+    this.getCaQuery();
   }
   //获取可用余额和冻结余额
   getCaQuery = () => {
@@ -67,10 +69,6 @@ class PutList extends Component {
     p = Object.assign(p, {currentPage: current, limit: size, pageSize: size});
     this.setState({pagination: p});
     this.loadList();
-  }
-  //切换记录列表
-  accountTypeEvent = (index) => {
-    this.setState({isActive: index});
   }
   changeFormEvent = (type, e, value) => {
     let search = this.state.search;
@@ -174,9 +172,9 @@ class PutList extends Component {
           </p>
         </div>
         <ul className={style.accountType}>
-          <li className={isActive === 0 ? style.active : null} onClick={this.accountTypeEvent.bind(this, 0)}>提现记录</li>
-          <li className={isActive === 1 ? style.active : null} onClick={this.accountTypeEvent.bind(this, 1)}>结算记录</li>
-          <li className={isActive === 2 ? style.active : null} onClick={this.accountTypeEvent.bind(this, 2)}>账户记录</li>
+          <li className={isActive === 0 ? style.active : null}><Link to="/main/putlist">提现记录</Link></li>
+          <li className={isActive === 1 ? style.active : null}><Link to="/main/arningslist">结算记录</Link></li>
+          <li className={isActive === 2 ? style.active : null}>账户记录</li>
         </ul>
         <ul className={style.search}>
           <li>申请时间：

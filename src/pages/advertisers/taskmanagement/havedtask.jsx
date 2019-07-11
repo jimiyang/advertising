@@ -216,8 +216,10 @@ class HavedTask extends Component{
       {
         title: '结算金额',
         key: 'price',
-        dataIndex: 'price',
-        width: 200
+        width: 200,
+        render: (record) => (
+          <span>{record.missionStatus === 14 ? (record.missionRealReadCnt * record.adUnitPrice).toFixed(2) : null}</span>
+        )
       },
       {
         title: '任务状态',

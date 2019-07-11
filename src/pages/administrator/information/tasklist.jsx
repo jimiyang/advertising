@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
-import {DatePicker, Select, Input, Button, Table, message, Checkbox, Popconfirm, notification} from 'antd';
-import Redirect from 'umi/redirect';
+import {DatePicker, Select, Input, Button, Table, message, Checkbox, Popconfirm, notification, Drawer} from 'antd';
 import style from '../style.less';
 import moment from 'moment';
 import {
   listallMission,
-  settleCampaign
+  settleCampaign,
+  getMissionOrderTotal,
+  listReadCnt
 } from '../../../api/api';
 const Option = Select.Option;
 let rowKeys = [];
@@ -35,15 +36,19 @@ class TaskList extends Component{
       allchk: false,
       ischecked: [],
       isDisabled: false,
-      isSubmit: false
+      isSubmit: false,
+      placement: 'right',
+      isVisible: false,
+      missionTotal: 0,
+      missionNotRelease: 0
     };
   }
   async componentWillMount() {
     const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
     if (!loginInfo) return false;
-    //因为setState是异步的，他会在render后才生效,加入一个回调函数
     await this.setState({loginName: loginInfo.data.loginName});
     this.loadList();
+    this.getMissionTotal();
   }
   loadList = () => {
    let {loginName, pagination, search} = this.state;
@@ -71,7 +76,12 @@ class TaskList extends Component{
       });
     }
     return arr;
-  } 
+  }
+  getMissionTotal = () => {
+    getMissionOrderTotal({loginName: this.state.loginName}).then(rs => {
+      this.setState({missionTotal: rs.data.total, missionNotRelease: rs.data.notRelease});
+    });
+  }
   changePage = (page) => {
     page = page === 0 ? 1 : page;
     const pagination = Object.assign(this.state.pagination, {currentPage: page});
@@ -130,14 +140,21 @@ class TaskList extends Component{
   }
   //全选反选
   onSelectChange = (e) => {
-    let {activityData} = this.state;
+    let {activityData, ischecked} = this.state;
     let rowKeys = [];
+    let arr = ischecked;
     if (e.target.checked === true) {
       rowKeys =  this.getSettleData(activityData);
+      activityData.map((item, index) => {
+        ischecked[index] = true;
+      })
     } else {
+      activityData.map((item, index) => {
+        ischecked[index] = false;
+      })
       rowKeys = [];
     }
-    this.setState({allchk: e.target.checked, ischecked: e.target.checked, selectedRowKeys: rowKeys});
+    this.setState({allchk: e.target.checked, selectedRowKeys: rowKeys});
   }
   openNotification = (str)=>{
     //使用notification.success()弹出一个通知提醒框 
@@ -147,7 +164,7 @@ class TaskList extends Component{
       duration: 10, //1秒
     }); 
   }
-  //单条结算
+  //单条结算//appName: "好物指南针"campaignName
   settleEvent = (item) => {
     const loginName = this.state.loginName;
     const params = {
@@ -168,13 +185,11 @@ class TaskList extends Component{
       let color='';
       let msg;
       if(rs.data[0].code === 1) {
-        color = 'red-color';
-        msg = '结算失败';
+        msg = (<p className="red-color">结算任务订单失败</p>);
       } else {
-        color = 'green-color';
-        msg = rs.data[0].data;
+        msg = (<p className="green-color">结算任务订单失败  公众号：{rs.data[0].appNickName}，活动名称：{rs.data[0].campaignName}</p>);
       }
-      this.openNotification(<div><p className={`${color}`}>{msg}</p></div>);
+      this.openNotification(<div>{msg}</div>);
       const pagination = Object.assign(this.state.pagination, {currentPage: 1});
       this.setState({pagination, isSubmit: false});
       this.loadList();
@@ -189,7 +204,7 @@ class TaskList extends Component{
       rowKeys.splice(index, 1);
       ischecked[index] = false;
     }
-    this.setState({ischecked, selectedRowKeys: rowKeys});
+    this.setState({ischecked, allchk: false, selectedRowKeys: rowKeys});
   }
   //批量结算
   batchSettleEvent = () => {
@@ -213,9 +228,9 @@ class TaskList extends Component{
       this.setState({isDisabled: false});
       rs.data.map((item, index) => {
         if (item.data === undefined) {
-          arr.push(<p key={index}>结算失败</p>);
+          arr.push(<p className="red-color">结算任务订单失败</p>);
         } else {
-          arr.push(<p key={index}>{item.data}</p>);
+          arr.push(<p key={index} className="green-color">结算任务订单成功  公众号：{item.appNickName}，活动名称：{item.campaignName}</p>);
         }
       });
       this.openNotification(<div>{arr}</div>);
@@ -224,6 +239,22 @@ class TaskList extends Component{
       this.loadList();
     });
   }
+  viewDataEvent = (item) => {
+    const {loginName} = this.state;
+    const params = {
+      limit: 10,
+      loginName,
+      missionId: item.missionId
+    };
+    console.log(params);
+    listReadCnt(params).then(rs => {
+      this.setState({isVisible: true});
+      console.log(rs);
+    });
+  }
+  closeEvent = () => {
+    this.setState({isVisible: false});
+  }
   render() {
     const {
       search,
@@ -231,8 +262,12 @@ class TaskList extends Component{
       pagination,
       allchk,
       ischecked,
-      selectedRowKeys,
-      isDisabled
+      isDisabled,
+      placement,
+      isVisible,
+      missionTotal,
+      missionNotRelease,
+      selectedRowKeys
     } = this.state;
     const columns = [
       {
@@ -299,7 +334,7 @@ class TaskList extends Component{
         render: (record) => (
           <div>
             <p>{record.missionReadCnt}</p>
-            <p>{record.missionRealReadCnt}</p>
+            <p className="blue-color line" title="点击查看每日任务阅读量" onClick={this.viewDataEvent.bind(this, record)}>{record.missionRealReadCnt}</p>
           </div>
         )
       },
@@ -358,11 +393,11 @@ class TaskList extends Component{
           <div>
             <div className={style.accountItems}>
               <h1>任务总数</h1>
-              {pagination.total}
+              {missionTotal}
             </div>
             <div className={style.lockAmount}>
               <h1>未投放任务</h1>
-              0
+              {missionNotRelease}
             </div>
           </div>
         </div>
@@ -397,10 +432,31 @@ class TaskList extends Component{
           dataSource={activityData}
           columns={columns}
           pagination={pagination}
+          //rowSelection={rowSelection}
           rowKey={record => record.id}
           scroll={{x: 1500}}
           className="table"
         />
+        <Drawer
+          title="每日任务阅读量"
+          placement={placement}
+          closable={true}
+          onClose={this.closeEvent.bind(this)}
+          visible={isVisible}
+        >
+          <dl className={style.drawer}>
+            <dt>
+              <span>日期</span>
+              <span>阅读量</span>
+            </dt>
+            <dd><span>2019-03-04</span><span>50000000</span></dd>
+            <dd><span>2019-03-04</span><span>50000000</span></dd>
+            <dd><span>2019-03-04</span><span>50000000</span></dd>
+            <dd><span>2019-03-04</span><span>50000000</span></dd>
+            <dd><span>2019-03-04</span><span>50000000</span></dd>
+            <dd><span>2019-03-04</span><span>50000000</span></dd>
+          </dl>
+        </Drawer>
       </div>
     );
   }

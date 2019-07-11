@@ -1,6 +1,7 @@
 import axios from 'axios';
 import {message} from 'antd';
 import router from 'umi/router';
+import { RSA_NO_PADDING } from 'constants';
 let baserUrl;
 if (window.location.hostname === 'localhost') {
   baserUrl = ''; 
@@ -20,7 +21,7 @@ instance.interceptors.response.use(
     if (res.data.code === 100000) {
       router.push('/relogin');
       window.localStorage.removeItem('login_info');
-    } 
+    }
     return res.data;
   },
   err => {

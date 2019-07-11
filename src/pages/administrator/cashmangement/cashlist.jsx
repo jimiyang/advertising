@@ -1,42 +1,121 @@
 import React, {Component} from 'react';
-import {Button, Input, DatePicker, Select, Table, Modal} from 'antd';
+import {Button, Input, DatePicker, Select, Table, Modal, Popconfirm} from 'antd';
 import Link from 'umi/link';
+import moment from 'moment';
 import style from '../style.less';
+import {
+  queryWithdrawManager,
+  withdrawDetail,
+  withdrawAudit,
+  withdrawPay
+} from '../../../api/api';
 const Option = Select.Option;
 class CashList extends Component{
   constructor(props) {
     super(props);
     this.state = {
-      flowOfMainData: [
-        {
-          id: 0,
-          deposit_number: '回复后是否会的撒谎',
-          deposit_money: 23432143124,
-          deposit_type: 1,
-          order_status: 10000,
-          gmt_time: 0
-        },
-        {
-          id: 1,
-          deposit_number: '回复后是否会的撒谎',
-          deposit_money: 23432143124,
-          deposit_type: 1,
-          order_status: 10000,
-          gmt_time: 1
-        },
-        {
-          id: 2,
-          deposit_number: '回复后是否会的撒谎',
-          deposit_money: 23432143124,
-          deposit_type: 1,
-          order_status: 10000,
-          gmt_time: 2
-        }
-      ],
-      statusData: ['待审核', '待付款', '已付款'],
+      loginName: null,
+      flowOfMainData: [],
+      statusData: ['待审核', '待付款', '付款成功', '提现驳回'],
       isVisible: false,
-      isPayVisible: false
+      isPayVisible: false,
+      search: {
+        merchantName: null,
+        merchantCode: null,
+        orderNo: null,
+        orderStatus: null,
+        dateStart: null,
+        dateEnd: null
+      },
+      pagination: {
+        size: 'small',
+        showSizeChanger: true,
+        total: 0,
+        currentPage: 1,
+        limit: 10,
+        onChange: this.changePage,
+        onShowSizeChange: this.onShowSizeChange
+      }
     };
+  }
+  async componentWillMount() {
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
+    await this.setState({loginName: loginInfo.data.loginName});
+    this.loadList();
+  }
+  loadList = () => {
+    const {loginName, search, pagination} = this.state;
+    const params = {
+      loginName,
+      currentPage: pagination.currentPage,
+      limit: pagination.limit,
+      ...search
+    };
+    queryWithdrawManager(params).then(rs => {
+      const p = Object.assign(pagination, {total: rs.total});
+      this.setState({flowOfMainData: rs.data});
+    });
+  }
+  changePage = (page) => {
+    page = page === 0 ? 1 : page;
+    const pagination = Object.assign(this.state.pagination, {currentPage: page});
+    this.setState({pagination});
+    this.loadList();
+  }
+  //改变每页条数事件
+  onShowSizeChange = (current, size) => {
+    let p = this.state.pagination;
+    p = Object.assign(p, {currentPage: current, limit: size});
+    this.setState({pagination: p});
+    this.loadList();
+  }
+  changeFormEvent = (type, e, value) => {
+    let {search} = this.state;
+    let obj = {};
+    switch(type) {
+      case 'merchantName':
+        obj = {[type]: e.target.value};
+        break;
+      case 'merchantCode':
+        obj = {[type]: e.target.value};
+        break;
+      case 'orderNo':
+        obj = {[type]: e.target.value};
+        break;
+      case 'orderStatus':
+        obj = {[type]: e};
+        break;
+      case 'dateStart':
+        obj = {[type]: value};
+        break;  
+      case 'dateEnd':
+        obj = {[type]: value};
+        break; 
+    }
+    search = Object.assign(search, obj);
+    this.setState({search});
+  }
+  searchEvent = () => {
+    const {pagination} = this.state;
+    const p = Object.assign(pagination, {currentPage: 1});
+    this.setState({pagination: p});
+    this.loadList();
+  }
+  clearEvent = () => {
+    let search = this.state.search;
+    search = Object.assign(
+      search,
+      {
+        merchantName: null,
+        merchantCode: null,
+        orderNo: null,
+        orderStatus: null,
+        dateStart: null,
+        dateEnd: null
+      }
+    );
+    this.setState({search});
+    this.loadList();
   }
   closeEvent = () => {
     this.setState({
@@ -44,6 +123,7 @@ class CashList extends Component{
       isPayVisible: false
     });
   }
+  //审核
   CheckEvent = () => {
     this.setState({isVisible: true});
   }
@@ -53,37 +133,39 @@ class CashList extends Component{
   render() {
     const {
       flowOfMainData,
+      pagination,
       statusData,
+      search,
       isVisible,
       isPayVisible
     } = this.state;
     const columns = [
       {
-        title: '商户名称',
-        key: 'deposit_number',
-        dataIndex: 'deposit_number'
+        title: '时间',
+        key: 'applyTime',
+        dataIndex: 'applyTime'
       },
       {
-        title: '商户编码',
-        key: 'deposit_money',
-        dataIndex: 'deposit_money'
+        title: '商户名称',
+        key: 'merchantName',
+        dataIndex: 'merchantName'
+      },
+      {
+        title: '商户名称',
+        key: 'merchantCode',
+        dataIndex: 'merchantCode'
       },
       {
         title: '商户类型',
-        key: 'deposit_type',
-        dataIndex: 'deposit_type'
-      },
-      {
-        title: '提现金额',
-        key: 'order_status',
-        dataIndex: 'order_status'
+        key: 'merchantType',
+        dataIndex: 'merchantType'
       },
       {
         title: '状态',
-        key: 'gmt_time',
-        dataIndex: 'gmt_time',
+        key: 'orderStatus',
+        dataIndex: 'orderStatus',
         render: (record) => (
-          <span>{statusData[record]}</span>
+          <span>{statusData[record - 1]}</span>
         )
       },
       {
@@ -92,9 +174,19 @@ class CashList extends Component{
         dataIndex: '',
         render: (record) => (
           <div className="opeartion-items">
-            {record.gmt_time === 0 ? <span className="blue-color" onClick={this.CheckEvent.bind(this)}>审核</span> : null}
-            {record.gmt_time === 1 ? <span className="blue-color" onClick={this.PayEvent.bind(this)}>付款</span> : null}
-            {record.gmt_time === 2 ? <Link to="/main/cashdetail" className="blue-color">详情</Link> : null}
+            {record.orderStatus === 1 ? <Link to={{pathname: '/main/cashdetail', state: {type: 'audit', orderNo: record.orderNo}}} className="blue-color">审核</Link> : null}
+            {record.orderStatus === 2 ? 
+              <Popconfirm
+                title="是否要进行审核?"
+                onConfirm={this.PayEvent.bind(this, record)}
+                okText="是"
+                cancelText="否"
+              >
+                <span className="blue-color">付款</span> 
+              </Popconfirm>
+              : null
+            }
+            <Link to={{pathname: '/main/cashdetail', state: {type: 'detail', orderNo: record.orderNo}}} className="blue-color">详情</Link>
           </div>
         )
       }
@@ -105,24 +197,34 @@ class CashList extends Component{
         <div className={style.administrator}>
           <div className={style.cash}>
             <ul className={style.search}>
-              <li>商户名称：<Input className="iptxt"/></li>
-              <li>商户编码：<Input /></li>
-              <li>提现单号：<Input /></li>
+              <li>商户名称：<Input className="iptxt" value={search.merchantName} onChange={this.changeFormEvent.bind(this, 'merchantName')} /></li>
+              <li>商户编码：<Input value={search.merchantCode} onChange={this.changeFormEvent.bind(this, 'merchantCode')} /></li>
+              <li>提现单号：<Input value={search.orderNo} onChange={this.changeFormEvent.bind(this, 'orderNo')} /></li>
               <li>提现状态：
-                <Select defaultValue={null}>
+                <Select value={search.orderStatus} onChange={this.changeFormEvent.bind(this, 'orderStatus')}>
                   <Option value={null}>请选择</Option>
-                  <Option value={1}>待审核</Option>
-                  <Option value={2}>待付款</Option>
-                  <Option value={3}>付款成功</Option>
-                  <Option value={4}>提现驳回</Option>
+                  {
+                    statusData.map((item, index) => (
+                      <Option key={index} value={index + 1}>{item}</Option>
+                    ))
+                  }
                 </Select>
               </li>
-              <li style={{width: '100%'}}>提现时间：<DatePicker />至<DatePicker /></li>
+              <li>提现时间：
+                <DatePicker format="YYYY-MM-DD" value={search.dateStart === null || search.dateStart === '' ? null : moment(search.dateStart)} onChange={this.changeFormEvent.bind(this, 'dateStart')} />
+                <DatePicker format="YYYY-MM-DD" value={search.dateEnd === null || search.dateEnd === '' ? null : moment(search.dateEnd)} className="ml10" onChange={this.changeFormEvent.bind(this, 'dateEnd')}/></li>
               <li>
-                <Button type="primary">查询</Button>
-                <Button>清空</Button>
+                <Button type="primary" onClick={this.searchEvent.bind(this)}>查询</Button>
+                <Button className="ml10" onClick={this.clearEvent.bind(this)}>清空</Button>
               </li>
             </ul>
+            <Table
+              dataSource={flowOfMainData}
+              columns={columns}
+              pagination={pagination}
+              rowKey={record => record.id}
+              className="table"
+            />
           </div>
         </div>
       </div>

@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
 import {DatePicker, Input, Table, Button, message} from 'antd';
-import Redirect from 'umi/redirect';
 import style from './style.less';
 import moment from 'moment';
+import Link from "umi/link";
 import {
   caQuery,
   flowFinanceList
@@ -29,7 +29,8 @@ class ArningsList extends Component {
         limit: 10,
         onChange: this.changePage,
         onShowSizeChange: this.onShowSizeChange
-      }
+      },
+      isActive: 1
     };
   }
   async componentWillMount() {
@@ -114,18 +115,18 @@ class ArningsList extends Component {
   }
   render () {
     const {
-      redirect,
       available_balance,
       freezen_balance,
       earningsData,
       pagination,
-      search
+      search,
+      isActive
     } = this.state;
     const columns = [
       {
         title: '结算单号',
-        key: 'missionId',
-        dataIndex: 'missionId'
+        key: 'orderNo',
+        dataIndex: 'orderNo'
       },
       {
         title: '结算金额',
@@ -142,8 +143,8 @@ class ArningsList extends Component {
       },
       {
         title: '接单单号',
-        key: 'orderNo',
-        dataIndex: 'orderNo'
+        key: 'missionId',
+        dataIndex: 'missionId'
       },
       {
         title: '到账时间',
@@ -154,7 +155,6 @@ class ArningsList extends Component {
         )
       }
     ];
-    if (redirect) return (<Redirect to="/relogin" />);
     return(
       <div className={style.arnings}>
         <h1 className="nav-title">我的收益 > 结算记录</h1>
@@ -187,6 +187,11 @@ class ArningsList extends Component {
             <Button type="primary" onClick={this.searchEvent.bind(this)}>查询</Button>
             <Button onClick={this.clearEvent.bind(this)} className="ml10">重置</Button>
           </li>
+        </ul>
+        <ul className={`${style.accountType} mt30`}>
+          <li className={isActive === 0 ? style.active : null}><Link to="/main/putlist">提现记录</Link></li>
+          <li className={isActive === 1 ? style.active : null}><Link to="/main/arningslist">结算记录</Link></li>
+          <li className={isActive === 2 ? style.active : null}>账户记录</li>
         </ul>
         <Table
           dataSource={earningsData}

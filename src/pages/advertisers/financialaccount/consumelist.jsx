@@ -110,7 +110,9 @@ class ConsumeList extends Component{
         orderStatus: null
       }
     );
-    this.setState({search});
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1});
+    this.setState(pagination, search);
+    this.loadList();
   }
   render(){
     const {
@@ -121,10 +123,10 @@ class ConsumeList extends Component{
     } = this.state;
     const columns = [
       {
-        title: '结算单号',
-        key: 'missionId',
+        title: '订单单号',
+        key: 'orderNo',
         render: (record) =>  (
-          <span>{record.missionId}</span>
+          <span>{record.orderNo}</span>
         )
       },
       {
@@ -135,7 +137,10 @@ class ConsumeList extends Component{
       {
         title: '消费时间',
         key: 'updateDate',
-        dataIndex: 'updateDate'
+        dataIndex: 'updateDate',
+        render: (record) => (
+          <span>{window.common.getDate(record, true)}</span>
+        )
       },
       {
         title: '活动ID',
@@ -166,7 +171,7 @@ class ConsumeList extends Component{
             <DatePicker className="ml10 w150" value={search.dateEnd === null || search.dateEnd === '' ? null : moment(search.dateEnd)} formate="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateEnd')} />
           </li>
           <li>
-            充值单号
+            订单单号
             <Input className="w180 ml10" value={search.orderNo} onChange={this.changeFormEvent.bind(this, 'orderNo')} />
           </li>
           <li>

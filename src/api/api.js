@@ -90,6 +90,10 @@ export const merchantAdd = params => axios.post(`${url}api/merchant/add`, params
 export const checkAdCampaignList = params => axios.post(`${url}api/ad/campaign/checkAdCampaignList`, params);
 //任务列表(管理员)
 export const listallMission = params => axios.post(`${url}api/ad/mission/listallMission`, params);
+//任务列表(管理员)任务统计数
+export const getMissionOrderTotal = params => axios.post(`${url}api/ad/mission/getMissionOrderTotal`, params);
+//任务列表查看接单阅读数(管理员)
+export const listReadCnt = params => axios.post(`${url}admin/data/adread/listReadCnt`, params);
 //结算详情
 export const list4Settle = params => axios.post(`${url}manager/campaign/list4Settle`, params);
 //活动结算审核(管理员)

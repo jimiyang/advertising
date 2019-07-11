@@ -142,7 +142,7 @@ class AdTask extends Component{
         key: 'missionReadCnt',
         dataIndex: 'missionReadCnt',
         render: (record) => (
-          <span>{record !== undefined ? window.common.formatNumber(record) : null}</span>
+          <span>{record !== undefined ? window.common.formatNumber(record) : '--'}</span>
         )
       },
       {
@@ -150,14 +150,14 @@ class AdTask extends Component{
         key: 'flowUnitPrice',
         dataIndex: 'flowUnitPrice',
         render: (record) => (
-          <span>{record !== undefined ? window.common.formatNumber(record) : null}</span>
+          <span>{record !== undefined ? window.common.formatNumber(record) : '--'}</span>
         )
       },
       {
         title: '预计收入',
         key: 'flowEstimateIncome',
         render: (record) => (
-          <span>{record !== undefined ? (record.missionReadCnt * record.flowUnitPrice).toFixed(2) : null}</span>
+          <span>{record !== undefined ? (record.missionReadCnt * record.flowUnitPrice).toFixed(2) : '--'}</span>
         )
       },
       {
@@ -165,15 +165,14 @@ class AdTask extends Component{
         key: 'missionRealReadCnt',
         dataIndex: 'missionRealReadCnt',
         render: (record) => (
-          <span>{record !== undefined ? window.common.formatNumber(record) : null}</span>
+          <span>{record !== undefined ? window.common.formatNumber(record) : '--'}</span>
         )
       },
       {
         title: '实际收入',
         key: 'flowRealIncome',
-        dataIndex: 'flowRealIncome',
         render: (record) => (
-          <span>{record !== undefined ? window.common.formatNumber(record) : null}</span>
+          <span>{record.missionStatus === 14 ? (record.flowUnitPrice * record.missionRealReadCnt).toFixed(2) : '--'}</span>
         )
       },
       {

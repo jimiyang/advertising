@@ -191,7 +191,7 @@ class ViewDetail extends Component {
             </li>
             <li>阅读单价：<div>{form.unitPrice}</div></li>
             <li>活动预算：<div>{form.postAmtTotal}元</div></li>
-            <li>推广预告：<div>预计您的广告将实现<em className="red-color m5">{form.availableCnt}</em>次有效阅读</div></li>
+            <li>推广预告：<div>预计您的广告将实现<em className="red-color m5">{window.common.formatNumber(parseInt(form.postAmtTotal * 100 / form.unitPrice * 100) / 10000)}</em>次有效阅读</div></li>
             {
               type === 1 ? <li>审核状态：<div>
                 <Radio.Group onChange={this.changeFormEvent.bind(this, 'postStatus')} value={params.postStatus}>

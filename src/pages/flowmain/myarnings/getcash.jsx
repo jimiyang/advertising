@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Alert, Form, Input, Button} from 'antd';
+import {Alert, Form, Input, Button, Table, message} from 'antd';
 import {historyList, applyWithdraw} from '../../../api/api';
 import style from './style.less';
 class GetCash extends Component{
@@ -10,6 +10,15 @@ class GetCash extends Component{
       withDrawData: [],
       form: {
         realWithdrawAmt: 0
+      },
+      pagination: {
+        size: 'small',
+        currentPage: 1,
+        total: 0,
+        limit: 10,
+        pageSize: 10,
+        onChange: this.changePage,
+        onShowSizeChange: this.onShowSizeChange
       }
     };
   }
@@ -19,19 +28,37 @@ class GetCash extends Component{
     this.loadList();
   }
   loadList = () => {
-    const {loginName} = this.state;
+    const {loginName, pagination} = this.state;
     const params = {
       loginName,
+      currentPage: pagination.currentPage,
+      limit: pagination.limit
     };
     historyList(params).then(rs => {
-      this.setState({withDrawData: rs.data});
+      const p = Object.assign(pagination, {total: rs.total});
+      this.setState({withDrawData: rs.data, pagination: p});
     });
+  }
+  changePage = (page) => {
+    page = page === 0 ? 1 : page;
+    console.log(page);
+    const pagination = Object.assign(this.state.pagination, {currentPage: page});
+    this.setState({pagination});
+    this.loadList();
+  }
+  //改变每页条数事件
+  onShowSizeChange = (current, size) => {
+    let p = this.state.pagination;
+    p = Object.assign(p, {currentPage: current, limit: size, pageSize: size});
+    this.setState({pagination: p});
+    this.loadList();
   }
   changeFormEvent = (type, e) => {
     let form = this.state.form;
     let obj = {};
     if (type === 'orderAmt') {
-      obj = {realWithdrawAmt: Number(e.target.value) * 0.8};
+      const number = isNaN(Number(e.target.value) * 0.8) === true ? 0 : Number(e.target.value) * 0.8;
+      obj = {realWithdrawAmt: number.toFixed(2)};
     }
     form = Object.assign(form, {[type]: e.target.value}, obj);
     this.setState({form});
@@ -44,7 +71,12 @@ class GetCash extends Component{
         form = Object.assign(form, values, {loginName});
         console.log(form);
         applyWithdraw(form).then(rs => {
-          console.log(rs);
+          if (rs.success) {
+            message.success(rs.message);
+          } else {
+            message.error(rs.message);
+          }
+          this.loadList();
         });
       }
     });
@@ -53,7 +85,8 @@ class GetCash extends Component{
     const {getFieldDecorator} = this.props.form;
     const {
       form,
-      withDrawData
+      withDrawData,
+      pagination
     } = this.state;
     const formItemLayout = {
       labelCol: {
@@ -77,6 +110,23 @@ class GetCash extends Component{
         }
       },
     };
+    const columns = [
+      {
+        title: '银行卡号',
+        key: 'bankCardNo',
+        dataIndex: 'bankCardNo'
+      },
+      {
+        title: '开户行',
+        key: 'bankName',
+        dataIndex: 'bankName'
+      },
+      {
+        title: '户主姓名',
+        key: 'bankCardOwnerName',
+        dataIndex: 'bankCardOwnerName'
+      }
+    ];
     return (
       <div className={style.arnings}>
         <h1 className="nav-title">我的收益 > 提现详情</h1>
@@ -111,7 +161,7 @@ class GetCash extends Component{
                 <li>
                   <Form.Item label="到账金额" {...tailFormItemLayout}>
                     {
-                      (<div>{form.realWithdrawAmt.toFixed(2)}</div>)
+                      (<div style={{fontWeight: 'bold', fontSize: '18px', color: '#f00'}}>{form.realWithdrawAmt}元</div>)
                     }
                   </Form.Item>
                 </li>
@@ -124,10 +174,10 @@ class GetCash extends Component{
                           initialValue: form.unitPrice || '',
                           rules: [
                             {required: true, message: '请输入银行卡号'},
-                            {pattern: /^([1-9]{1})(\d{14}|\d{18})$/, message: '请输入正确的银行卡号'}
+                            {pattern: /^\d+$/, message: '请输入正确的银行卡号'}
                           ]
                         }
-                      )(<div><Input onChange={this.changeFormEvent.bind(this, 'bankCardNo')} /></div>)
+                      )(<div><Input  maxLength={19} onChange={this.changeFormEvent.bind(this, 'bankCardNo')} /></div>)
                     }
                   </Form.Item>
                 </li>
@@ -168,18 +218,16 @@ class GetCash extends Component{
                 </li>
               </Form>
             </ul>
-            <dl className={style.historylist}>
-              <dt>历史提现信息</dt>
-              {
-                withDrawData.map((item, index) => (
-                  <dd key={index}>
-                    <p>银行卡号：{item.bankCardNo}</p>
-                    <p>开户行：{item.bankCardNo}</p>
-                    <p>户主姓名：{item.bankCardOwnerName}</p>
-                  </dd>
-                ))
-              }
-            </dl>
+            <div className={style.historylist}>
+              <h1>历史提现信息</h1>
+              <Table
+                dataSource={withDrawData}
+                columns={columns}
+                rowKey={record => record.id}
+                pagination={pagination}
+                className="table"
+              />
+            </div>
           </div>
         </div>
       </div>

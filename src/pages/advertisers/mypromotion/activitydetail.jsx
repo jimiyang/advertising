@@ -154,7 +154,7 @@ class ActivityDetail extends Component{
               <li>活动预算：<div>{form.postAmtTotal}元</div></li>
               <li>
                 活动效果：
-                <div>预计您的广告将实现<em className="red-color m5">{window.common.formatNumber(Math.round(form.postAmtTotal / form.unitPrice))}</em>次有效阅读</div>
+                <div>预计您的广告将实现<em className="red-color m5">{window.common.formatNumber(parseInt(form.postAmtTotal * 100 / form.unitPrice * 100) / 10000)}</em>次有效阅读</div>
               </li>
               <li className="mt30"><Button onClick={this.goBackEvent.bind(this)}>返回</Button></li>
             </ul>
