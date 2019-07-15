@@ -3,6 +3,7 @@ import {DatePicker, Input, Table, Button, message} from 'antd';
 import style from './style.less';
 import moment from 'moment';
 import Link from "umi/link";
+import router from "umi/router";
 import {
   caQuery,
   flowFinanceList
@@ -26,6 +27,7 @@ class ArningsList extends Component {
         showSizeChanger: true,
         total: 0,
         currentPage: 1,
+        current: 1,
         limit: 10,
         onChange: this.changePage,
         onShowSizeChange: this.onShowSizeChange
@@ -91,8 +93,8 @@ class ArningsList extends Component {
     this.setState({search});
   }
   searchEvent = () => {
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1});
-    this.setState(pagination);
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
+    this.setState({pagination});
     this.loadList();
   }
   clearEvent = () => {
@@ -106,12 +108,13 @@ class ArningsList extends Component {
         orderStatus: null
       }
     );
-    this.setState({search});
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
+    this.setState({pagination, search});
+    this.loadList();
   }
   //提现弹窗
   widthdrawEvent = () => {
-    //this.setState({isDrawVisible: true});
-    message.warning('功能正在开发中....');
+    router.push('/main/getcash');
   }
   render () {
     const {
@@ -173,6 +176,10 @@ class ArningsList extends Component {
             <span onClick={this.widthdrawEvent.bind(this)}>提现</span>
           </p>
         </div>
+        <ul className={`${style.accountType} mt30`}>
+          <li className={isActive === 0 ? style.active : null}><Link to="/main/putlist">提现记录</Link></li>
+          <li className={isActive === 1 ? style.active : null}><Link to="/main/arningslist">结算记录</Link></li>
+        </ul>
         <ul className={style.search}>
           <li>
             创建时间
@@ -187,11 +194,6 @@ class ArningsList extends Component {
             <Button type="primary" onClick={this.searchEvent.bind(this)}>查询</Button>
             <Button onClick={this.clearEvent.bind(this)} className="ml10">重置</Button>
           </li>
-        </ul>
-        <ul className={`${style.accountType} mt30`}>
-          <li className={isActive === 0 ? style.active : null}><Link to="/main/putlist">提现记录</Link></li>
-          <li className={isActive === 1 ? style.active : null}><Link to="/main/arningslist">结算记录</Link></li>
-          <li className={isActive === 2 ? style.active : null}>账户记录</li>
         </ul>
         <Table
           dataSource={earningsData}

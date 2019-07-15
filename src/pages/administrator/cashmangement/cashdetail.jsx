@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, message, Input} from 'antd';
+import {Button, message, Input, Popconfirm, Form} from 'antd';
 import style from '../style.less';
 import {
   withdrawDetail,
@@ -16,7 +16,9 @@ class CashDetail extends Component{
       orderNo: null,
       orderStatus: null,
       auditRemark: null,
+      thirdOrderNo: null,
       type: null,
+      isHide: false,
       form: {}
     };
   }
@@ -37,24 +39,40 @@ class CashDetail extends Component{
       this.setState({form: f});
     });
   }
-  changeEvent = (e) => {
-    this.setState({auditRemark: e.target.value});
+  changeEvent = (type, e) => {
+    const reg = /[^\d]/g;
+    let flag = false;
+    if (reg.test(e.target.value)) {
+      flag = true;
+    }
+    this.setState({[type]: e.target.value, isHide: flag});
   }
   auditEvent = (status) => {
-    const {form, loginName, auditRemark}  = this.state;
-    if (isNull(auditRemark)) {
-      message.error('请填写审核备注信息');
-      return false;
+    const {form, loginName, auditRemark, thirdOrderNo, type, isHide}  = this.state;
+    let obj = {};
+    let methods;
+    if (type === 'pay') {
+      if (isNull(thirdOrderNo)) {
+        message.error('请输入汇款单号');
+        return false;
+      }
+      obj = {thirdOrderNo};
+      methods = withdrawPay;
+    } else {
+      if (isNull(auditRemark)) {
+        message.error('请填写审核备注信息');
+        return false;
+      }
+      obj = {auditRemark};
+      methods = withdrawAudit;
     }
     const params = {
       orderNo: form.orderNo,
       loginName: loginName,
       orderStatus: status,
-      auditRemark: auditRemark
+      ...obj
     };
-    console.log(params);
-    withdrawAudit(params).then(rs => {
-      console.log(rs);
+    methods(params).then(rs => {
       if (rs.success) {
         message.success(rs.message);
         window.history.go(-1);
@@ -69,7 +87,8 @@ class CashDetail extends Component{
   render() {
     const {
       form,
-      type
+      type,
+      isHide
     } = this.state;
     return(
       <div className={style.administrator}>
@@ -117,26 +136,60 @@ class CashDetail extends Component{
               <div>{form.bankCardOwnerName}</div>
             </li>
             <li>
-              <label>汇款单号：</label>
+              <label>订单单号：</label>
               <div>{form.orderNo}</div>
             </li>
             <li>
               <label>备注：</label>
-              <div>{type === 'audit' ? <TextArea rows={4} onChange={this.changeEvent.bind(this)} style={{width: '300px'}} /> : form.auditRemark }</div>
+              <div>{type === 'audit' ? <TextArea rows={4} onChange={this.changeEvent.bind(this, 'auditRemark')} style={{width: '300px'}} /> : form.auditRemark }</div>
             </li>
+            {
+              type === 'pay' ?
+              <li>
+                <label>汇款单号：</label>
+                <div>
+                  <Input className={style.ipttxt} onChange={this.changeEvent.bind(this, 'thirdOrderNo')}/>
+                  <p className={`red-color ${isHide === true ? null : 'hide'}`}>汇款单号只能输入数字</p>
+                </div>
+              </li>
+              : null
+            }
             <li>
               {
                 type === 'audit' ?
                 <div>
-                  <Button type="primary" onClick={this.auditEvent.bind(this, 2)}>通过</Button>
-                  <Button className="ml30" onClick={this.auditEvent.bind(this, 4)}>驳回</Button>
+                  <Popconfirm
+                    title="是否要通过审核?"
+                    onConfirm={this.auditEvent.bind(this, 2)}
+                    okText="Yes"
+                    cancelText="No"
+                  >
+                    <Button type="primary">通过</Button>
+                  </Popconfirm>
+                  <Popconfirm
+                    title="是否要驳回审核?"
+                    onConfirm={this.auditEvent.bind(this, 4)}
+                    okText="Yes"
+                    cancelText="No"
+                  >
+                    <Button className="ml30">驳回</Button>
+                  </Popconfirm>
                 </div>
-                : <Button onClick={this.goBack.bind(this)}>返回</Button>
+                : 
+                <div>
+                  <Popconfirm
+                    title="是否要进行付款?"
+                    onConfirm={this.auditEvent.bind(this, 3)}
+                    okText="Yes"
+                    cancelText="No"
+                  >
+                    <Button type="primary">确定</Button>
+                  </Popconfirm>
+                </div>
               }
-              
-            </li>  
+              <Button className="ml30" onClick={this.goBack.bind(this)}>返回</Button>
+            </li> 
           </ul>
-          
         </div>
       </div>
     );

@@ -24,6 +24,7 @@ class PutList extends Component {
         showSizeChanger: true,
         total: 0,
         currentPage: 1,
+        current: 1,
         limit: 10,
         pageSize: 10,
         onChange: this.changePage,
@@ -93,6 +94,9 @@ class PutList extends Component {
     this.setState({search});
   }
   searchEvent = () => {
+    let p = this.state.pagination;
+    p = Object.assign(p, {currentPage: 1, current: 1});
+    this.setState({pagination: p});
     this.loadList();
   }
   clearEvent = () => {
@@ -106,7 +110,10 @@ class PutList extends Component {
         orderStatus: null
       }
     )
-    this.setState({search});
+    let p = this.state.pagination;
+    p = Object.assign(p, {currentPage: 1, current: 1});
+    this.setState({pagination: p, search});
+    this.loadList();
   }
   widthdrawEvent = () => {
     router.push('/main/getcash');
@@ -122,18 +129,21 @@ class PutList extends Component {
     const columns = [
       {
         title: '提现单号',
-        key: 'bankCardNo',
-        dataIndex: 'bankCardNo'
+        key: 'orderNo',
+        dataIndex: 'orderNo'
       },
       {
         title: '提现渠道',
         key: 'bankName',
-        dataIndex: 'bankName'
+        dataIndex: 'bankName',
+        render: (record) => (
+          <span>汇款</span>
+        )
       },
       {
         title: '提现金额',
-        key: 'realWithdrawAmt',
-        dataIndex: 'realWithdrawAmt'
+        key: 'orderAmt',
+        dataIndex: 'orderAmt'
       },
       {
         title: '申请时间',
@@ -153,7 +163,7 @@ class PutList extends Component {
         key: 'updateDate',
         dataIndex: 'updateDate',
         render: (record) => (
-          <span>{window.common.getDate(record, true)}</span>
+          <span>{record === undefined ? '--' : window.common.getDate(record, true)}</span>
         )
       }
     ];
@@ -174,13 +184,12 @@ class PutList extends Component {
         <ul className={style.accountType}>
           <li className={isActive === 0 ? style.active : null}><Link to="/main/putlist">提现记录</Link></li>
           <li className={isActive === 1 ? style.active : null}><Link to="/main/arningslist">结算记录</Link></li>
-          <li className={isActive === 2 ? style.active : null}>账户记录</li>
         </ul>
         <ul className={style.search}>
           <li>申请时间：
             <DatePicker formate="YYYY-MM-DD" value={search.dateStart === null || search.dateStart === '' ? null : moment(search.dateStart)} formate="YYYY-MM-DD" onChange={this.changeFormEvent.bind(this, 'dateStart')} />
             <DatePicker formate="YYYY-MM-DD" value={search.dateEnd === null || search.dateEnd === '' ? null : moment(search.dateEnd)} onChange={this.changeFormEvent.bind(this, 'dateEnd')} /></li>
-          <li>提现单号：<Input onChange={this.changeFormEvent.bind(this, 'orderNo')} /></li>
+          <li>提现单号：<Input value={search.orderNo} onChange={this.changeFormEvent.bind(this, 'orderNo')} /></li>
           <li>状态：
             <Select value={search.orderStatus} style={{width: '180px'}} onChange={this.changeFormEvent.bind(this, 'orderStatus')}>
               <Option value={null}>请选择</Option>

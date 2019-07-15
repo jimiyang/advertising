@@ -29,6 +29,7 @@ class HavedTask extends Component{
         showSizeChanger: true,
         total: 0,
         currentPage: 1,
+        current: 1,
         limit: 10,
         pageSize: 10,
         onChange: this.changePage,
@@ -99,8 +100,8 @@ class HavedTask extends Component{
   }
   //搜索
   searchEvent = () => {
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1});
-    this.setState(pagination);
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
+    this.setState({pagination});
     this.loadList();
   }
   clearEvent = () => {
@@ -115,7 +116,9 @@ class HavedTask extends Component{
         dateEnd: null
       }
     );
-    this.setState({search});
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
+    this.setState({pagination, search});
+    this.loadList();
   }
   render() {
     const {
@@ -126,50 +129,37 @@ class HavedTask extends Component{
     } = this.state;
     const columns = [
       {
-        title: '序号',
-        key: 'id',
-        dataIndex: 'id',
-        width: 100
+        title: '任务ID',
+        key: 'missionId',
+        dataIndex: 'missionId',
       },
       {
-        title: '活动时间',
+        title: (<div><p>活动名称</p><p>活动时间</p></div>),
         key: 'createDates',
-        dataIndex: '',
-        width: 200,
         render: (record) => (
           <div>
-            <p>{window.common.getDate(record.dateStart, false)}</p>
-            <p>{window.common.getDate(record.dateEnd, false)}</p>
+            <p>{record.campaignName}</p>
+            <p>{window.common.getDate(record.dateStart, false)}-{window.common.getDate(record.dateEnd, false)}</p>
+            
           </div>
         )
       },
       {
-        title: '活动名称',
-        key: 'campaignName',
-        dataIndex: 'campaignName',
-        width: 200
-      },
-      {
-        title: (<div>接单公众号<p>分类&标签</p></div>),
+        title: (<div>接单公众号<p>广告位置</p></div>),
         key: 'appNickName',
-        dataIndex: 'appNickName',
-        width: 200
-      },
-      {
-        title: '接单时间',
-        key: 'createDate',
-        dataIndex: 'createDate',
-        width: 200,
         render: (record) => (
-          <span>{window.common.getDate(record, true)}</span>
+          <div>
+            <p>{record.appNickName}</p>
+            <p>{window.common.advertLocal[record.appArticlePosition - 1]}</p>
+          </div>
         )
       },
       {
-        title: (<div>预计发文时间<p>实际发文时间</p></div>),
+        title: (<div><p>接单时间</p><p>预计发文时间</p><p>实际发文时间</p></div>),
         key: 'planPostArticleTime',
-        width: 200,
         render: (record) => (
           <div>
+            <p>{window.common.getDate(record, true)}</p>
             <p>{record.planPostArticleTime === undefined ? '--' : window.common.getDate(record.planPostArticleTime, true)}</p>
             <p>{record.realPostArticleTime === undefined ? '--' : window.common.getDate(record.realPostArticleTime, true)}</p>
           </div>
@@ -179,53 +169,34 @@ class HavedTask extends Component{
         title: '广告位置',
         key: 'appArticlePosition',
         dataIndex: 'appArticlePosition',
-        width: 200,
         render: (record) => (
           <span>{window.common.advertLocal[record - 1]}</span>
         )
       },
       {
-        title: '接单阅读数',
+        title: (<div><p>接单阅读量</p><p>实际阅读量</p></div>),
         key: 'missionReadCnt',
-        dataIndex: 'missionReadCnt',
-        width: 200
-      },
-      {
-        title: '占比',
-        key: 'ratioRead',
-        dataIndex: 'ratioRead',
-        width: 200,
         render: (record) => (
-          <span>{record}%</span>
+          <div>
+            <p>{record.missionReadCnt === undefined ? '--' : record.missionReadCnt}</p>
+            <p>{record.missionRealReadCnt === undefined ? '--' : record.missionRealReadCnt}</p>
+          </div>
         )
       },
       {
-        title: '预期支出金额',
-        key: 'adEstimateCost',
-        width: 200,
+        title: (<div><p>CPC单价</p><p>预计支出</p></div>),
+        key: 'adUnitPrice',
         render: (record) => (
-          <span>{(record.missionReadCnt * record.adUnitPrice).toFixed(2)}</span>
-        )
-      },
-      {
-        title: '实际阅读',
-        key: 'missionRealReadCnt',
-        dataIndex: 'missionRealReadCnt',
-        width: 200
-      },
-      {
-        title: '结算金额',
-        key: 'price',
-        width: 200,
-        render: (record) => (
-          <span>{record.missionStatus === 14 ? (record.missionRealReadCnt * record.adUnitPrice).toFixed(2) : null}</span>
+          <div>
+            <p>{record.adUnitPrice}</p>
+            <p>{record.adEstimateCost}</p>
+          </div>
         )
       },
       {
         title: '任务状态',
         key: 'missionStatus',
         dataIndex: 'missionStatus',
-        width: 200,
         render: (record) => (
           <span>{window.common.orderStatus[record - 10]}</span>
         )
@@ -233,7 +204,6 @@ class HavedTask extends Component{
       {
         title: '操作',
         key: 'opeartion',
-        width: 200,
         render: (record) => (
           <div className="opeartion-items">
             <Link className="blue-color" to={{pathname: '/main/advertdetail', state: {id: record.id, type: 0}}}>查看任务</Link>
@@ -290,7 +260,6 @@ class HavedTask extends Component{
           pagination={pagination}
           rowKey={record => record.id}
           className="table"
-          scroll={{x: 2000}}
         />
       </div>  
     )

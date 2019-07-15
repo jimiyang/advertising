@@ -33,6 +33,7 @@ class CashList extends Component{
         total: 0,
         currentPage: 1,
         limit: 10,
+        current: 1,
         onChange: this.changePage,
         onShowSizeChange: this.onShowSizeChange
       }
@@ -97,7 +98,7 @@ class CashList extends Component{
   }
   searchEvent = () => {
     const {pagination} = this.state;
-    const p = Object.assign(pagination, {currentPage: 1});
+    const p = Object.assign(pagination, {currentPage: 1, current: 1});
     this.setState({pagination: p});
     this.loadList();
   }
@@ -114,7 +115,9 @@ class CashList extends Component{
         dateEnd: null
       }
     );
-    this.setState({search});
+    const {pagination} = this.state;
+    const p = Object.assign(pagination, {currentPage: 1, current: 1});
+    this.setState({search, pagination: p});
     this.loadList();
   }
   closeEvent = () => {
@@ -123,42 +126,46 @@ class CashList extends Component{
       isPayVisible: false
     });
   }
-  //审核
-  CheckEvent = () => {
-    this.setState({isVisible: true});
-  }
-  PayEvent = () => {
-    this.setState({isPayVisible: true});
-  }
   render() {
     const {
       flowOfMainData,
       pagination,
       statusData,
-      search,
-      isVisible,
-      isPayVisible
+      search
     } = this.state;
     const columns = [
+      {
+        title: '提现单号',
+        key: 'orderNo',
+        dataIndex: 'orderNo'
+      },
       {
         title: '时间',
         key: 'applyTime',
         dataIndex: 'applyTime'
       },
       {
-        title: '商户名称',
+        title: (<div><p>商户名称</p><p>商户编码</p></div>),
         key: 'merchantName',
-        dataIndex: 'merchantName'
-      },
-      {
-        title: '商户名称',
-        key: 'merchantCode',
-        dataIndex: 'merchantCode'
+        render: (record) => (
+          <div>
+            <p>{record.merchantName}</p>
+            <p>{record.merchantCode}</p>
+          </div>
+        )
       },
       {
         title: '商户类型',
         key: 'merchantType',
-        dataIndex: 'merchantType'
+        dataIndex: 'merchantType',
+        render: (record) => (
+          <span>{record === 1 ? '广告主' : '流量主'}</span>
+        )
+      },
+      {
+        title: '提现金额',
+        key: 'feeAmt',
+        dataIndex: 'feeAmt'
       },
       {
         title: '状态',
@@ -176,14 +183,7 @@ class CashList extends Component{
           <div className="opeartion-items">
             {record.orderStatus === 1 ? <Link to={{pathname: '/main/cashdetail', state: {type: 'audit', orderNo: record.orderNo}}} className="blue-color">审核</Link> : null}
             {record.orderStatus === 2 ? 
-              <Popconfirm
-                title="是否要进行审核?"
-                onConfirm={this.PayEvent.bind(this, record)}
-                okText="是"
-                cancelText="否"
-              >
-                <span className="blue-color">付款</span> 
-              </Popconfirm>
+              <Link to={{pathname: '/main/cashdetail', state: {type: 'pay', orderNo: record.orderNo}}} className="blue-color">付款</Link>
               : null
             }
             <Link to={{pathname: '/main/cashdetail', state: {type: 'detail', orderNo: record.orderNo}}} className="blue-color">详情</Link>

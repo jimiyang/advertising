@@ -7,6 +7,7 @@ class GetCash extends Component{
     super(props);
     this.state = {
       loginName: null,
+      isDisabled: false,
       withDrawData: [],
       form: {
         realWithdrawAmt: 0
@@ -70,13 +71,15 @@ class GetCash extends Component{
         let {form, loginName} = this.state;
         form = Object.assign(form, values, {loginName});
         console.log(form);
+        this.setState({isDisabled: true});
         applyWithdraw(form).then(rs => {
+          this.setState({isDisabled: false});
           if (rs.success) {
             message.success(rs.message);
           } else {
             message.error(rs.message);
           }
-          this.loadList();
+          window.history.go(-1);
         });
       }
     });
@@ -86,7 +89,8 @@ class GetCash extends Component{
     const {
       form,
       withDrawData,
-      pagination
+      pagination,
+      isDisabled
     } = this.state;
     const formItemLayout = {
       labelCol: {
@@ -133,8 +137,8 @@ class GetCash extends Component{
         <div className={style.cashArea}>
           <div className={style.notice}>
             <Alert
-              message="提现声明"
-              description={<div><p>提现有手续费，请阅读提现说明。</p></div>}
+              message="提现服务费说明"
+              description={<div><p>针对您的每笔提现，平台将收取20%的提现服务费。</p></div>}
               type="warning"
               closable
             />
@@ -213,20 +217,22 @@ class GetCash extends Component{
                 </li>
                 <li className={style.button}>
                   <Form.Item>
-                    <Button type="primary" htmlType="submit" className={style.btn}>确认</Button>
+                    <Button type="primary" htmlType="submit" className={style.btn} disabled={isDisabled}>确认</Button>
                   </Form.Item>
                 </li>
               </Form>
             </ul>
             <div className={style.historylist}>
-              <h1>历史提现信息</h1>
-              <Table
-                dataSource={withDrawData}
-                columns={columns}
-                rowKey={record => record.id}
-                pagination={pagination}
-                className="table"
-              />
+              {
+                /*<h1>历史提现信息</h1>
+                <Table
+                  dataSource={withDrawData}
+                  columns={columns}
+                  rowKey={record => record.id}
+                  pagination={pagination}
+                  className="table"
+                />*/
+              }
             </div>
           </div>
         </div>

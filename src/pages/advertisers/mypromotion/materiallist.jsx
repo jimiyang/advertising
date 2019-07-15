@@ -27,6 +27,7 @@ class MaterialList extends Component{
         showSizeChanger: true,
         total: 0,
         currentPage: 1,
+        current: 1,
         limit: 10,
         pageSize: 10,
         onChange: this.changePage,
@@ -76,14 +77,15 @@ class MaterialList extends Component{
     this.setState({search});
   }
   searchEvent = () => {
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1});
-    this.setState(pagination);
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
+    this.setState({pagination});
     this.loadList();
   }
   clearEvent = () => {
     let search = this.state.search;
     search = Object.assign(search, {title: null, articleType: null});
-    this.setState({search});
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
+    this.setState({pagination, search});
     this.loadList();
   }
   //删除素材

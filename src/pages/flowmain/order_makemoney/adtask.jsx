@@ -26,6 +26,7 @@ class AdTask extends Component{
         showSizeChanger: true,
         total: 0,
         currentPage: 1,
+        current: 1,
         limit: 10,
         onChange: this.changePage,
         onShowSizeChange: this.onShowSizeChange
@@ -85,7 +86,7 @@ class AdTask extends Component{
     this.setState({search});
   }
   searchEvent = () => {
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1});
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
     this.setState(pagination);
     this.loadList();
   }
@@ -98,7 +99,9 @@ class AdTask extends Component{
         missionStatus: null
       }
     );
-    this.setState({search, status: null});
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
+    this.setState({search, status: null, pagination});
+    this.loadList();
   }
   render() {
     const {

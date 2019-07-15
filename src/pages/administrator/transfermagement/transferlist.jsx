@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {Table, Input, Button, Select, message, Popconfirm, Modal, DatePicker} from 'antd';
 import Link from 'umi/link';
-import Redirect from 'umi/redirect';
 import style from '../style.less';
 const Option = Select.Option;
 class TransferList extends Component{

@@ -15,7 +15,7 @@ class CreateAdvertity extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      redirect: false,
+      isDisabled: false,
       currentTime: null,
       isVisible: false, //是否显示充值弹层
       topup:{
@@ -143,7 +143,9 @@ class CreateAdvertity extends Component {
           message.error('必须大于0');
         }
         //console.log(form);
+        this.setState({isDisabled: true});
         add(form).then(rs => {
+          this.setState({isDisabled: false});
           message.success(rs.message);
           router.push({
             pathname: '/main/selectmateria',
@@ -225,7 +227,7 @@ class CreateAdvertity extends Component {
   }
   render() {
     const {
-      redirect,
+      isDisabled,
       form,
       mediaTypeLabel,
       provinceTypeType,
@@ -286,7 +288,7 @@ class CreateAdvertity extends Component {
                         {required: true, message: '请输入活动名称'}
                       ]
                     }    
-                  )(<Input style={{width: '425px'}} placeholder="请输入活动名称" onChange={this.changeFormEvent.bind(this, 'campaignName')} className={style.ipttxt} />)
+                  )(<Input maxLength={100} style={{width: '425px'}} placeholder="请输入活动名称" onChange={this.changeFormEvent.bind(this, 'campaignName')} className={style.ipttxt} />)
                   }
                 </Form.Item>
                 <Form.Item label="活动周期" {...tailFormItemLayout}>
@@ -470,7 +472,7 @@ class CreateAdvertity extends Component {
                 </ul>          
                 <div className={style.warning}>推广效果: 预计您的广告将实现<em className="m5">{validReading}</em>次有效阅读</div>
                 <Form.Item>
-                  <Button type="primary" htmlType="submit" className={style.btn}>下一步</Button>
+                  <Button type="primary" htmlType="submit" className={style.btn} disabled={isDisabled}>下一步</Button>
                 </Form.Item>
             </Form>
         </div>

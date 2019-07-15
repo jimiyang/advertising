@@ -23,6 +23,7 @@ class MyActivity extends Component{
         showSizeChanger: true,
         total: 0,
         currentPage: 1,
+        current: 1,
         limit: 10,
         pageSize: 10,
         onChange: this.changePage,
@@ -114,13 +115,9 @@ class MyActivity extends Component{
     this.setState({search});
   }
   searchEvent = () => {
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1});
-    this.setState(pagination);
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
+    this.setState({pagination});
     this.loadList();
-  }
-  //创建活动
-  createEvent = () => {
-    router.push('/main/createactivity');
   }
   //重置
   clearEvent = () => {
@@ -133,7 +130,13 @@ class MyActivity extends Component{
         postStatus: null
       }
     );
-    this.setState({search});
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
+    this.setState({pagination, search});
+    this.loadList();
+  }
+  //创建活动
+  createEvent = () => {
+    router.push('/main/createactivity');
   }
   render() {
     const {
@@ -146,14 +149,17 @@ class MyActivity extends Component{
     } = this.state;
     const columns = [
       {
-        title: '序号',
-        key: 'id',
-        dataIndex: 'id'
+        title: '活动ID',
+        key: 'campaignId',
+        dataIndex: 'campaignId'
       },
       {
-        title: '活动周期',
+        title: (<div><p>活动名称</p><p>活动周期</p></div>),
         render: (record) => (
-          <span>{window.common.getDate(record.dateStart, false)}-{window.common.getDate(record.dateEnd, false)}</span>
+          <div>
+            <p>{record.campaignName}</p>
+            <p>{window.common.getDate(record.dateStart, false)}-{window.common.getDate(record.dateEnd, false)}</p>
+          </div>
         )
       },
       {
@@ -165,27 +171,14 @@ class MyActivity extends Component{
         )
       },
       {
-        title: '活动名称',
-        key: 'campaignName',
-        dataIndex: 'campaignName'
-      },
-      {
-        title: '活动预算',
+        title: (<div><p>活动预算</p><p>CPC单价</p><p>任务阅读数</p></div>),
         key: 'postAmtTotal',
-        dataIndex: 'postAmtTotal',
         render: (record) => (
-          <span>{window.common.formatNumber(record)}</span>
-        )
-      },
-      {
-        title: '阅读单价',
-        key: 'unitPrice',
-        dataIndex: 'unitPrice'
-      },
-      {
-        title: '任务阅读数',
-        render: (record) => (
-          <span>{window.common.formatNumber(Math.round(record.postAmtTotal / record.unitPrice))}</span>
+          <div>
+            <p>{window.common.formatNumber(record.postAmtTotal)}</p>
+            <p>{record.unitPrice}</p>
+            <p>{window.common.formatNumber(parseInt(record.postAmtTotal * 100 / record.unitPrice * 100) / 10000)}</p>
+          </div>
         )
       },
       {

@@ -15,7 +15,7 @@ class Receivead extends Component{
     super(props);
     this.state = {
       currentTime: null,
-      redirect: false,
+      isDisabled: false,
       loginName: null,
       form: {
        campaignId: null,
@@ -121,7 +121,6 @@ class Receivead extends Component{
       if (!err) {
         let {form, loginName} = this.state;
         //form = Object.assign(form, values);
-        console.log(form);
         const params = {
           campaignId: form.campaignId,
           appId: form.appId,
@@ -135,7 +134,9 @@ class Receivead extends Component{
           missionReadCnt: form.missionReadCnt,
           planPostArticleTime: form.planPostArticleTime
         };
+        this.setState({isDisabled: true});
         flowMissionAdd(params).then(rs => {
+          this.setState({isDisabled: false});
           if (rs.success) {
             message.success(rs.message);
             window.history.go(-1);
@@ -165,7 +166,8 @@ class Receivead extends Component{
     const {
       form,
       selmediaValData,
-      selprovinceValData
+      selprovinceValData,
+      isDisabled
     } = this.state;
     const {getFieldDecorator} = this.props.form;
     const passwordValidator = (rule, value, callback) => {
@@ -291,7 +293,7 @@ class Receivead extends Component{
             <li><em className={style.name}>发文时段</em><div>{window.common.getDate(form.createDate, true)}</div></li>
             <li>
               <Form.Item>
-                <Button type="primary"  htmlType="submit">确定</Button>
+                <Button type="primary"  htmlType="submit" disabled={isDisabled}>确定</Button>
                 <Button className="ml30" onClick={this.goBackEvent.bind(this)}>返回</Button>
               </Form.Item>
             </li>

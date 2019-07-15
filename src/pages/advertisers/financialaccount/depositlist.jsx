@@ -36,6 +36,7 @@ class DepositList extends Component{
         size: 'small',
         limit: 10, //每页显示多少条
         currentPage: 1,
+        current: 1,
         total: 0,
         showSizeChanger: true,
         onChange: this.changePage,
@@ -77,8 +78,12 @@ class DepositList extends Component{
     };
     //console.log(params);
     topupList(params).then(rs => {
-      const pagination = Object.assign(this.state.pagination, {total: rs.total});
-      this.setState({depositData: rs.data, pagination});
+      if (rs.success) {
+        const pagination = Object.assign(this.state.pagination, {total: rs.total});
+        this.setState({depositData: rs.data, pagination});
+      } else {
+        message.error(rs.message);
+      } 
     });
   }
   changePage = (page) => {
@@ -98,7 +103,11 @@ class DepositList extends Component{
   getCaQuery = () => {
     caQuery({operatorLoginName: this.state.loginName}).then(rs => {
       //console.log(rs);
-      this.setState({available_balance: rs.data.available_balance, freezen_balance: rs.data.freezen_balance});
+      if (rs.success) {
+        this.setState({available_balance: rs.data.available_balance, freezen_balance: rs.data.freezen_balance});
+      } else {
+        message.error(rs.message);
+      }
     });
   }
   //切换记录列表
@@ -129,8 +138,22 @@ class DepositList extends Component{
     this.setState({search});
   }
   searchEvent = () => {
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1});
-    this.setState(pagination);
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
+    this.setState({pagination});
+    this.loadList();
+  }
+  clearEvent = () => {
+    let search = this.state.search;
+    search = Object.assign(
+      search, {
+        dateStart: null,
+        dateEnd: null,
+        orderNo: null,
+        orderStatus: null
+      }
+    );
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
+    this.setState({pagination, search});
     this.loadList();
   }
   //充值弹窗
@@ -187,18 +210,7 @@ class DepositList extends Component{
       this.setState({detailData: rs.data, isDetailVisible: true});
     });
   }
-  clearEvent = () => {
-    let search = this.state.search;
-    search = Object.assign(
-      search, {
-        dateStart: null,
-        dateEnd: null,
-        orderNo: null,
-        orderStatus: null
-      }
-    );
-    this.setState({search});
-  }
+  
   render(){
     const {
       isActive,

@@ -26,6 +26,7 @@ class TaskList extends Component{
         size: 'small',
         limit: 10, //每页显示多少条
         currentPage: 1,
+        current: 1,
         total: 0,
         showSizeChanger: true,
         onChange: this.changePage,
@@ -40,7 +41,8 @@ class TaskList extends Component{
       placement: 'right',
       isVisible: false,
       missionTotal: 0,
-      missionNotRelease: 0
+      missionNotRelease: 0,
+      readData: []
     };
   }
   async componentWillMount() {
@@ -119,7 +121,7 @@ class TaskList extends Component{
     this.setState({search});
   }
   searchEvent = () => {
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1});
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
     this.setState({pagination});
     this.loadList();
   }
@@ -134,7 +136,7 @@ class TaskList extends Component{
         campaignName: null
       }
     );
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1});
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
     this.setState({search, pagination});
     this.loadList();
   }
@@ -222,7 +224,6 @@ class TaskList extends Component{
       loginName,
       settleMissions
     };
-    console.log(params);
     let arr = [];
     settleCampaign(params).then(rs => {
       this.setState({isDisabled: false});
@@ -246,10 +247,8 @@ class TaskList extends Component{
       loginName,
       missionId: item.missionId
     };
-    console.log(params);
     listReadCnt(params).then(rs => {
-      this.setState({isVisible: true});
-      console.log(rs);
+      this.setState({readData: rs.data, isVisible: true});
     });
   }
   closeEvent = () => {
@@ -267,7 +266,8 @@ class TaskList extends Component{
       isVisible,
       missionTotal,
       missionNotRelease,
-      selectedRowKeys
+      selectedRowKeys,
+      readData
     } = this.state;
     const columns = [
       {
@@ -286,7 +286,7 @@ class TaskList extends Component{
         width: 400,
         render: (record) => (
           <div>
-            <p>{record.campaignName}</p>
+            <div className="txthide" title={record.campaignName}>{record.campaignName}</div>
             <p>{record.adCampaign.dateStart !== undefined ? window.common.getDate(record.adCampaign.dateStart) : '--'}至{record.adCampaign.dateEnd !== undefined ? window.common.getDate(record.adCampaign.dateEnd) : '--'}</p>
             <p>{record.adCampaign.advertiserName === undefined ? '--' : record.adCampaign.advertiserName}</p>
           </div>
@@ -323,7 +323,7 @@ class TaskList extends Component{
           <div>
             <p>{record.createDate !== undefined ? window.common.getDate(record.createDate, true) : '--'}</p>
             <p>{record.planPostArticleTime !== undefined ? window.common.getDate(record.planPostArticleTime, true) : '--'}</p>
-            <p>{record.realPostArticleTime !== undefined ? window.common.getDate(record.realPostArticleTime, true) : '--'}</p>
+            <p>{record.realPostArticleTime !== '' ? window.common.getDate(record.realPostArticleTime, true) : '--'}</p>
           </div>
         )
       },
@@ -449,12 +449,11 @@ class TaskList extends Component{
               <span>日期</span>
               <span>阅读量</span>
             </dt>
-            <dd><span>2019-03-04</span><span>50000000</span></dd>
-            <dd><span>2019-03-04</span><span>50000000</span></dd>
-            <dd><span>2019-03-04</span><span>50000000</span></dd>
-            <dd><span>2019-03-04</span><span>50000000</span></dd>
-            <dd><span>2019-03-04</span><span>50000000</span></dd>
-            <dd><span>2019-03-04</span><span>50000000</span></dd>
+            {
+              readData.map((item, index) => (
+                <dd key={index}><span>{item.statDate}</span><span>{item.intPageReadUser}</span></dd>
+              ))
+            }
           </dl>
         </Drawer>
       </div>

@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {DatePicker, Select, Input, Button, Table, message, Popconfirm} from 'antd';
-import Redirect from 'umi/redirect';
 import style from '../style.less';
 import Link from 'umi/link';
 import moment from 'moment';
@@ -9,6 +8,7 @@ import {
   getAdCampaignCountByPostStatus,
   updatePostStatusById
 } from '../../../api/api';
+import { hidden } from 'ansi-colors';
 const Option = Select.Option;
 class ActivityList extends Component{
   constructor(props) {
@@ -26,6 +26,7 @@ class ActivityList extends Component{
         size: 'small',
         limit: 10, //每页显示多少条
         currentPage: 1,
+        current: 1,
         total: 0,
         showQuickJumper: true,
         showSizeChanger: true,
@@ -101,8 +102,8 @@ class ActivityList extends Component{
     this.setState({search});
   }
   searchEvent = () => {
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1});
-    this.setState(pagination);
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
+    this.setState({pagination});
     this.loadList();
   }
   clearEvent = () => {
@@ -116,7 +117,9 @@ class ActivityList extends Component{
         campaignName: null
       }
     );
-    this.setState({search});
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
+    this.setState({search, pagination});
+    this.loadList();
   }
   //取消
   cancelActivityEvent = (item) => {
@@ -162,7 +165,10 @@ class ActivityList extends Component{
         title: '活动名称',
         key: 'campaignName',
         dataIndex: 'campaignName',
-        width: 150
+        width: 150,
+        render: (record) => (
+          <div className="txthide" title={record.campaignName}>{record}</div>
+        )
       },
       {
         title: '活动预算',
@@ -250,7 +256,7 @@ class ActivityList extends Component{
           </li>
           <li>
             <Button type="primary" onClick={this.searchEvent.bind(this)}>查询</Button>
-            <Button className="ml10" onClick={this.clearEvent.bind(this)}>查询</Button>
+            <Button className="ml10" onClick={this.clearEvent.bind(this)}>清空</Button>
           </li>
         </ul>
         <Table

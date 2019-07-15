@@ -21,6 +21,7 @@ class MyOrder extends Component{
         limit: 10,
         pageSize: 10,
         currentPage: 1,
+        current: 1,
         total: 0
       },
       appNickName: null,
@@ -100,7 +101,7 @@ class MyOrder extends Component{
   }
   //搜索
   searchEvent = () => {
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1});
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
     this.setState(pagination);
     this.loadList();
   }
@@ -130,7 +131,9 @@ class MyOrder extends Component{
         campaignName: null
       }
     );
-    this.setState({search});
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
+    this.setState({pagination, search});
+    this.loadList();
   }
   render() {
     const {

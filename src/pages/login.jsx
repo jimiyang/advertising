@@ -7,7 +7,7 @@ class Login extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      loginName: 'SHcszfwx', //流量主：hahahahah1111 //广告主：topup20190520 //管理员：SHcszfwx
+      loginName: 'ggz_10', //流量主：llz_10 //广告主：ggz_10 //管理员：SHcszfwx
       password: '111qqq'
     }
   }
@@ -18,7 +18,7 @@ class Login extends Component {
   }
   login = () => {
     login(this.state).then(rs => {
-      if (rs.success === true) {
+      if (rs.success) {
         message.success(rs.message);
         const params = {
           data: {
@@ -30,6 +30,8 @@ class Login extends Component {
         };
         window.localStorage.setItem('login_info', JSON.stringify(params));
         router.push('/main');
+      } else {
+        message.error(rs.message);
       }
     });
   }

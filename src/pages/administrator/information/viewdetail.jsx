@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {Button, Radio, Input, message} from 'antd';
-import Redirect from 'umi/redirect';
 import style from '../style.less';
 import {
   updatePostStatusById,
@@ -138,7 +137,6 @@ class ViewDetail extends Component {
       selmediaValData,
       selproviceValData
     } = this.state;
-    if (redirect) return (<Redirect to="/relogin" />);
     return (
       <div className={style.administrator}>
         <h1 className="nav-title">活动详情</h1>

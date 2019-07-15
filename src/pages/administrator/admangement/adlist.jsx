@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
-import {Table, Input, Button, Select, message, Modal} from 'antd';
-import Redirect from 'umi/redirect';
+import {Table, Input, Button, Select, message} from 'antd';
 import style from '../style.less';
 import AddFlowMain from '../../components/addflowmain'; //添加广告主
 import {
@@ -30,6 +29,7 @@ class AdList extends Component{
         showSizeChanger: true,
         total: 0,
         currentPage: 1,
+        current: 1,
         limit: 10,
         onChange: this.changePage,
         onShowSizeChange: this.onShowSizeChange
@@ -97,8 +97,8 @@ class AdList extends Component{
   }
   //搜索
   searchEvent = () => {
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1});
-    this.setState(pagination);
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1,});
+    this.setState({pagination});
     this.loadList();
   }
   clearEvent = () => {
@@ -111,7 +111,9 @@ class AdList extends Component{
         status: null
       }
     );
-    this.setState({search});
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
+    this.setState({search, pagination});
+    this.loadList();
   }
   resetPwdEvent = (item) => {
     const operatorLoginName = this.state.operatorLoginName;
@@ -224,7 +226,6 @@ class AdList extends Component{
         )
       },*/
     ];
-    if (redirect) return (<Redirect to="/relogin" />);
     return (
       <div className={style.administrator}>
         <AddFlowMain

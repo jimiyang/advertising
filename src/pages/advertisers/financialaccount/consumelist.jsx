@@ -17,6 +17,7 @@ class ConsumeList extends Component{
         size: 'small',
         limit: 10, //每页显示多少条
         currentPage: 1,
+        current: 1,
         total: 0,
         showSizeChanger: true,
         onChange: this.changePage,
@@ -45,8 +46,12 @@ class ConsumeList extends Component{
       ...search
     };
     financeList(params).then(rs => {
-      const p = Object.assign(pagination, {total: rs.total});
-      this.setState({depositData: rs.data, pagination: p});
+      if (rs.success) {
+        const p = Object.assign(pagination, {total: rs.total});
+        this.setState({depositData: rs.data, pagination: p});
+      } else {
+        message.error(rs.message);
+      } 
     });
   }
   changePage = (page) => {
@@ -96,8 +101,8 @@ class ConsumeList extends Component{
     this.setState({search});
   }
   searchEvent = () => {
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1});
-    this.setState(pagination);
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
+    this.setState({pagination});
     this.loadList();
   }
   clearEvent = () => {
@@ -110,8 +115,8 @@ class ConsumeList extends Component{
         orderStatus: null
       }
     );
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1});
-    this.setState(pagination, search);
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
+    this.setState({pagination, search});
     this.loadList();
   }
   render(){

@@ -1,7 +1,6 @@
 import styles from './index.css';
 import React, {Component} from 'react';
 import router from 'umi/router';
-import Redirect from 'umi/redirect';
 import {Layout, message} from 'antd';
 import common from '../untils/common';
 import Menu from  '../pages/wrap/menu'; //左侧菜单
@@ -48,7 +47,6 @@ class BasicLayout extends Component {
       type,
       redirect
     } = this.state;
-    if (redirect) return (<Redirect to="/relogin" />);
     return (
       <div className="section">
         <meta name="referrer" content="never" />

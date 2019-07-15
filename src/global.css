@@ -24,6 +24,7 @@ input, .radius2, .ant-input, .ant-select-selection{border-radius: 2px;}
 .w180{width: 180px;}
 .w260{width: 260px;}
 .hide{display: none;}
+.txthide{width: 300px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
 .ant-modal-content{border-radius: 2px;}
 .ant-modal-footer{text-align: center;background: #F6F6F6;height: 62px;}
 .ant-btn{border-radius: 2px;height: 36px;line-height: 36px;padding:0 25px;}

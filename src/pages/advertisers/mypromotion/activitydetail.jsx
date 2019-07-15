@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
-import {Button, message} from 'antd';
-import Redirect from 'umi/redirect';
+import {Button, message, Table} from 'antd';
 import {
   getDictByType,
   getById
@@ -92,7 +91,13 @@ class ActivityDetail extends Component{
   }
   render() {
     const {form, mediaTypeLabel, provinceTypeType, selmediaValData, selproviceValData, redirect} = this.state;
-    if (redirect) return (<Redirect to="/relogin" />);
+    const columns = [
+      {
+        title: '任务ID',
+        key: 'missionId',
+        dataIndex: 'missionId'
+      }
+    ];
     return (
       <div className={style.mypromotion}>
         <h1 className="nav-title">我的推广活动 > 活动详情</h1>
@@ -100,6 +105,7 @@ class ActivityDetail extends Component{
           <h2 className="small-title"><em></em>基本信息</h2>
           <ul className={style.detaillist}>
               <li>活动名称：<div>{form.campaignName}</div></li>
+              <li>活动ID：<div>{form.campaignId}</div></li>
               <li>活动日期：<div>{form.dateStart !== '' ? window.common.getDate(form.dateStart, false) : null}至{form.dateEnd !== '' ? window.common.getDate(form.dateEnd, false) : null}</div></li>
               <li>活动形式：<div>{window.common.getAdType(form.adType)}</div></li>
               <li>
@@ -155,6 +161,10 @@ class ActivityDetail extends Component{
               <li>
                 活动效果：
                 <div>预计您的广告将实现<em className="red-color m5">{window.common.formatNumber(parseInt(form.postAmtTotal * 100 / form.unitPrice * 100) / 10000)}</em>次有效阅读</div>
+              </li>
+              <li>
+                <Table
+                />
               </li>
               <li className="mt30"><Button onClick={this.goBackEvent.bind(this)}>返回</Button></li>
             </ul>

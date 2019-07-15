@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {Table, Popconfirm, message, Button, Input, Select, Modal} from 'antd';
-import Redirect from 'umi/redirect';
 import style from './style.less';
 import AddEmployess from '../../components/addemployess';
 import {
@@ -28,6 +27,7 @@ class EmployessList extends Component{
         size: 'small',
         limit: 10, //每页显示多少条
         currentPage: 1,
+        current: 1,
         total: 0,
         showQuickJumper: true,
         showSizeChanger: true,
@@ -96,8 +96,8 @@ class EmployessList extends Component{
     this.setState({search});
   }
   searchEvent = () => {
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1});
-    this.setState(pagination);
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
+    this.setState({pagination});
     this.loadList();
   }
   clearEvent = () => {
@@ -109,7 +109,9 @@ class EmployessList extends Component{
         status: null
       }
     );
-    this.setState({search});
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
+    this.setState({pagination, search});
+    this.loadList();
   }
   addEvent = (type, item) => {
     let addForm = this.state.addForm;
@@ -166,7 +168,6 @@ class EmployessList extends Component{
     });
   }
   confirm = (item) => {
-    console.log(item);
     const status = item.status === 1 ? 2 : 1; //1启用，2停用
     const params = {
       status,
@@ -240,7 +241,6 @@ class EmployessList extends Component{
         )
       }
     ];
-    if (redirect) return (<Redirect to="/relogin" />);
     return(
       <div className={style.employess}>
         <Modal

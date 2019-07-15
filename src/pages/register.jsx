@@ -29,8 +29,12 @@ class Register extends Component{
       if (!err) {
         const form = Object.assign(this.state.form, values);
         register(form).then(rs => {
-          message.success(rs.message);
-          router.push('/');
+          if (rs.success) {
+            message.success(rs.message);
+            router.push('/');
+          } else {
+            message.error(rs.message);
+          }
         });
       }
     });

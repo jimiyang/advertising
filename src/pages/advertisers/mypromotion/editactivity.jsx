@@ -16,7 +16,7 @@ class EditAdvertity extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      redirect: false,
+      isDisabled: false,
       currentTime: null,
       isVisible: false, //是否显示充值弹层
       topup:{
@@ -190,7 +190,9 @@ class EditAdvertity extends Component {
           message.warning('活动周期最多7天！');
           return false;
         }
+        this.setState({isDisabled: true});
         edit(form).then(rs => {
+          this.setState({isDisabled: false});
           message.success(rs.message);
           //router.push('/main/selectmateria');
           router.push({
@@ -274,7 +276,7 @@ class EditAdvertity extends Component {
   }
   render() {
     const {
-      redirect,
+      isDisabled,
       form,
       mediaTypeLabel,
       provinceTypeType,
@@ -310,7 +312,6 @@ class EditAdvertity extends Component {
         }
       },
     };
-    if (redirect) return (<Redirect to="/relogin" />);
     return(
       <div className={style.mypromotion}>
         <Modal
@@ -336,7 +337,7 @@ class EditAdvertity extends Component {
                         {required: true, message: '请输入活动名称'}
                       ]
                     }    
-                  )(<Input style={{width: '425px'}} placeholder="请输入活动名称" onChange={this.changeFormEvent.bind(this, 'campaignName')} className={style.ipttxt} />)
+                  )(<Input maxLength={100} style={{width: '425px'}} placeholder="请输入活动名称" onChange={this.changeFormEvent.bind(this, 'campaignName')} className={style.ipttxt} />)
                   }
                 </Form.Item>
                 <Form.Item label="活动周期" {...tailFormItemLayout}>
@@ -522,7 +523,7 @@ class EditAdvertity extends Component {
                 </ul>          
                 <div className={style.warning}>推广效果: 预计您的广告将实现<em className="m5">{validReading}</em>次有效阅读</div>
                 <Form.Item>
-                  <Button type="primary" htmlType="submit" className={style.btn}>下一步</Button>
+                  <Button type="primary" htmlType="submit" className={style.btn} disabled={isDisabled}>下一步</Button>
                 </Form.Item>
             </Form>
         </div>
