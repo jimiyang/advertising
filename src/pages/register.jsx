@@ -1,12 +1,12 @@
-import React, {Component} from 'react';
-import {Form, Input, Icon, message, Button} from 'antd';
-import router from 'umi/router';
-import Link from 'umi/link';
-import Redirect from 'umi/redirect';
-import {register} from '../api/api';
+import React, {Component} from 'react'
+import {Form, Input, Icon, message, Button} from 'antd'
+import router from 'umi/router'
+import Link from 'umi/link'
+import Redirect from 'umi/redirect'
+import {register} from '../api/api'
 class Register extends Component{
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       redirect: false,
       form: {
@@ -20,36 +20,36 @@ class Register extends Component{
     }
   }
   componentWillMount() {
-    const form = Object.assign(this.state.form, {type: Number(this.props.location.state.type)});
-    this.setState({form});
+    const form = Object.assign(this.state.form, {type: Number(this.props.location.state.type)})
+    this.setState({form})
   }
   RegisterEvent = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        const form = Object.assign(this.state.form, values);
+        const form = Object.assign(this.state.form, values)
         register(form).then(rs => {
           if (rs.success) {
-            message.success(rs.message);
-            router.push('/');
+            message.success(rs.message)
+            router.push('/')
           } else {
-            message.error(rs.message);
+            message.error(rs.message)
           }
-        });
+        })
       }
-    });
+    })
   }
   resetEvent = () => {
-    //window.history.go(-1);
-    router.push('/');
+    //window.history.go(-1)
+    router.push('/')
   }
   render() {
-    const {getFieldDecorator} = this.props.form;
+    const {getFieldDecorator} = this.props.form
     const {
       form,
       redirect
-    } = this.state;
-    if (redirect) return (<Redirect to="/" />);
+    } = this.state
+    if (redirect) return (<Redirect to="/" />)
     return(
       <div className="login-form">
         <div className="header">
@@ -179,5 +179,5 @@ class Register extends Component{
     )
   }
 }
-//export default Register;
-export default Form.create()(Register);
+//export default Register
+export default Form.create()(Register)

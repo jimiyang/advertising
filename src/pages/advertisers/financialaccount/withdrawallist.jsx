@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
-import {DatePicker, Table, Select, Input, Button} from 'antd';
-import style from './style.less';
-const {Option} = Select; 
+import React, {Component} from 'react'
+import {DatePicker, Table, Select, Input, Button} from 'antd'
+import style from './style.less'
+const {Option} = Select 
 class WithdrawList extends Component{
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       depositData: [
         {
@@ -19,16 +19,16 @@ class WithdrawList extends Component{
       pagination: {
         size: 'small'
       }
-    };
+    }
   }
   componentWillMount() {
-    //console.log('提现记录');
+    //console.log('提现记录')
   }
   render(){
     const {
       depositData,
       pagination
-    } = this.state;
+    } = this.state
     const columns = [
       {
         title: '提现单号',
@@ -55,7 +55,7 @@ class WithdrawList extends Component{
         key: 'gmt_time',
         dataIndex: 'gmt_time'
       }
-    ];
+    ]
     return(
       <div className={style.financialModel}>
         <ul className={style.search}>
@@ -90,4 +90,4 @@ class WithdrawList extends Component{
     )
   }
 }
-export default WithdrawList;
+export default WithdrawList

@@ -1,18 +1,16 @@
-import React, {Component} from 'react';
-import {Select, DatePicker, Input, message, Button, Form} from 'antd';
-import style from './style.less';
-import moment from 'moment';
-import Redirect from 'umi/redirect';
-import {isNull} from 'util';
+import React, {Component} from 'react'
+import {Select, DatePicker, Input, message, Button, Form} from 'antd'
+import style from './style.less'
+import moment from 'moment'
 import {
   detail,
   getDictByType,
   flowMissionAdd
-} from '../../../api/api';
-const Option = Select.Option;
+} from '../../../api/api'
+const Option = Select.Option
 class Receivead extends Component{
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       currentTime: null,
       isDisabled: false,
@@ -32,15 +30,15 @@ class Receivead extends Component{
       provinceLabelType: [],
       selmediaValData: [],
       selprovinceValData: []
-    };
+    }
   }
   componentWillMount() {
     Promise.all([getDictByType({type: 'mediaType'}), getDictByType({type: 'provinceType'})]).then(rs => {
-      this.initForm(this.props.location.state.campaignId);
-      let form = this.state.form;
-      form = Object.assign(form, this.props.location.state);
-      const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
-      if (!loginInfo) return false;
+      this.initForm(this.props.location.state.campaignId)
+      let form = this.state.form
+      form = Object.assign(form, this.props.location.state)
+      const loginInfo = JSON.parse(window.localStorage.getItem('login_info'))
+      if (!loginInfo) return false
       this.setState({
         mediaTypeLabel: rs[0].data,
         selmediaValData: new Array(rs[0].data.length),
@@ -48,79 +46,79 @@ class Receivead extends Component{
         selprovinceValData: new Array(rs[1].data.length),
         form,
         loginName: loginInfo.data.loginName
-      });
-    });
+      })
+    })
   }
   initForm = (campaignId) => {
     detail({campaignId}).then(rs => {
-      const form = Object.assign(this.state.form, rs.data.campaign);
-      const selmediaValData = this.initLabel('media', form.targetMediaCategory);
-      const selprovinceValData = this.initLabel('province', form.targetArea);
-      this.setState({form, selmediaValData, selprovinceValData});
-    });
+      const form = Object.assign(this.state.form, rs.data.campaign)
+      const selmediaValData = this.initLabel('media', form.targetMediaCategory)
+      const selprovinceValData = this.initLabel('province', form.targetArea)
+      this.setState({form, selmediaValData, selprovinceValData})
+    })
   }
    //初始化标签
    initLabel = (type, data) => {
-    let arr = data;
+    let arr = data
     switch (type) {
       case 'media':
-        const mediaLabel = this.state.mediaTypeLabel;
-        let selmediaValData = this.state.selmediaValData;
+        const mediaLabel = this.state.mediaTypeLabel
+        let selmediaValData = this.state.selmediaValData
         if (arr !== '' || arr.length !== 0) {
           JSON.parse(arr).map((node, i) => {
             mediaLabel.map((item, index) => {
               if (node == Number(item.value)) {
-                selmediaValData[index] = item.label;
+                selmediaValData[index] = item.label
               }
-            });
-          });
+            })
+          })
         }
-        return selmediaValData;
+        return selmediaValData
       case 'province':
-        const provinceLabel = this.state.provinceLabelType;
-        let selproviceValData = this.state.selprovinceValData;
+        const provinceLabel = this.state.provinceLabelType
+        let selproviceValData = this.state.selprovinceValData
         if (arr !== '' || arr.length !== 0) {
           JSON.parse(arr).map((node, i) => {
             provinceLabel.map((item, index) => {
               if (node == Number(item.value)) {
-                selproviceValData[index] = item.label;
+                selproviceValData[index] = item.label
               }
-            });
-          });
+            })
+          })
         }
-        return selproviceValData;
+        return selproviceValData
 
       default: 
-        break;
+        break
     }
   }
   changeValueEvent = (type, e, value) => {
-    let {form} = this.state;
-    let obj = {};
+    let {form} = this.state
+    let obj = {}
     switch(type) {
       case 'articlePosition':
-        obj = {[type]: e};
-        break;
+        obj = {[type]: e}
+        break
       case 'missionReadCnt':
-        obj = {[type]: e.target.value};
+        obj = {[type]: e.target.value}
         
-        break;
+        break
       case 'planPostArticleTime':
-        obj = {[type]: value};
-        break;
+        obj = {[type]: value}
+        break
       default:
-        break;
+        break
     }
-    form = Object.assign(form, obj);
-    this.setState({form});
+    form = Object.assign(form, obj)
+    this.setState({form})
   }
   //确定接广告提交事件
   createEvent = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        let {form, loginName} = this.state;
-        //form = Object.assign(form, values);
+        let {form, loginName} = this.state
+        //form = Object.assign(form, values)
         const params = {
           campaignId: form.campaignId,
           appId: form.appId,
@@ -133,34 +131,34 @@ class Receivead extends Component{
           articlePosition: form.articlePosition,
           missionReadCnt: form.missionReadCnt,
           planPostArticleTime: form.planPostArticleTime
-        };
-        this.setState({isDisabled: true});
+        }
+        this.setState({isDisabled: true})
         flowMissionAdd(params).then(rs => {
-          this.setState({isDisabled: false});
+          this.setState({isDisabled: false})
           if (rs.success) {
-            message.success(rs.message);
-            window.history.go(-1);
+            message.success(rs.message)
+            window.history.go(-1)
           } else {
-            message.error(rs.message);
+            message.error(rs.message)
           }
-        });
+        })
       }
-    });
+    })
   }
   goBackEvent = () => {
-    window.history.go(-1);
+    window.history.go(-1)
   }
   disabledEndDate = (endValue) => {
-    const startValue = this.state.currentTime;
-    if (!endValue || !startValue) {return false;}
-    return endValue.valueOf() <= startValue.valueOf();
+    const startValue = this.state.currentTime
+    if (!endValue || !startValue) {return false}
+    return endValue.valueOf() <= startValue.valueOf()
   }
   handleEndOpenChange = (open) => {
-    let me = this;
+    let me = this
     if(open){
-      me.currentTime = moment();
+      me.currentTime = moment()
     }
-    this.setState({currentTime: moment()});
+    this.setState({currentTime: moment()})
   }
   render() {
     const {
@@ -168,19 +166,19 @@ class Receivead extends Component{
       selmediaValData,
       selprovinceValData,
       isDisabled
-    } = this.state;
-    const {getFieldDecorator} = this.props.form;
+    } = this.state
+    const {getFieldDecorator} = this.props.form
     const passwordValidator = (rule, value, callback) => {
-      //const { getFieldValue } = this.props.form;
+      //const { getFieldValue } = this.props.form
       if (value > form.availableCnt) {
-        callback('建议接单数量不能大于最大阅读数');
+        callback('建议接单数量不能大于最大阅读数')
       } // 必须总是返回一个 callback，否则 validateFields 无法响应
-      let reg = /^[1-9]\d*$/;
-      if (reg.test(/^[1-9]\d*$/ )) {
-        callback('只能输入整数');
+      let reg = /^[1-9]\d*$/
+      if (!reg.test(value)) {
+        callback('只能输入整数')
       }
-      callback(); 
-    };
+      callback() 
+    }
     return (
       <div className={style.pubAccount}>
         <ul className={style.receiveAd}>
@@ -303,4 +301,4 @@ class Receivead extends Component{
     )
   }
 }
-export default Form.create()(Receivead);;
+export default Form.create()(Receivead)

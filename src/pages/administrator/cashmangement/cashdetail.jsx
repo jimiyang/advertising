@@ -1,16 +1,16 @@
-import React, {Component} from 'react';
-import {Button, message, Input, Popconfirm, Form} from 'antd';
-import style from '../style.less';
+import React, {Component} from 'react'
+import {Button, message, Input, Popconfirm, Form} from 'antd'
+import style from '../style.less'
 import {
   withdrawDetail,
   withdrawAudit,
   withdrawPay
-} from '../../../api/api';
-import { isNull } from 'util';
-const {TextArea} = Input;
+} from '../../../api/api'
+import { isNull } from 'util'
+const {TextArea} = Input
 class CashDetail extends Component{
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       loginName: null,
       orderNo: null,
@@ -20,81 +20,85 @@ class CashDetail extends Component{
       type: null,
       isHide: false,
       form: {}
-    };
+    }
   }
   async componentWillMount() {
-    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
-    const state = this.props.location.state;
-    await this.setState({loginName: loginInfo.data.loginName, type: state.type, orderNo: state.orderNo});
-    this.initForm();
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'))
+    const state = this.props.location.state
+    await this.setState({loginName: loginInfo.data.loginName, type: state.type, orderNo: state.orderNo})
+    this.initForm()
   }
   initForm = () => {
-    const {loginName, orderNo, form} = this.state;
+    const {loginName, orderNo, form} = this.state
     const params = {
       loginName,
       orderNo
-    };
+    }
     withdrawDetail(params).then(rs => {
-      const f = Object.assign(form, rs.data, rs.account);
-      this.setState({form: f});
-    });
+      const f = Object.assign(form, rs.data, rs.account)
+      this.setState({form: f})
+    })
   }
   changeEvent = (type, e) => {
-    const reg = /[^\d]/g;
-    let flag = false;
+    const reg = /[^\d]/g
+    let flag = false
     if (reg.test(e.target.value)) {
-      flag = true;
+      flag = true
     }
-    this.setState({[type]: e.target.value, isHide: flag});
+    this.setState({[type]: e.target.value, isHide: flag})
   }
   auditEvent = (status) => {
-    const {form, loginName, auditRemark, thirdOrderNo, type, isHide}  = this.state;
-    let obj = {};
-    let methods;
+    const {form, loginName, auditRemark, thirdOrderNo, type, isHide}  = this.state
+    let obj = {}
+    let methods
     if (type === 'pay') {
       if (isNull(thirdOrderNo)) {
-        message.error('请输入汇款单号');
-        return false;
+        message.error('请输入汇款单号')
+        return false
       }
-      obj = {thirdOrderNo};
-      methods = withdrawPay;
+      obj = {thirdOrderNo}
+      methods = withdrawPay
     } else {
       if (isNull(auditRemark)) {
-        message.error('请填写审核备注信息');
-        return false;
+        message.error('请填写审核备注信息')
+        return false
       }
-      obj = {auditRemark};
-      methods = withdrawAudit;
+      obj = {auditRemark}
+      methods = withdrawAudit
     }
     const params = {
       orderNo: form.orderNo,
       loginName: loginName,
       orderStatus: status,
       ...obj
-    };
+    }
     methods(params).then(rs => {
       if (rs.success) {
-        message.success(rs.message);
-        window.history.go(-1);
+        message.success(rs.message)
+        window.history.go(-1)
       } else {
-        message.error(rs.message);
+        message.error(rs.message)
       }
-    });
+    })
   }
   goBack = () => {
-    window.history.go(-1);
+    window.history.go(-1)
   }
   render() {
     const {
       form,
       type,
       isHide
-    } = this.state;
+    } = this.state
     return(
       <div className={style.administrator}>
         <h1 className="nav-title">提现管理 > 详情</h1>
         <div className={style.cash}>
           <ul className={style.detail}>
+            <li>
+              <label>提现单号：</label>
+              <div>{form.orderNo}</div>
+            </li>
             <li>
               <label>商户名称：</label>
               <div>{form.merchantName}</div>
@@ -120,8 +124,16 @@ class CashDetail extends Component{
               <div>{form.freezen_balance}元</div>
             </li>
             <li>
-              <label>提现金额：</label>
+              <label>申请金额：</label>
+              <div>{form.orderAmt}元</div>
+            </li>
+            <li>
+              <label>实际到账金额：</label>
               <div>{form.realWithdrawAmt}元</div>
+            </li>
+            <li>
+              <label>手续费：</label>
+              <div>{form.feeAmt}元</div>
             </li>
             <li>
               <label>银行卡号：</label>
@@ -135,10 +147,7 @@ class CashDetail extends Component{
               <label>户主姓名：</label>
               <div>{form.bankCardOwnerName}</div>
             </li>
-            <li>
-              <label>订单单号：</label>
-              <div>{form.orderNo}</div>
-            </li>
+           
             <li>
               <label>备注：</label>
               <div>{type === 'audit' ? <TextArea rows={4} onChange={this.changeEvent.bind(this, 'auditRemark')} style={{width: '300px'}} /> : form.auditRemark }</div>
@@ -160,7 +169,7 @@ class CashDetail extends Component{
                 <div>
                   <Popconfirm
                     title="是否要通过审核?"
-                    onConfirm={this.auditEvent.bind(this, 2)}
+                    onConfirm={this.auditEvent.bind(this, 3)}
                     okText="Yes"
                     cancelText="No"
                   >
@@ -168,31 +177,35 @@ class CashDetail extends Component{
                   </Popconfirm>
                   <Popconfirm
                     title="是否要驳回审核?"
-                    onConfirm={this.auditEvent.bind(this, 4)}
+                    onConfirm={this.auditEvent.bind(this, 2)}
                     okText="Yes"
                     cancelText="No"
                   >
                     <Button className="ml30">驳回</Button>
                   </Popconfirm>
                 </div>
-                : 
+                :  null
+              }
+              {
+                type === 'pay' ? 
                 <div>
                   <Popconfirm
                     title="是否要进行付款?"
-                    onConfirm={this.auditEvent.bind(this, 3)}
+                    onConfirm={this.auditEvent.bind(this, 4)}
                     okText="Yes"
                     cancelText="No"
                   >
                     <Button type="primary">确定</Button>
                   </Popconfirm>
                 </div>
+                : null
               }
               <Button className="ml30" onClick={this.goBack.bind(this)}>返回</Button>
             </li> 
           </ul>
         </div>
       </div>
-    );
+    )
   }
-};
-export default CashDetail;
+}
+export default CashDetail

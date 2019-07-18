@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
-import {Menu, Icon} from 'antd';
-const SubMenu = Menu.SubMenu;
+import React, {Component} from 'react'
+import {Menu, Icon} from 'antd'
+const SubMenu = Menu.SubMenu
 class MenuApp extends Component {
     constructor(props) {
-        super(props);
+        super(props)
         this.state = {
           defaultMenuData: [
             {
@@ -116,36 +116,36 @@ class MenuApp extends Component {
               children: []    
             }
           ]
-        };
+        }
     }
     componentWillMount() {
-      const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
-      if (window.localStorage.getItem('login_info') === null) return false;
-      let data = [];
+      const loginInfo = JSON.parse(window.localStorage.getItem('login_info'))
+      if (window.localStorage.getItem('login_info') === null) return false
+      let data = []
       switch(loginInfo.data.merchantType) {
         case 0:
-          data = this.state.administoraData;
-          break;
+          data = this.state.administoraData
+          break
         case 1:
-          data = this.state.advertMenuData;
-          break;
+          data = this.state.advertMenuData
+          break
         case 2: 
-          data = this.state.flowofMainMenu;
-          break;
+          data = this.state.flowofMainMenu
+          break
         default:
-          data = this.state.advertMenuData;
-          break;
+          data = this.state.advertMenuData
+          break
       }
-      data = this.state.defaultMenuData.concat(data);
-      this.setState({defaultmenusData: data});
+      data = this.state.defaultMenuData.concat(data)
+      this.setState({defaultmenusData: data})
     }
     handleClick(pane){
-      this.props.handleClick(pane);
+      this.props.handleClick(pane)
     }
     render() {
       const {
         defaultmenusData
-      } = this.state;
+      } = this.state
       return (
         <div className="menu-blocks">
           <Menu
@@ -178,4 +178,4 @@ class MenuApp extends Component {
       )
     }
 }
-export default MenuApp;
+export default MenuApp

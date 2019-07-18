@@ -60,6 +60,12 @@
   .all{
     text-align: right;padding-top:10px;
   }
+  .contentItems{
+    display: flex;
+    .detaillist{
+      margin-right: 20%;
+    }
+  }
   .detaillist{
     margin-top: 28px;color: #686E76;font-size: 13px;
     li{
@@ -75,8 +81,8 @@
         width: 330px;height: 60px;
       }
       .coverimg{
-        position: relative;
-        img{width: 184px;height: 100px;margin-top: 12px;border: 1px solid #f1f1f1;cursor: pointer;}
+        position: relative;padding-top:5px;
+        img{width: 250px;height: 120px;margin-top: 10px;border: 1px solid #f1f1f1;cursor: pointer;}
         span{background:#000;opacity:0.2;color:#fff;position: absolute;left:0;right: 0;bottom: 0;padding-left:5px;
           overflow: hidden;text-overflow: ellipsis;white-space: nowrap;
         }
@@ -157,4 +163,7 @@
     border-bottom: 1px solid #e8e8e8;
     span{display: inline-block;width:49%;text-align: center;padding: 10px 0;}
   }
+}
+.tableBox{
+  div{width: 100%;}
 }

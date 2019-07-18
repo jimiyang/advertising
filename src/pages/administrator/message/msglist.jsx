@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
-import {Button, Input, DatePicker, Table, Modal} from 'antd';
-import Link from 'umi/link';
+import React, {Component} from 'react'
+import {Button, Input, DatePicker, Table, Modal} from 'antd'
+import Link from 'umi/link'
 class CashList extends Component{
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       flowOfMainData: [
         {
@@ -34,19 +34,19 @@ class CashList extends Component{
       statusData: ['待审核', '待付款', '已付款'],
       isVisible: false,
       isPayVisible: false
-    };
+    }
   }
   closeEvent = () => {
     this.setState({
       isVisible: false,
       isPayVisible: false
-    });
+    })
   }
   CheckEvent = () => {
-    this.setState({isVisible: true});
+    this.setState({isVisible: true})
   }
   PayEvent = () => {
-    this.setState({isPayVisible: true});
+    this.setState({isPayVisible: true})
   }
   render() {
     const {
@@ -54,7 +54,7 @@ class CashList extends Component{
       statusData,
       isVisible,
       isPayVisible
-    } = this.state;
+    } = this.state
     const columns = [
       {
         title: '商户名称',
@@ -96,13 +96,13 @@ class CashList extends Component{
           </div>
         )
       }
-    ];
+    ]
     return (
       <div>
         <h1 className="nav-title">消息发布</h1>
         <div>开发中.....</div>
       </div>
-    );
+    )
   }
-};
-export default CashList;
+}
+export default CashList

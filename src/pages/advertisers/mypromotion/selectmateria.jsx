@@ -1,15 +1,15 @@
-import React, {Component} from 'react';
-import router from 'umi/router';
-import Redirect from 'umi/redirect';
-import style from './style.less';
-import { Radio, Button, Modal, message, Popconfirm, Table} from 'antd';
+import React, {Component} from 'react'
+import router from 'umi/router'
+import Redirect from 'umi/redirect'
+import style from './style.less'
+import { Radio, Button, Modal, message, Popconfirm, Table} from 'antd'
 import {
   articleList,
   updatePostContentById
-} from '../../../api/api';//接口地址
+} from '../../../api/api'//接口地址
 class SelectMateria extends Component{
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       redirect: false,
       isActive: 0,
@@ -42,30 +42,44 @@ class SelectMateria extends Component{
         postUrl: null, //预览路径
         extrendJson: null, //标题
       }
-    };
+    }
   }
   async componentWillMount() {
-    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
-    const state = this.props.location.state;
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'))
+    const state = this.props.location.state
     if (state) {
-      this.setState({type: state.type, id: state.id});
+      this.setState({type: state.type, id: state.id})
     }
-    await this.setState({loginName: loginInfo.data.loginName});
-    this.loadList();
-    //console.log(window.screen.height - 100);
+    await this.setState({loginName: loginInfo.data.loginName})
+    this.loadList()
+    //console.log(window.screen.height - 100)
   }
   loadList = () => {
-    let {loginName, search, pagination} = this.state;
+    let {loginName, search, pagination} = this.state
     const params = {
       loginName,
       currentPage: pagination.currentPage,
       limit: pagination.limit,
       ...search
-    };
+    }
     articleList(params).then(rs => {
-      const p = Object.assign(pagination, {total: rs.data.totalNum});
-      this.setState({materiaData: rs.data.items, pagination: p});
-    });
+      if (!rs.data) return false
+      const p = Object.assign(pagination, {total: rs.data.totalNum})
+      this.setState({materiaData: rs.data.items, pagination: p})
+    })
+  }
+  changePage = (page) => {
+    page = page === 0 ? 1 : page
+    const pagination = Object.assign(this.state.pagination, {currentPage: page})
+    this.setState({pagination})
+    this.loadList()
+  }
+  //改变每页条数事件
+  onShowSizeChange = (current, size) => {
+    let p = this.state.pagination
+    p = Object.assign(p, {currentPage: current, limit: size, pageSize: size})
+    this.setState({pagination: p})
+    this.loadList()
   }
   //选择素材
   selMarteiaEvent = (item) => {
@@ -74,28 +88,28 @@ class SelectMateria extends Component{
       impImage: item.thumbMediaUrl,
       postUrl: '',
       extrendJson: item.title,
-    };
-    this.setState({form});
+    }
+    this.setState({form})
   }
   promoteSaveEvent = (status) => {
-    let {loginName, form, id} = this.state;
+    let {loginName, form, id} = this.state
     if (!form.postContent) {
-      message.error('请选择素材');
-      return false;
+      message.error('请选择素材')
+      return false
     }
-    id = id === null ? this.props.location.query.activityId : id;
+    id = id === null ? this.props.location.query.activityId : id
     const params = {
       ...form,
       id,
       loginName,
       postStatus: status, //21提交审核中，20活动草稿
-    };
-    this.setState({isDisabled: true});
+    }
+    this.setState({isDisabled: true})
     updatePostContentById(params).then(rs => {
-      message.success(rs.message);
-      this.setState({isDisabled: false});
-      router.push('/main/myactivity');
-    });
+      message.success(rs.message)
+      this.setState({isDisabled: false})
+      router.push('/main/myactivity')
+    })
   }
   selectEvent = () => {
     router.push({
@@ -104,11 +118,11 @@ class SelectMateria extends Component{
         activityId: this.state.id,
         type: 'selectmateria'
       }
-    });
+    })
   }
   //上一步
   goPrevEvent = () => {
-    router.push({pathname: '/main/editactivity', state: {id: this.state.id}});
+    router.push({pathname: '/main/editactivity', state: {id: this.state.id}})
   }
   render() {
     const {
@@ -118,7 +132,7 @@ class SelectMateria extends Component{
       form,
       redirect,
       isDisabled
-    } = this.state;
+    } = this.state
     const columns = [
       {
         key: '选择',
@@ -147,8 +161,8 @@ class SelectMateria extends Component{
           <span>{window.common.getDate(record, true)}</span>
         )
       }
-    ];
-    if (redirect) return (<Redirect to="/relogin" />);
+    ]
+    if (redirect) return (<Redirect to="/relogin" />)
     return(
       <div className={style.mypromotion}>
         <div className={style.selectmateriaitems}>
@@ -172,7 +186,7 @@ class SelectMateria extends Component{
           </div>
         </div>
       </div>
-    );
+    )
   }
 }
-export default SelectMateria;
+export default SelectMateria

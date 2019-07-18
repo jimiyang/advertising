@@ -1,17 +1,17 @@
-import React, {Component} from 'react';
-import {Table, Input, Button, Select, message} from 'antd';
-import style from '../style.less';
-import AddFlowMain from '../../components/addflowmain'; //添加广告主
+import React, {Component} from 'react'
+import {Table, Input, Button, Select, message} from 'antd'
+import style from '../style.less'
+import AddFlowMain from '../../components/addflowmain' //添加广告主
 import {
   merchantList,
   merchantEdit,
   employeeEdit,
   merchantAdd
-} from '../../../api/api';
-const Option = Select.Option;
+} from '../../../api/api'
+const Option = Select.Option
 class AdList extends Component{
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       redirect: false,
       adData: [],
@@ -41,68 +41,68 @@ class AdList extends Component{
         loginName: null,
         password: null
       }
-    };
+    }
   }
   async componentWillMount() {
-    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
-    if (!loginInfo) return false;
-    await this.setState({operatorLoginName: loginInfo.data.loginName});
-    this.loadList();
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'))
+    if (!loginInfo) return false
+    await this.setState({operatorLoginName: loginInfo.data.loginName})
+    this.loadList()
   }
   loadList = () => {
-    const {operatorLoginName, pagination, search} = this.state;
+    const {operatorLoginName, pagination, search} = this.state
     const params = {
       operatorLoginName,
       currentPage: pagination.currentPage,
       limit: pagination.limit,
       ...search
-    };
+    }
     merchantList(params).then(rs => {
-      const p = Object.assign(pagination, {total: rs.total});
-      this.setState({adData: rs.data, pagination: p});
-    });
+      const p = Object.assign(pagination, {total: rs.total})
+      this.setState({adData: rs.data, pagination: p})
+    })
   }
   changePage = (page) => {
-    page = page === 0 ? 1 : page;
-    const pagination = Object.assign(this.state.pagination, {currentPage: page});
-    this.setState({pagination});
-    this.loadList();
+    page = page === 0 ? 1 : page
+    const pagination = Object.assign(this.state.pagination, {currentPage: page, current: page})
+    this.setState({pagination})
+    this.loadList()
   }
   //改变每页条数事件
   onShowSizeChange = (current, size) => {
-    let p = this.state.pagination;
-    p = Object.assign(p, {currentPage: current, limit: size});
-    this.setState({pagination: p});
-    this.loadList();
+    let p = this.state.pagination
+    p = Object.assign(p, {currentPage: current, current, limit: size})
+    this.setState({pagination: p})
+    this.loadList()
   }
   changeFormEvent = (type, e) => {
-    let search = this.state.search;
-    let obj = {};
+    let search = this.state.search
+    let obj = {}
     switch(type) {
       case 'merchantName':
-        obj = {[type]: e.target.value};
-        break;
+        obj = {[type]: e.target.value}
+        break
       case 'merchantCode':
-        obj = {[type]: e.target.value};
-        break;
+        obj = {[type]: e.target.value}
+        break
       case 'status':
-        obj = {[type]: e};
-        break;
+        obj = {[type]: e}
+        break
       default:
-        obj = {[type]: e.target.value};
-        break;
+        obj = {[type]: e.target.value}
+        break
     }
-    search = Object.assign(search, obj);
-    this.setState({search});
+    search = Object.assign(search, obj)
+    this.setState({search})
   }
   //搜索
   searchEvent = () => {
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1,});
-    this.setState({pagination});
-    this.loadList();
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1,})
+    this.setState({pagination})
+    this.loadList()
   }
   clearEvent = () => {
-    let search = this.state.search;
+    let search = this.state.search
     search = Object.assign(
       search,
       {
@@ -110,60 +110,60 @@ class AdList extends Component{
         merchantCode: null,
         status: null
       }
-    );
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
-    this.setState({search, pagination});
-    this.loadList();
+    )
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1})
+    this.setState({search, pagination})
+    this.loadList()
   }
   resetPwdEvent = (item) => {
-    const operatorLoginName = this.state.operatorLoginName;
+    const operatorLoginName = this.state.operatorLoginName
     const params = {
       password: '111qqq',
       employeeId: item.employeeId,
       operatorLoginName
-    };
+    }
     employeeEdit(params).then(rs => {
-      message.success(rs.message);
-      this.loadList();
-    });
+      message.success(rs.message)
+      this.loadList()
+    })
   }
   statusEvent = (item) => {
-    const status = item.status === 1 ? 2 : 1; //1启用，2停用
+    const status = item.status === 1 ? 2 : 1 //1启用，2停用
     const params = {
       status,
       id: item.id,
       merchantId: item.merchantId,
       operatorLoginName: this.state.operatorLoginName
-    };
+    }
     merchantEdit(params).then(rs => {
-      message.success(rs.message);
-      this.loadList();
-    });
+      message.success(rs.message)
+      this.loadList()
+    })
   }
   addEvent = () => {
-    this.setState({isAddVisible: true});
+    this.setState({isAddVisible: true})
   }
   closeEvent = () => {
-    this.setState({isAddVisible: false});   
+    this.setState({isAddVisible: false})   
   }
   //保存添加员工信息s
   saveEvent = () => {
-    const {form} = this.formRef.props;
+    const {form} = this.formRef.props
     form.validateFields((err, values) => {
       if (!err) {
-        let addForm = this.state.addForm;
-        addForm = Object.assign(addForm, {type: 1}, values); //1是添加广告主
+        let addForm = this.state.addForm
+        addForm = Object.assign(addForm, {type: 1}, values) //1是添加广告主
         merchantAdd(addForm).then(rs => {
-          message.success(rs.message);
-          this.setState({isAddVisible: false});
-          this.loadList();
-        });
+          message.success(rs.message)
+          this.setState({isAddVisible: false})
+          this.loadList()
+        })
       }
-    });
+    })
     
   }
   saveFormRef = formRef => {
-    this.formRef = formRef;
+    this.formRef = formRef
   }
   render() {
     const {
@@ -172,7 +172,7 @@ class AdList extends Component{
       search,
       pagination,
       isAddVisible
-    } = this.state;
+    } = this.state
     const columns = [
       {
         title: '广告主名称',
@@ -225,7 +225,7 @@ class AdList extends Component{
           </div>
         )
       },*/
-    ];
+    ]
     return (
       <div className={style.administrator}>
         <AddFlowMain
@@ -269,4 +269,4 @@ class AdList extends Component{
     )
   }
 }
-export default AdList;
+export default AdList

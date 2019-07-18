@@ -1,7 +1,7 @@
-import { combineReducers } from 'redux';
-const EDIT_TODO = 'EDIT_TODO';
-const ADD_TODO = 'ADD_TODO';
-const ROUTER_TODO = 'ROUTER_TODO';
+import { combineReducers } from 'redux'
+const EDIT_TODO = 'EDIT_TODO'
+const ADD_TODO = 'ADD_TODO'
+const ROUTER_TODO = 'ROUTER_TODO'
 //如果action申明了要做什么，那么具体区改变（更新）state，就是reducer做的事情了，
 //这样理解吧，action约定了一个type，然后reducer遇到这个type，就去做一件事
 //type是这个指令的唯一标识
@@ -30,11 +30,11 @@ const todos = (state = initialState, action) => {
             routerType: action.routerType
           }
         default:
-          return state;
+          return state
     }
 }
 //使用redux的combineReducers方法将所有reducer打包起来
 const rootReducer = combineReducers({
   todos
-});
-export default rootReducer;
+})
+export default rootReducer

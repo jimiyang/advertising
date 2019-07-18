@@ -1,18 +1,18 @@
-import React, {Component} from 'react';
-import {Table, Popconfirm, message, Button, Input, Select, Modal} from 'antd';
-import style from './style.less';
-import AddEmployess from '../../components/addemployess';
+import React, {Component} from 'react'
+import {Table, Popconfirm, message, Button, Input, Select, Modal} from 'antd'
+import style from './style.less'
+import AddEmployess from '../../components/addemployess'
 import {
   employeeList,
   employeeGetById,
   employeeEdit,
   employeeAdd
-} from '../../../api/api';
-const Option = Select.Option;
-const aas =employeeAdd;
+} from '../../../api/api'
+const Option = Select.Option
+const aas =employeeAdd
 class EmployessList extends Component{
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       redirect: false,
       operatorLoginName: '',
@@ -41,156 +41,156 @@ class EmployessList extends Component{
         password: null
       },
       type: 'add', //用来区分是添加员工弹层or编辑员工弹层
-    };
+    }
   }
   async componentWillMount() {
-    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
-    if (!loginInfo) return false;
-    await this.setState({operatorLoginName: loginInfo.data.loginName});
-    this.loadList();
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'))
+    if (!loginInfo) return false
+    await this.setState({operatorLoginName: loginInfo.data.loginName})
+    this.loadList()
   }
   loadList = () => {
-    const {operatorLoginName, search, pagination} = this.state;
+    const {operatorLoginName, search, pagination} = this.state
     const params = {
       currentPage: pagination.currentPage,
       limit: pagination.limit,
       operatorLoginName,
       ...search
-    };
+    }
     employeeList(params).then(rs => {
-      const p = Object.assign(pagination, {total: rs.total});
-      this.setState({employessData: rs.data, pagination: p});
-    });
+      const p = Object.assign(pagination, {total: rs.total})
+      this.setState({employessData: rs.data, pagination: p})
+    })
   }
   changePage = (page) => {
-    page = page === 0 ? 1 : page;
-    const pagination = Object.assign(this.state.pagination, {currentPage: page});
-    this.setState({pagination});
-    this.loadList();
+    page = page === 0 ? 1 : page
+    const pagination = Object.assign(this.state.pagination, {currentPage: page, current: page})
+    this.setState({pagination})
+    this.loadList()
   }
   //改变每页条数事件
   onShowSizeChange = (current, size) => {
-    let p = this.state.pagination;
-    p = Object.assign(p, {currentPage: current, limit: size});
-    this.setState({pagination: p});
-    this.loadList();
+    let p = this.state.pagination
+    p = Object.assign(p, {currentPage: current, current, limit: size})
+    this.setState({pagination: p})
+    this.loadList()
   }
   changeFormEvent = (type, e) => {
-    let search = this.state.search;
-    let obj = {};
+    let search = this.state.search
+    let obj = {}
     switch (type) {
       case 'name':
-        obj = {[type]: e.target.value};
-        break;
+        obj = {[type]: e.target.value}
+        break
       case 'loginName':
-        obj = {[type]: e.target.value};
-        break;
+        obj = {[type]: e.target.value}
+        break
       case 'status':
-        obj = {[type]: e};
-        break;
+        obj = {[type]: e}
+        break
       default:
-        obj = {[type]: e.target.value};
-        break;
+        obj = {[type]: e.target.value}
+        break
     }
-    search = Object.assign(search, obj);
-    this.setState({search});
+    search = Object.assign(search, obj)
+    this.setState({search})
   }
   searchEvent = () => {
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
-    this.setState({pagination});
-    this.loadList();
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1})
+    this.setState({pagination})
+    this.loadList()
   }
   clearEvent = () => {
-    let search = this.state.search;
+    let search = this.state.search
     search = Object.assign(
       search, {
         name: null,
         loginName: null,
         status: null
       }
-    );
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
-    this.setState({pagination, search});
-    this.loadList();
+    )
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1})
+    this.setState({pagination, search})
+    this.loadList()
   }
   addEvent = (type, item) => {
-    let addForm = this.state.addForm;
+    let addForm = this.state.addForm
     if (type === 'edit') {
       const params = {
         id: item.id,
         operatorLoginName: this.state.operatorLoginName
-      };
+      }
       employeeGetById(params).then(rs => {
-        this.setState({addForm: rs.data});
-      });
+        this.setState({addForm: rs.data})
+      })
     } else {
-      addForm = Object.assign(addForm, {name: null, mobile: null});
-      this.setState({addForm});
+      addForm = Object.assign(addForm, {name: null, mobile: null})
+      this.setState({addForm})
     }
-    this.setState({type, isAddVisible: true});
+    this.setState({type, isAddVisible: true})
   }
   //添加员工事件change
   changeValueEvent = (type, e) => {
-    let addForm = this.state.addForm;
-    let obj = {[type]: e.target.value};
-    addForm = Object.assign(addForm, obj);
-    this.setState({addForm});
+    let addForm = this.state.addForm
+    let obj = {[type]: e.target.value}
+    addForm = Object.assign(addForm, obj)
+    this.setState({addForm})
   }
   saveEvent = () => {
     let {operatorLoginName, addForm, type} = this.state
     let params = {
       operatorLoginName,
       ...addForm
-    };
-    let employee;
+    }
+    let employee
     if (type === 'add') {
-      employee = employeeAdd;
-      delete params.id;
+      employee = employeeAdd
+      delete params.id
     } else {
-      employee = employeeEdit;
-      params = Object.assign(params, {employeeId: params.id});
+      employee = employeeEdit
+      params = Object.assign(params, {employeeId: params.id})
     }
     employee(params).then(rs => {
-      message.success(rs.message);
-      this.setState({isAddVisible: false});
-      this.loadList();
-    });
+      message.success(rs.message)
+      this.setState({isAddVisible: false})
+      this.loadList()
+    })
   }
   resetPwdEvent = (item) => {
     const params = {
       password: '111qqq',
       employeeId: item.id,
       operatorLoginName: this.state.operatorLoginName
-    };
+    }
     employeeEdit(params).then(rs => {
-      message.success(rs.message);
-      this.loadList();
-    });
+      message.success(rs.message)
+      this.loadList()
+    })
   }
   confirm = (item) => {
-    const status = item.status === 1 ? 2 : 1; //1启用，2停用
+    const status = item.status === 1 ? 2 : 1 //1启用，2停用
     const params = {
       status,
       employeeId: item.id,
       operatorLoginName: this.state.operatorLoginName
-    };
+    }
     window.api.baseInstance('api/employee/edit', params).then(rs => {
-      message.success(rs.message);
-      this.loadList();
-    });
+      message.success(rs.message)
+      this.loadList()
+    })
   }
   closeEvent = () => {
-    this.setState({isAddVisible: false});
+    this.setState({isAddVisible: false})
   }
   render() {
     const {
-      redirect,
+      pagination,
       employessData,
       isAddVisible,
       type,
       addForm,
       search
-    } = this.state;
+    } = this.state
     const columns = [
       {
         title: '姓名',
@@ -240,7 +240,7 @@ class EmployessList extends Component{
           </div>
         )
       }
-    ];
+    ]
     return(
       <div className={style.employess}>
         <Modal
@@ -282,11 +282,12 @@ class EmployessList extends Component{
         <Table
           dataSource={employessData}
           columns={columns}
+          pagination={pagination}
           rowKey={record => record.id}
           className="table"
         />
       </div>
-    );
+    )
   }
 }
-export default EmployessList;
+export default EmployessList

@@ -1,16 +1,16 @@
-import React, {Component} from 'react';
-import {Button, Select, Input, Modal, message, Pagination} from 'antd';
-import Redirect from 'umi/redirect';
-import router from 'umi/router';
-import style from './style.less';
+import React, {Component} from 'react'
+import {Button, Select, Input, Modal, message, Pagination} from 'antd'
+import Redirect from 'umi/redirect'
+import router from 'umi/router'
+import style from './style.less'
 import {
   campaignList,
   listApps
-} from '../../../api/api';
-const Option = Select.Option;
+} from '../../../api/api'
+const Option = Select.Option
 class MyOrder extends Component{
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       loginName: '',
       redirect: false,
@@ -30,87 +30,87 @@ class MyOrder extends Component{
         appId: null,
         campaignName: null
       }
-    };
+    }
   }
   async componentWillMount() {
-    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
-    if (!loginInfo) return false;
-    await this.setState({loginName: loginInfo.data.loginName});
-    this.loadList();
-    this.getListApps(loginInfo.data.loginName);
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'))
+    if (!loginInfo) return false
+    await this.setState({loginName: loginInfo.data.loginName})
+    this.loadList()
+    this.getListApps(loginInfo.data.loginName)
   }
   loadList = () => {
-    const {pagination, search} = this.state;
+    const {pagination, search} = this.state
     const params = {
       currentPage: pagination.currentPage,
       limit: pagination.limit,
       ...search
-    };
+    }
     campaignList(params).then(rs => {
-      const p = Object.assign(pagination, {total: Number(rs.total)});
-      this.setState({orderData: rs.data, pagination: p});
-    });
+      const p = Object.assign(pagination, {total: Number(rs.total)})
+      this.setState({orderData: rs.data, pagination: p})
+    })
   }
   //查询所有公众号
   getListApps = (loginName) => {
     listApps({loginName}).then(rs => {
-      const appsData = rs.data === undefined ? [] : rs.data;
-      this.setState({appsData});
-    });
+      const appsData = rs.data === undefined ? [] : rs.data
+      this.setState({appsData})
+    })
   }
   changePage = (page) => {
-    page = page === 0 ? 1 : page;
-    const pagination = Object.assign(this.state.pagination, {currentPage: page});
-    this.setState({pagination});
-    this.loadList();
+    page = page === 0 ? 1 : page
+    const pagination = Object.assign(this.state.pagination, {currentPage: page, current: page})
+    this.setState({pagination})
+    this.loadList()
   }
   //改变每页条数事件
   onShowSizeChange = (current, size) => {
-    let p = this.state.pagination;
-    p = Object.assign(p, {currentPage: current, limit: size});
-    this.setState({pagination: p});
-    this.loadList();
+    let p = this.state.pagination
+    p = Object.assign(p, {currentPage: current, current, limit: size})
+    this.setState({pagination: p})
+    this.loadList()
   }
   changeFormEvent = (type, e, value) => {
-    let obj = {};
-    let {search} = this.state;
+    let obj = {}
+    let {search} = this.state
     switch(type) {
       case 'campaignName':
         if (e === null) {
-          obj = {[type]: e};  
+          obj = {[type]: e}  
         } else {
-          obj = {[type]: e.target.value};
+          obj = {[type]: e.target.value}
         }
-        break;
+        break
       case 'adType':
-        obj = {[type]: e};
+        obj = {[type]: e}
       case 'appId':
-        obj = {[type]: value.props.value};
-        //detailForm = Object.assign(detailForm, {appId: value.props.value, appNickName: value.props.children});
-        this.setState({appNickName: value.props.children});
-        break;
+        obj = {[type]: value.props.value}
+        //detailForm = Object.assign(detailForm, {appId: value.props.value, appNickName: value.props.children})
+        this.setState({appNickName: value.props.children})
+        break
       default: 
-        obj = {[type]: e};
-        break;
+        obj = {[type]: e}
+        break
     }
-    search = Object.assign(search, obj);
-    this.setState({search});
+    search = Object.assign(search, obj)
+    this.setState({search})
     if (type === 'appId') {
-      this.loadList();
+      this.loadList()
     }
   }
   //搜索
   searchEvent = () => {
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
-    this.setState(pagination);
-    this.loadList();
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1})
+    this.setState(pagination)
+    this.loadList()
   }
   //接收此广告
   ReceiveEvent = (item) => {
-    let {search, appNickName} = this.state;
+    let {search, appNickName} = this.state
     if (!search.appId) {
-      message.error('请选择公众号');
-      return false;
+      message.error('请选择公众号')
+      return false
     }
     router.push({
       pathname: '/main/receivead',
@@ -119,10 +119,10 @@ class MyOrder extends Component{
         appNickName,
         appId: search.appId
       }
-    });
+    })
   }
   clearEvent = () => {
-    let search = this.state.search;
+    let search = this.state.search
     search = Object.assign(
       search,
       {
@@ -130,30 +130,22 @@ class MyOrder extends Component{
         appId: null,
         campaignName: null
       }
-    );
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
-    this.setState({pagination, search});
-    this.loadList();
+    )
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1})
+    this.setState({pagination, search})
+    this.loadList()
   }
   render() {
     const {
-      redirect,
       orderData,
       pagination,
       search,
       appsData
-    } = this.state;
-    if (redirect) return (<Redirect to="/relogin" />);
+    } = this.state
     return(
       <div className={style.pubAccount}>
         <h1 className="nav-title">接单赚钱 > 可接任务</h1>
         <ul className={style.search}>
-          <li>广告类型
-            <Select value={search.adType} onChange={this.changeFormEvent.bind(this, 'adType')} className="w180 ml10">
-              <Option value={null}>请选择</Option>
-              <Option value={'article'}>公众号推文</Option>
-            </Select>
-          </li>
           <li>公众号名称
             <Select value={search.appId} onChange={this.changeFormEvent.bind(this, 'appId')} className="w180 ml10">
               <Option value={null}>请选择</Option>
@@ -208,7 +200,7 @@ class MyOrder extends Component{
           </div>
         </div>
       </div>
-    );
+    )
   }
-};
-export default MyOrder;
+}
+export default MyOrder

@@ -1,16 +1,16 @@
-import React, {Component} from 'react';
-import {Popconfirm, Input, Button, Table, message} from 'antd';
-import Redirect from 'umi/redirect';
-import router from 'umi/router';
+import React, {Component} from 'react'
+import {Popconfirm, Input, Button, Table, message} from 'antd'
+import Redirect from 'umi/redirect'
+import router from 'umi/router'
 import {
   articleList,
   deleteArticleById,
   judgeArticleUseById
-} from '../../../api/api';//接口地址
-import style from './style.less';
+} from '../../../api/api'//接口地址
+import style from './style.less'
 class MaterialList extends Component{
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       loginName: null,
       employeeId: null,
@@ -34,72 +34,72 @@ class MaterialList extends Component{
         onShowSizeChange: this.onShowSizeChange
       },
       id: null
-    };
+    }
   }
   async componentWillMount() {
-    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
-    if (!loginInfo) return false;
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'))
+    if (!loginInfo) return false
     await this.setState({
       loginName: loginInfo.data.loginName,
       employeeId: loginInfo.data.employeeId
-    });
-    this.loadList();
+    })
+    this.loadList()
   }
   loadList = () => {
-    let {loginName, search, pagination} = this.state;
+    let {loginName, search, pagination} = this.state
     const params = {
       loginName,
       currentPage: pagination.currentPage,
       limit: pagination.limit,
       ...search
-    };
+    }
     articleList(params).then(rs => {
-      const p = Object.assign(pagination, {total: rs.data.totalNum});
-      this.setState({materiaData: rs.data.items, pagination: p});
-    });
+      const p = Object.assign(pagination, {total: rs.data.totalNum})
+      this.setState({materiaData: rs.data.items, pagination: p})
+    })
   }
   changePage = (page) => {
-    page = page === 0 ? 1 : page;
-    const pagination = Object.assign(this.state.pagination, {currentPage: page});
-    this.setState({pagination});
-    this.loadList();
+    page = page === 0 ? 1 : page
+    const pagination = Object.assign(this.state.pagination, {currentPage: page, current: page})
+    this.setState({pagination})
+    this.loadList()
   }
   //改变每页条数事件
   onShowSizeChange = (current, size) => {
-    let p = this.state.pagination;
-    p = Object.assign(p, {currentPage: current, limit: size});
-    this.setState({pagination: p});
-    this.loadList();
+    let p = this.state.pagination
+    p = Object.assign(p, {currentPage: current, current, pageSize: size, limit: size})
+    this.setState({pagination: p})
+    this.loadList()
   }
   changeFormEvent = (type, e) => {
-    let search = this.state.search;
-    search = Object.assign(search, {[type]: e.target.value});
-    this.setState({search});
+    let search = this.state.search
+    search = Object.assign(search, {[type]: e.target.value})
+    this.setState({search})
   }
   searchEvent = () => {
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
-    this.setState({pagination});
-    this.loadList();
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1})
+    this.setState({pagination})
+    this.loadList()
   }
   clearEvent = () => {
-    let search = this.state.search;
-    search = Object.assign(search, {title: null, articleType: null});
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
-    this.setState({pagination, search});
-    this.loadList();
+    let search = this.state.search
+    search = Object.assign(search, {title: null, articleType: null})
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1})
+    this.setState({pagination, search})
+    this.loadList()
   }
   //删除素材
   delEvent = (id) => {
-    const {loginName, employeeId} = this.state;
+    const {loginName, employeeId} = this.state
     const params = {
       id,
       loginName,
       employeeId
-    };
+    }
     deleteArticleById(params).then(rs => {
-      message.success(rs.message);
-      this.loadList();
-    });
+      message.success(rs.message)
+      this.loadList()
+    })
   }
   addEvent = () => {
     router.push({
@@ -107,28 +107,28 @@ class MaterialList extends Component{
       state: {
         type: 'materiallist'
       }
-    });
+    })
   }
   editEvent = (id) => {
     const params = {
       id,
       loginName: this.state.loginName
-    };
+    }
     judgeArticleUseById(params).then(rs => {
-      //console.log(rs.data);
+      //console.log(rs.data)
       if (rs.data) {
-        message.error(rs.data);
+        message.error(rs.data)
       } else {
-        router.push({pathname: '/main/editor', state: {id, type: 'materiallist'}});
+        router.push({pathname: '/main/editor', state: {id, type: 'materiallist'}})
       }
-    });
+    })
   }
   render() {
     const {
       redirect,
       pagination,
       search
-    } = this.state;
+    } = this.state
     const columns = [
       {
         title: '标题',
@@ -169,8 +169,8 @@ class MaterialList extends Component{
           </div>
         )
       }
-    ];
-    if (redirect) return (<Redirect to="/relogin" />);
+    ]
+    if (redirect) return (<Redirect to="/relogin" />)
     return(
       <div className={style.mypromotion}>
         <h1 className="nav-title">素材库
@@ -197,4 +197,4 @@ class MaterialList extends Component{
     )
   }
 }
-export default MaterialList;
+export default MaterialList

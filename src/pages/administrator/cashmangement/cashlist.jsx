@@ -1,22 +1,19 @@
-import React, {Component} from 'react';
-import {Button, Input, DatePicker, Select, Table, Modal, Popconfirm} from 'antd';
-import Link from 'umi/link';
-import moment from 'moment';
-import style from '../style.less';
+import React, {Component} from 'react'
+import {Button, Input, DatePicker, Select, Table, Modal, Popconfirm} from 'antd'
+import Link from 'umi/link'
+import moment from 'moment'
+import style from '../style.less'
 import {
-  queryWithdrawManager,
-  withdrawDetail,
-  withdrawAudit,
-  withdrawPay
-} from '../../../api/api';
-const Option = Select.Option;
+  queryWithdrawManager
+} from '../../../api/api'
+const Option = Select.Option
 class CashList extends Component{
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       loginName: null,
       flowOfMainData: [],
-      statusData: ['待审核', '待付款', '付款成功', '提现驳回'],
+      statusData: ['待审核', '驳回审核', '待支付', '成功', '付款失败'],
       isVisible: false,
       isPayVisible: false,
       search: {
@@ -37,73 +34,73 @@ class CashList extends Component{
         onChange: this.changePage,
         onShowSizeChange: this.onShowSizeChange
       }
-    };
+    }
   }
   async componentWillMount() {
-    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
-    await this.setState({loginName: loginInfo.data.loginName});
-    this.loadList();
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'))
+    await this.setState({loginName: loginInfo.data.loginName})
+    this.loadList()
   }
   loadList = () => {
-    const {loginName, search, pagination} = this.state;
+    const {loginName, search, pagination} = this.state
     const params = {
       loginName,
       currentPage: pagination.currentPage,
       limit: pagination.limit,
       ...search
-    };
+    }
     queryWithdrawManager(params).then(rs => {
-      const p = Object.assign(pagination, {total: rs.total});
-      this.setState({flowOfMainData: rs.data});
-    });
+      const p = Object.assign(pagination, {total: rs.total})
+      this.setState({flowOfMainData: rs.data})
+    })
   }
   changePage = (page) => {
-    page = page === 0 ? 1 : page;
-    const pagination = Object.assign(this.state.pagination, {currentPage: page});
-    this.setState({pagination});
-    this.loadList();
+    page = page === 0 ? 1 : page
+    const pagination = Object.assign(this.state.pagination, {currentPage: page, current: page})
+    this.setState({pagination})
+    this.loadList()
   }
   //改变每页条数事件
   onShowSizeChange = (current, size) => {
-    let p = this.state.pagination;
-    p = Object.assign(p, {currentPage: current, limit: size});
-    this.setState({pagination: p});
-    this.loadList();
+    let p = this.state.pagination
+    p = Object.assign(p, {currentPage: current, current, limit: size})
+    this.setState({pagination: p})
+    this.loadList()
   }
   changeFormEvent = (type, e, value) => {
-    let {search} = this.state;
-    let obj = {};
+    let {search} = this.state
+    let obj = {}
     switch(type) {
       case 'merchantName':
-        obj = {[type]: e.target.value};
-        break;
+        obj = {[type]: e.target.value}
+        break
       case 'merchantCode':
-        obj = {[type]: e.target.value};
-        break;
+        obj = {[type]: e.target.value}
+        break
       case 'orderNo':
-        obj = {[type]: e.target.value};
-        break;
+        obj = {[type]: e.target.value}
+        break
       case 'orderStatus':
-        obj = {[type]: e};
-        break;
+        obj = {[type]: e}
+        break
       case 'dateStart':
-        obj = {[type]: value};
-        break;  
+        obj = {[type]: value}
+        break  
       case 'dateEnd':
-        obj = {[type]: value};
-        break; 
+        obj = {[type]: value}
+        break 
     }
-    search = Object.assign(search, obj);
-    this.setState({search});
+    search = Object.assign(search, obj)
+    this.setState({search})
   }
   searchEvent = () => {
-    const {pagination} = this.state;
-    const p = Object.assign(pagination, {currentPage: 1, current: 1});
-    this.setState({pagination: p});
-    this.loadList();
+    const {pagination} = this.state
+    const p = Object.assign(pagination, {currentPage: 1, current: 1})
+    this.setState({pagination: p})
+    this.loadList()
   }
   clearEvent = () => {
-    let search = this.state.search;
+    let search = this.state.search
     search = Object.assign(
       search,
       {
@@ -114,17 +111,17 @@ class CashList extends Component{
         dateStart: null,
         dateEnd: null
       }
-    );
-    const {pagination} = this.state;
-    const p = Object.assign(pagination, {currentPage: 1, current: 1});
-    this.setState({search, pagination: p});
-    this.loadList();
+    )
+    const {pagination} = this.state
+    const p = Object.assign(pagination, {currentPage: 1, current: 1})
+    this.setState({search, pagination: p})
+    this.loadList()
   }
   closeEvent = () => {
     this.setState({
       isVisible: false,
       isPayVisible: false
-    });
+    })
   }
   render() {
     const {
@@ -132,7 +129,7 @@ class CashList extends Component{
       pagination,
       statusData,
       search
-    } = this.state;
+    } = this.state
     const columns = [
       {
         title: '提现单号',
@@ -163,34 +160,28 @@ class CashList extends Component{
         )
       },
       {
-        title: '提现金额',
-        key: 'feeAmt',
-        dataIndex: 'feeAmt'
+        title: '申请金额',
+        key: 'orderAmt',
+        dataIndex: 'orderAmt'
       },
       {
-        title: '状态',
+        title: (<div><p>状态</p><p>操作</p></div>),
         key: 'orderStatus',
-        dataIndex: 'orderStatus',
         render: (record) => (
-          <span>{statusData[record - 1]}</span>
-        )
-      },
-      {
-        title: '操作',
-        key: 'opeartion',
-        dataIndex: '',
-        render: (record) => (
-          <div className="opeartion-items">
-            {record.orderStatus === 1 ? <Link to={{pathname: '/main/cashdetail', state: {type: 'audit', orderNo: record.orderNo}}} className="blue-color">审核</Link> : null}
-            {record.orderStatus === 2 ? 
-              <Link to={{pathname: '/main/cashdetail', state: {type: 'pay', orderNo: record.orderNo}}} className="blue-color">付款</Link>
-              : null
-            }
-            <Link to={{pathname: '/main/cashdetail', state: {type: 'detail', orderNo: record.orderNo}}} className="blue-color">详情</Link>
+          <div>
+            <p>{statusData[record.orderStatus - 1]}</p>
+            <div className="opeartion-items">
+              {record.orderStatus === 1 ? <Link to={{pathname: '/main/cashdetail', state: {type: 'audit', orderNo: record.orderNo}}} className="blue-color">审核</Link> : null}
+              {record.orderStatus === 3 ? 
+                <Link to={{pathname: '/main/cashdetail', state: {type: 'pay', orderNo: record.orderNo}}} className="blue-color">付款</Link>
+                : null
+              }
+              <Link to={{pathname: '/main/cashdetail', state: {type: 'detail', orderNo: record.orderNo}}} className="blue-color">详情</Link>
+            </div>
           </div>
         )
       }
-    ];
+    ]
     return (
       <div>
         <h1 className="nav-title">提现管理</h1>
@@ -228,7 +219,7 @@ class CashList extends Component{
           </div>
         </div>
       </div>
-    );
+    )
   }
-};
-export default CashList;
+}
+export default CashList

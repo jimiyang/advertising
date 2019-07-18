@@ -1,5 +1,4 @@
-import {isNull} from "util";
-import {message} from 'antd';
+
 const utils =  {
   tagsData: ['汽车', '美食', '地方号', '运动户外', '房产家居', '母婴', '娱乐', '科技', '健康养生', '两性健康', '财富', '美容护肤', '宗教', '军事', '进阶职场', '游戏动漫', '直播', '搞笑趣闻', '时尚', '情感', '星座占卜', '生活服务', '萌宠', '亲子教育'],
   //广告主订单/任务状态
@@ -16,81 +15,81 @@ const utils =  {
   articleUrl: 'http://test.fensihui.com/', //文章预览地址
   //删除数组中为空的元素
   removeEmptyArrayEle(arr) {    
-    for(var i = 0; i < arr.length; i++) {
+    for(var i = 0; i < arr.length ;i++) {
      if(arr[i] == undefined) {
-        arr.splice(i,1);
-        i = i - 1; // i - 1 ,因为空元素在数组下标 2 位置，删除空之后，后面的元素要向前补位，
+        arr.splice(i,1)
+        i = i - 1 // i - 1 ,因为空元素在数组下标 2 位置，删除空之后，后面的元素要向前补位，
         // 这样才能真正去掉空元素,觉得这句可以删掉的连续为空试试，然后思考其中逻辑
       }
      }
-     return arr;
+     return arr
   },
   //获取时间
   getDate(time, flag) {
-    const date = new Date(time);
-    const y = date.getFullYear();
-    let m = date.getMonth() + 1;
-    m = m < 10 ? (`0${m}`) : m;
-    let d = date.getDate();
-    d = d < 10 ? (`0${d}`) : d;
-    let h = date.getHours();
-    h = h < 10 ? (`0${h}`) : h;
-    let minute = date.getMinutes();
-    let second = date.getSeconds();
-    minute = minute < 10 ? (`0${minute}`) : minute;
-    second = second < 10 ? (`0${second}`) : second;
-    const str = flag ? `${y}-${m}-${d} ${h}:${minute}:${second}` : `${y}-${m}-${d} `;
-    return str;
+    const date = new Date(time)
+    const y = date.getFullYear()
+    let m = date.getMonth() + 1
+    m = m < 10 ? (`0${m}`) : m
+    let d = date.getDate()
+    d = d < 10 ? (`0${d}`) : d
+    let h = date.getHours()
+    h = h < 10 ? (`0${h}`) : h
+    let minute = date.getMinutes()
+    let second = date.getSeconds()
+    minute = minute < 10 ? (`0${minute}`) : minute
+    second = second < 10 ? (`0${second}`) : second
+    const str = flag ? `${y}-${m}-${d} ${h}:${minute}:${second}` : `${y}-${m}-${d} `
+    return str
   },
   //时间格式化
   getTime() {
-    let d = new Date();
-    let year = d.getFullYear();
-    let month = d.getMonth() + 1 > 10 ? d.getMonth()+1 : `0${d.getMonth()+1}`;
-    let day = d.getDate() > 10 ? d.getDate() : `0${d.getDate()}`;
-    let hour = d.getHours() > 10 ? d.getHours() : `0${d.getHours()}`;
-    let minute = d.getMinutes() > 10 ? d.getMinutes() : `0${d.getMinutes()}`;
-    let second = d.getSeconds() > 10 ? d.getSeconds() : `0${d.getSeconds()}`;
-    const time = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
-    return time;
+    let d = new Date()
+    let year = d.getFullYear()
+    let month = d.getMonth() + 1 > 10 ? d.getMonth()+1 : `0${d.getMonth()+1}`
+    let day = d.getDate() > 10 ? d.getDate() : `0${d.getDate()}`
+    let hour = d.getHours() > 10 ? d.getHours() : `0${d.getHours()}`
+    let minute = d.getMinutes() > 10 ? d.getMinutes() : `0${d.getMinutes()}`
+    let second = d.getSeconds() > 10 ? d.getSeconds() : `0${d.getSeconds()}`
+    const time = `${year}-${month}-${day} ${hour}:${minute}:${second}`
+    return time
   },
   // 日期对比，得出天数 
   dateDiff(sDate1,  sDate2){
-    let oDate1, oDate2, iDays;
-    oDate1 = new Date(sDate1);     
-    oDate2 = new Date(sDate2);  
-    iDays = parseInt(Math.abs(oDate1 - oDate2) / 1000 / 60 / 60 / 24) + 1;     
-    return  iDays;
+    let oDate1, oDate2, iDays
+    oDate1 = new Date(sDate1)     
+    oDate2 = new Date(sDate2)  
+    iDays = parseInt(Math.abs(oDate1 - oDate2) / 1000 / 60 / 60 / 24) + 1     
+    return  iDays
   },
   getAdType(type) { //活动形式
-    let typeName = '';
+    let typeName = ''
     switch(type) {
       case 'link':
-        typeName='H5支付后广告';
-        break;
+        typeName='H5支付后广告'
+        break
       case 'banner':
-        typeName='banner广告';
-        break;
+        typeName='banner广告'
+        break
       case 'miniapp':
-        typeName='小程序广告';
-        break;
+        typeName='小程序广告'
+        break
       case 'article':
-        typeName='公众号软文';
-        break;
+        typeName='公众号软文'
+        break
       case 'section':
-        typeName='软文贴片广告';
-        break;
+        typeName='软文贴片广告'
+        break
       default:
-        typeName='H5支付后广告';
-        break;
+        typeName='H5支付后广告'
+        break
     }
-    return typeName;
+    return typeName
   },
   formatNumber(count) {
-    let source = String(count).split(".");//按小数点分成2部分
-    source[0] = source[0].replace(new RegExp('(\\d)(?=(\\d{3})+$)','ig'),"$1,");//只将整数部分进行都好分割
-    return source.join(".");//再将小数部分合并进来
-    //return count;
+    let source = String(count).split(".")//按小数点分成2部分
+    source[0] = source[0].replace(new RegExp('(\\d)(?=(\\d{3})+$)','ig'),"$1,")//只将整数部分进行都好分割
+    return source.join(".")//再将小数部分合并进来
+    //return count
   }
-};
-export default utils;
+}
+export default utils

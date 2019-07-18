@@ -1,16 +1,16 @@
-import React, {Component} from 'react';
-import {message, notification} from 'antd';
-import style from './style.less';
-import QRCode from 'qrcode.react'; //二维码
-import Redirect from 'umi/redirect';
-import router from 'umi/router';
+import React, {Component} from 'react'
+import {message, notification} from 'antd'
+import style from './style.less'
+import QRCode from 'qrcode.react' //二维码
+import Redirect from 'umi/redirect'
+import router from 'umi/router'
 import {
   orderQuery
-} from '../../../api/api';//接口地址
-let timer;
+} from '../../../api/api'//接口地址
+let timer
 class QrCode extends Component{
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       operatorLoginName: null,
       qrUrl: null,
@@ -18,46 +18,45 @@ class QrCode extends Component{
       amount: null,
       messageTip: '充值订单支付中',
       type: 'WX'
-    };
+    }
   }
   async componentWillMount() {
-    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
-    if (!loginInfo) return false;
-    const rechargeInfo = this.props.location.query;
-    if (!rechargeInfo) return false;
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'))
+    if (!loginInfo) return false
+    const rechargeInfo = this.props.location.query
+    if (!rechargeInfo) return false
     await this.setState({
       operatorLoginName: loginInfo.data.loginName,
       qrUrl: rechargeInfo.payUrl,
       orderNo: rechargeInfo.orderNo,
       amount: rechargeInfo.amount,
       type: rechargeInfo.channelType
-    });
-    const {operatorLoginName, orderNo} = this.state;
+    })
+    const {operatorLoginName, orderNo} = this.state
     const params = {
       operatorLoginName,
       orderNo
-    };
-    this.orderStatus(params);
+    }
+    this.orderStatus(params)
   }
   orderStatus = (params) => {
     timer = setTimeout(() => {
       orderQuery(params).then(rs => {
-        this.setState({messageTip: rs.message});
-        console.log(rs);
+        this.setState({messageTip: rs.message})
         if(rs.success) {
           if (rs.data.status === 1) {
-            this.openNotification();
+            this.openNotification()
           } else {
-            message.error(rs.data.msg);
+            message.error(rs.data.msg)
           }
-          router.push('/main/depositlist');
-          clearTimeout(timer);
-          return false;
+          router.push('/main/depositlist')
+          clearTimeout(timer)
+          return false
         } else {
-          this.orderStatus(params);
+          this.orderStatus(params)
         }
       })
-    }, 2000);
+    }, 2000)
   }
   openNotification = ()=>{
     //使用notification.success()弹出一个通知提醒框 
@@ -71,16 +70,16 @@ class QrCode extends Component{
         </div>
       ),
       duration: 2, //1秒
-    }); 
+    }) 
   }
   componentWillUnmount() {
-    clearTimeout(timer);
+    clearTimeout(timer)
   }
   render() {
     const {
       qrUrl,
       messageTip
-    } = this.state;
+    } = this.state
     return (
       <div className={style.financialModel}>
         <h1 className="nav-title">扫码充值</h1>
@@ -95,5 +94,5 @@ class QrCode extends Component{
       </div>
     )
   }  
-};
-export default QrCode;
+}
+export default QrCode

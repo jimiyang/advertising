@@ -24,7 +24,7 @@ input, .radius2, .ant-input, .ant-select-selection{border-radius: 2px;}
 .w180{width: 180px;}
 .w260{width: 260px;}
 .hide{display: none;}
-.txthide{width: 300px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
+.txthide{width: 300px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;display: inline-block;}
 .ant-modal-content{border-radius: 2px;}
 .ant-modal-footer{text-align: center;background: #F6F6F6;height: 62px;}
 .ant-btn{border-radius: 2px;height: 36px;line-height: 36px;padding:0 25px;}
@@ -281,6 +281,7 @@ input, .radius2, .ant-input, .ant-select-selection{border-radius: 2px;}
   margin-top: 20px;
   color:#686E76;
   border: 1px solid rgba(230, 238, 244, 1);
+  border-bottom: none;
 }
 .ant-table-thead > tr{
   background: #EEF6FD 100%;

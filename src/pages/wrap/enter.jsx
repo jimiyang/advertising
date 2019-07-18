@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
-import Link from 'umi/link';
+import React, {Component} from 'react'
+import Link from 'umi/link'
 class Enter extends Component {
   login = () => {
-    //window.localStorage.setItem('checkLogin', '1000');
-    //router.push('/');
+    //window.localStorage.setItem('checkLogin', '1000')
+    //router.push('/')
   }
   render() {
     return(
@@ -32,7 +32,7 @@ class Enter extends Component {
           </li>
         </ul>
       </div>
-    );
+    )
   }
 }
-export default Enter;
+export default Enter

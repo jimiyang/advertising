@@ -1,16 +1,16 @@
-import React, {Component} from 'react';
-import {DatePicker, Input, Table, Button, message} from 'antd';
-import style from './style.less';
-import moment from 'moment';
-import Link from "umi/link";
-import router from "umi/router";
+import React, {Component} from 'react'
+import {DatePicker, Input, Table, Button, message} from 'antd'
+import style from './style.less'
+import moment from 'moment'
+import Link from "umi/link"
+import router from "umi/router"
 import {
   caQuery,
   flowFinanceList
-} from '../../../api/api';
+} from '../../../api/api'
 class ArningsList extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       loginName: '',
       earningsData: [],
@@ -33,72 +33,76 @@ class ArningsList extends Component {
         onShowSizeChange: this.onShowSizeChange
       },
       isActive: 1
-    };
+    }
   }
   async componentWillMount() {
-    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
-    await this.setState({loginName: loginInfo.data.loginName});
-    this.loadList();
-    this.getCaQuery();
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'))
+    await this.setState({loginName: loginInfo.data.loginName})
+    this.loadList()
+    this.getCaQuery()
   }
   //获取可用余额和冻结余额
   getCaQuery = () => {
     caQuery({operatorLoginName: this.state.loginName}).then(rs => {
-      this.setState({available_balance: rs.data.available_balance, freezen_balance: rs.data.freezen_balance});
-    });
+      if (rs.success && rs.data !== undefined) {
+        this.setState({available_balance: rs.data.available_balance, freezen_balance: rs.data.freezen_balance})
+      } else {
+        message.error(rs.message)
+      }
+    })
   }
   loadList = () => {
-    const {loginName, pagination, search} = this.state;
+    const {loginName, pagination, search} = this.state
     const params = {
       currentPage: pagination.currentPage,
       limit: pagination.limit,
       loginName,
       ...search
-    };
+    }
     flowFinanceList(params).then(rs => {
-      const p = Object.assign(pagination, {total: rs.total});
-      this.setState({earningsData: rs.data, pagination: p});
-    });
+      const p = Object.assign(pagination, {total: rs.total})
+      this.setState({earningsData: rs.data, pagination: p})
+    })
   }
   changePage = (page) => {
-    page = page === 0 ? 1 : page;
-    const pagination = Object.assign(this.state.pagination, {currentPage: page});
-    this.setState({pagination});
-    this.loadList();
+    page = page === 0 ? 1 : page
+    const pagination = Object.assign(this.state.pagination, {currentPage: page, current: page})
+    this.setState({pagination})
+    this.loadList()
   }
   //改变每页条数事件
   onShowSizeChange = (current, size) => {
-    let p = this.state.pagination;
-    p = Object.assign(p, {currentPage: current, limit: size});
-    this.setState({pagination: p});
-    this.loadList();
+    let p = this.state.pagination
+    p = Object.assign(p, {currentPage: current, current, limit: size})
+    this.setState({pagination: p})
+    this.loadList()
   }
   changeFormEvent = (type, e, value) => {
-    let search = this.state.search;
-    let obj = {};
+    let search = this.state.search
+    let obj = {}
     switch (type) {
       case 'dateStart':
-        obj = {[type]: value};
-        break;
+        obj = {[type]: value}
+        break
       case 'dateEnd':
-        obj = {[type]: value};
-        break;
+        obj = {[type]: value}
+        break
       case 'orderNo':
-        obj = {[type]: e.target.value};
-        break;
+        obj = {[type]: e.target.value}
+        break
       default:
-        break;
+        break
     }
-    search = Object.assign(search, obj);
-    this.setState({search});
+    search = Object.assign(search, obj)
+    this.setState({search})
   }
   searchEvent = () => {
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
-    this.setState({pagination});
-    this.loadList();
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1})
+    this.setState({pagination})
+    this.loadList()
   }
   clearEvent = () => {
-    let search = this.state.search;
+    let search = this.state.search
     search = Object.assign(
       search,
       {
@@ -107,14 +111,18 @@ class ArningsList extends Component {
         orderNo: null,
         orderStatus: null
       }
-    );
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
-    this.setState({pagination, search});
-    this.loadList();
+    )
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1})
+    this.setState({pagination, search})
+    this.loadList()
   }
   //提现弹窗
   widthdrawEvent = () => {
-    router.push('/main/getcash');
+    router.push('/main/getcash')
+  }
+  tapEvent = (index) => {
+    const url = index === 0 ? '/main/putlist' : '/main/arningslist'
+    router.push(url)
   }
   render () {
     const {
@@ -124,7 +132,7 @@ class ArningsList extends Component {
       pagination,
       search,
       isActive
-    } = this.state;
+    } = this.state
     const columns = [
       {
         title: '结算单号',
@@ -157,7 +165,7 @@ class ArningsList extends Component {
           <span>{window.common.getDate(record, true)}</span>
         )
       }
-    ];
+    ]
     return(
       <div className={style.arnings}>
         <h1 className="nav-title">我的收益 > 结算记录</h1>
@@ -177,8 +185,8 @@ class ArningsList extends Component {
           </p>
         </div>
         <ul className={`${style.accountType} mt30`}>
-          <li className={isActive === 0 ? style.active : null}><Link to="/main/putlist">提现记录</Link></li>
-          <li className={isActive === 1 ? style.active : null}><Link to="/main/arningslist">结算记录</Link></li>
+          <li className={isActive === 0 ? style.active : null} onClick={this.tapEvent.bind(this, 0)}><a href="javascript:">提现记录</a></li>
+          <li className={isActive === 1 ? style.active : null} onClick={this.tapEvent.bind(this, 1)}><a href="javascript:">结算记录</a></li>
         </ul>
         <ul className={style.search}>
           <li>
@@ -205,5 +213,5 @@ class ArningsList extends Component {
       </div>
     )
   }
-};
-export default ArningsList;
+}
+export default ArningsList

@@ -1,20 +1,20 @@
-import React, {Component} from 'react';
-import {Input, DatePicker, Form, Radio, Button, message, Modal} from 'antd';
-import moment from 'moment';
-import style from './style.less';
-import Redirect from 'umi/redirect';
-import router from 'umi/router';
+import React, {Component} from 'react'
+import {Input, DatePicker, Form, Radio, Button, message, Modal} from 'antd'
+import moment from 'moment'
+import style from './style.less'
+import Redirect from 'umi/redirect'
+import router from 'umi/router'
 import {
   getDictByType,
   caQuery,
   native,
   getById,
   edit
-} from '../../../api/api';//接口地址
-import RechargeModel from '../../components/rechargeModel'; //充值modal
+} from '../../../api/api'//接口地址
+import RechargeModel from '../../components/rechargeModel' //充值modal
 class EditAdvertity extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       isDisabled: false,
       currentTime: null,
@@ -45,234 +45,241 @@ class EditAdvertity extends Component {
       provinceTypeType: [], //省
       selmediaValData: [], //选中的行业标签
       selproviceValData: [] //选中的地域标签
-    };
+    }
   }
   componentWillMount() {
-    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
-    if (!loginInfo) return false;
-    const form = Object.assign(this.state.form, {loginName: loginInfo.data.loginName});
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'))
+    if (!loginInfo) return false
+    const form = Object.assign(this.state.form, {loginName: loginInfo.data.loginName})
     Promise.all([getDictByType({type: 'mediaType'}), getDictByType({type: 'provinceType'})]).then(rs => {
       this.setState({
         mediaTypeLabel: rs[0].data,
         selmediaValData: new Array(rs[0].data.length),
         provinceTypeType: rs[1].data,
         selproviceValData: new Array(rs[1].data.length)
-      });
-      this.initForm();
-      this.getCaQuery();
-    });
+      })
+      this.initForm()
+      this.getCaQuery()
+    })
   }
   initForm = () => {
-    if (!this.props.location.state) return false;
+    if (!this.props.location.state) return false
     getById({id: this.props.location.state.id}).then(rs => {
-      const form = Object.assign(this.state.form, rs.data);
-      const media = typeof form.targetMediaCategory === 'string' ? [] : JSON.parse(form.targetMediaCategory);
-      const categoryType = JSON.parse(form.targetMediaCategory).length !== 0 ? 1 : 0;
-      const area = typeof form.targetArea === 'string' ? [] : JSON.parse(form.targetArea);
-      const areaType = JSON.parse(form.targetArea).length !== 0 ? 1 : 0;
-      const selmediaValData = this.initLabel('media', form.targetMediaCategory);
-      const selproviceValData = this.initLabel('province', form.targetArea);
-      this.setState({categoryType, areaType, form, selmediaValData, selproviceValData, validReading: Math.round(form.postAmtTotal / form.unitPrice)});
-    });
+      const form = Object.assign(this.state.form, rs.data)
+      const media = typeof form.targetMediaCategory === 'string' ? [] : JSON.parse(form.targetMediaCategory)
+      const categoryType = JSON.parse(form.targetMediaCategory).length !== 0 ? 1 : 0
+      const area = typeof form.targetArea === 'string' ? [] : JSON.parse(form.targetArea)
+      const areaType = JSON.parse(form.targetArea).length !== 0 ? 1 : 0
+      const selmediaValData = this.initLabel('media', form.targetMediaCategory)
+      const selproviceValData = this.initLabel('province', form.targetArea)
+      this.setState({categoryType, areaType, form, selmediaValData, selproviceValData, validReading: Math.round(form.postAmtTotal / form.unitPrice)})
+    })
   }
   //获取可用余额和冻结余额
   getCaQuery = () => {
     caQuery({operatorLoginName: this.state.form.loginName}).then(rs => {
-      this.setState({availableBalance: rs.data.available_balance});
-    });
+      if (rs.success && rs.data !== undefined) {
+        this.setState({availableBalance: rs.data.available_balance})
+      } else {
+        message.error(rs.message)
+      }
+    })
   }
   //初始化标签
   initLabel = (type, data) => {
-    let arr = data;
+    let arr = data
     switch (type) {
       case 'media':
-        const mediaLabel = this.state.mediaTypeLabel;
-        let selmediaValData = this.state.selmediaValData;
+        const mediaLabel = this.state.mediaTypeLabel
+        let selmediaValData = this.state.selmediaValData
         if (arr !== '' || arr.length !== 0) {
           JSON.parse(arr).map((node, i) => {
             mediaLabel.map((item, index) => {
               if (node == Number(item.value)) {
-                selmediaValData[index] = node;
+                selmediaValData[index] = node
               }
-            });
-          });
+            })
+          })
         }
-        return selmediaValData;
+        return selmediaValData
       case 'province':
-        const provinceLabel = this.state.provinceTypeType;
-        let selproviceValData = this.state.selproviceValData;
+        const provinceLabel = this.state.provinceTypeType
+        let selproviceValData = this.state.selproviceValData
         if (arr !== '' || arr.length !== 0) {
           JSON.parse(arr).map((node, i) => {
             provinceLabel.map((item, index) => {
               if (node == Number(item.value)) {
-                selproviceValData[index] = node;
+                selproviceValData[index] = node
               }
-            });
-          });
+            })
+          })
         }
-        return selproviceValData;
+        return selproviceValData
       default: 
-        break;
+        break
     }
   }
   //form 表单改变
   changeFormEvent = (type, e, value) => {
-    let form = this.state.form;
-    let obj = {};
+    let form = this.state.form
+    let obj = {}
     switch(type) {
       case 'date':
-        obj={'dateStart': value[0], 'dateEnd': value[1]};
-        form = Object.assign(form, obj);
-        this.setState({form});
-        break;
+        obj={'dateStart': value[0], 'dateEnd': value[1]}
+        form = Object.assign(form, obj)
+        this.setState({form})
+        break
       case 'dateStart':
-        obj={'dateStart': value};
-        form = Object.assign(form, obj);
-        this.props.form.setFieldsValue({date: value});
-        this.setState({form});
-        break;
+        obj={'dateStart': value}
+        form = Object.assign(form, obj)
+        this.props.form.setFieldsValue({date: value})
+        this.setState({form})
+        break
       case 'dateEnd':
-        obj={'dateEnd': value};
-        form = Object.assign(form, obj);
-        this.props.form.setFieldsValue({date: value});
-        this.setState({form});
-        break;
+        obj={'dateEnd': value}
+        form = Object.assign(form, obj)
+        this.props.form.setFieldsValue({date: value})
+        this.setState({form})
+        break
       case 'unitPrice':
-        form = Object.assign(form, {unitPrice: e.target.value});
+        form = Object.assign(form, {unitPrice: e.target.value})
         if (form.postAmtTotal !== 0) {
-          this.setState({validReading: Math.round(form.postAmtTotal / e.target.value)});
+          this.setState({validReading: Math.round(form.postAmtTotal / e.target.value)})
         }
-        break;
+        break
       case 'postAmtTotal':
-        form = Object.assign(form, {postAmtTotal: e.target.value});
+        form = Object.assign(form, {postAmtTotal: e.target.value})
         if (form.unitPrice !== 0) {
-          this.setState({validReading: Math.round(e.target.value / form.unitPrice)});
+          this.setState({validReading: Math.round(e.target.value / form.unitPrice)})
         }
-        break;
+        break
       case 'categoryType':
-        this.setState({[type]: e.target.value});
-        break;
+        this.setState({[type]: e.target.value})
+        break
       case 'areaType':
-        this.setState({[type]: e.target.value});
-        break;
+        this.setState({[type]: e.target.value})
+        break
       default:
-        obj = {[type]: e.target.value};
-        this.setState({form});
-        break;
+        obj = {[type]: e.target.value}
+        this.setState({form})
+        break
     }
-    this.setState({form});
+    this.setState({form})
   }
   //编辑活动事件
   createEvent = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        let form = this.state.form;
-        delete values.date;
-        const category = window.common.removeEmptyArrayEle(form.targetMediaCategory);
-        const area = window.common.removeEmptyArrayEle(form.targetArea);
+        let form = this.state.form
+        delete values.date
+        const category = window.common.removeEmptyArrayEle(form.targetMediaCategory)
+        const area = window.common.removeEmptyArrayEle(form.targetArea)
         if (category.length === 0 || category === '') {
-          form.targetMediaCategory = [];
+          form.targetMediaCategory = []
         } else {
-          form.targetMediaCategory = typeof category === 'string' ? JSON.parse(category) : category;
+          form.targetMediaCategory = typeof category === 'string' ? JSON.parse(category) : category
         }
         if (area.length === 0) {
-          form.targetArea = [];
-          form.targetArea.length = 0;
+          form.targetArea = []
+          form.targetArea.length = 0
         } else {
-          form.targetArea = typeof area === 'string' ? JSON.parse(area) : area;
+          form.targetArea = typeof area === 'string' ? JSON.parse(area) : area
         }
-        form.dateStart = window.common.getDate(form.dateStart);
-        form.dateEnd = window.common.getDate(form.dateEnd);
-        form = Object.assign(form, values);
-        const dateLen = window.common.dateDiff(form.dateStart, form.dateEnd);
+        form.dateStart = window.common.getDate(form.dateStart)
+        form.dateEnd = window.common.getDate(form.dateEnd)
+        form = Object.assign(form, values)
+        const dateLen = window.common.dateDiff(form.dateStart, form.dateEnd)
         if (dateLen > 7) {
-          message.warning('活动周期最多7天！');
-          return false;
+          message.warning('活动周期最多7天！')
+          return false
         }
-        this.setState({isDisabled: true});
+        this.setState({isDisabled: true})
         edit(form).then(rs => {
-          this.setState({isDisabled: false});
-          message.success(rs.message);
-          //router.push('/main/selectmateria');
+          this.setState({isDisabled: false})
+          message.success(rs.message)
+          //router.push('/main/selectmateria')
           router.push({
             pathname: '/main/selectmateria',
             state: {
               id: form.id,
               type: 'add'
             }
-          });
-        });
+          })
+        })
       }
     })
-    //router.push('/main/selectmateria');
+    //router.push('/main/selectmateria')
+  }
+  goBackEvent = () => {
+    router.push('/main/myactivity')
   }
   //选择多个标签
   selTagEvent = (item, index, type) => {
-    type = type === 'selmediaValData' ? 'selmediaValData' : 'selproviceValData';
-    let form = this.state.form;
+    type = type === 'selmediaValData' ? 'selmediaValData' : 'selproviceValData'
+    let form = this.state.form
     if (type === 'selmediaValData') {
-      let str = this.state.selmediaValData;
+      let str = this.state.selmediaValData
       if (str.includes(Number(item.value)) === true) {
-        str[index] = null;
+        str[index] = null
       } else {
-        str[index] = Number(item.value);
+        str[index] = Number(item.value)
       }
-      form = Object.assign(form, {targetMediaCategory: str});
-      this.setState({form});
+      form = Object.assign(form, {targetMediaCategory: str})
+      this.setState({form})
     } else {
       if (this.state.selproviceValData.includes(Number(item.value)) === true) {
-        this.state.selproviceValData[index] = null;
+        this.state.selproviceValData[index] = null
       } else {
-        this.state.selproviceValData[index] = Number(item.value);
+        this.state.selproviceValData[index] = Number(item.value)
       }
-      form = Object.assign(form, {targetArea:  this.state.selproviceValData});
-      this.setState({form});
+      form = Object.assign(form, {targetArea:  this.state.selproviceValData})
+      this.setState({form})
     }
   }
   disabledEndDate = (endValue) => {
-    const startValue = this.state.currentTime;
-    if (!endValue || !startValue) {return false;}
-    return endValue.valueOf() <= startValue.valueOf();
+    const startValue = this.state.currentTime
+    if (!endValue || !startValue) {return false}
+    return endValue.valueOf() <= startValue.valueOf()
   }
   handleEndOpenChange = (open) => {
-    let me = this;
+    let me = this
     if(open){
-      me.currentTime = moment();
+      me.currentTime = moment()
     }
-    this.setState({currentTime: moment()});
+    this.setState({currentTime: moment()})
   }
   //显示充值弹层
   saveMoneyEvent = () => {
-    let topup = this.state.topup;
-    topup = Object.assign(topup, {amount: ''});
-    this.setState({isVisible: true, topup});
+    let topup = this.state.topup
+    topup = Object.assign(topup, {amount: ''})
+    this.setState({isVisible: true, topup})
   }
   //关闭充值弹层
   closeEvent = () => {
-    this.setState({isVisible: false});
+    this.setState({isVisible: false})
   }
   //调用子组件的表单事件
   bindValue = (type, e) => {
-    let topup = this.state.topup;
-    topup = Object.assign(topup, {[type]: e.target.value});
-    this.setState({topup});
+    let topup = this.state.topup
+    topup = Object.assign(topup, {[type]: e.target.value})
+    this.setState({topup})
   }
   //确定要充值
   rechargeEvent = () => {
     const params = {
       ...this.state.topup,
       operatorLoginName: this.state.form.loginName
-    };
-    const reg = /^[0-9]+([.]{1}[0-9]{1,2})?$/;
+    }
+    const reg = /^[0-9]+([.]{1}[0-9]{1,2})?$/
     if (!reg.test(params.amount)) {
-      message.error('请输入整数或小数(保留后两位)');
-      return false;
+      message.error('请输入整数或小数(保留后两位)')
+      return false
     }
     native(params).then(rs => {
-      this.setState({qrUrl: rs.data.payUrl});
-      router.push({pathname: '/main/qrcode', query: rs.data});
-    });
+      this.setState({qrUrl: rs.data.payUrl})
+      router.push({pathname: '/main/qrcode', query: rs.data})
+    })
   }
   render() {
     const {
@@ -288,8 +295,8 @@ class EditAdvertity extends Component {
       availableBalance,
       isVisible,
       topup
-    } = this.state;
-    const {getFieldDecorator} = this.props.form;
+    } = this.state
+    const {getFieldDecorator} = this.props.form
     const formItemLayout = {
       labelCol: {
         xs: { span: 12 },
@@ -299,7 +306,7 @@ class EditAdvertity extends Component {
         xs: { span: 12 },
         sm: { span: 18 },
       }
-    };
+    }
     const tailFormItemLayout = {
       wrapperCol: {
         xs: {
@@ -311,7 +318,7 @@ class EditAdvertity extends Component {
           offset: 1,
         }
       },
-    };
+    }
     return(
       <div className={style.mypromotion}>
         <Modal
@@ -524,6 +531,7 @@ class EditAdvertity extends Component {
                 <div className={style.warning}>推广效果: 预计您的广告将实现<em className="m5">{validReading}</em>次有效阅读</div>
                 <Form.Item>
                   <Button type="primary" htmlType="submit" className={style.btn} disabled={isDisabled}>下一步</Button>
+                  <Button className="ml30" onClick={this.goBackEvent.bind(this)}>返回</Button>
                 </Form.Item>
             </Form>
         </div>
@@ -531,4 +539,4 @@ class EditAdvertity extends Component {
     )
   }
 }
-export default Form.create()(EditAdvertity);
+export default Form.create()(EditAdvertity)

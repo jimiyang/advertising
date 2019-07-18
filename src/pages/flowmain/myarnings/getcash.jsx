@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
-import {Alert, Form, Input, Button, Table, message} from 'antd';
-import {historyList, applyWithdraw} from '../../../api/api';
-import style from './style.less';
+import React, {Component} from 'react'
+import {Alert, Form, Input, Button, Table, message} from 'antd'
+import {historyList, applyWithdraw} from '../../../api/api'
+import style from './style.less'
 class GetCash extends Component{
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       loginName: null,
       isDisabled: false,
@@ -21,77 +21,76 @@ class GetCash extends Component{
         onChange: this.changePage,
         onShowSizeChange: this.onShowSizeChange
       }
-    };
+    }
   }
   async componentWillMount() {
-    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
-    await this.setState({loginName: loginInfo.data.loginName});
-    this.loadList();
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'))
+    await this.setState({loginName: loginInfo.data.loginName})
+    this.loadList()
   }
   loadList = () => {
-    const {loginName, pagination} = this.state;
+    const {loginName, pagination} = this.state
     const params = {
       loginName,
       currentPage: pagination.currentPage,
       limit: pagination.limit
-    };
+    }
     historyList(params).then(rs => {
-      const p = Object.assign(pagination, {total: rs.total});
-      this.setState({withDrawData: rs.data, pagination: p});
-    });
+      const p = Object.assign(pagination, {total: rs.total})
+      this.setState({withDrawData: rs.data, pagination: p})
+    })
   }
   changePage = (page) => {
-    page = page === 0 ? 1 : page;
-    console.log(page);
-    const pagination = Object.assign(this.state.pagination, {currentPage: page});
-    this.setState({pagination});
-    this.loadList();
+    page = page === 0 ? 1 : page
+    console.log(page)
+    const pagination = Object.assign(this.state.pagination, {currentPage: page})
+    this.setState({pagination})
+    this.loadList()
   }
   //改变每页条数事件
   onShowSizeChange = (current, size) => {
-    let p = this.state.pagination;
-    p = Object.assign(p, {currentPage: current, limit: size, pageSize: size});
-    this.setState({pagination: p});
-    this.loadList();
+    let p = this.state.pagination
+    p = Object.assign(p, {currentPage: current, limit: size, pageSize: size})
+    this.setState({pagination: p})
+    this.loadList()
   }
   changeFormEvent = (type, e) => {
-    let form = this.state.form;
-    let obj = {};
+    let form = this.state.form
+    let obj = {}
     if (type === 'orderAmt') {
-      const number = isNaN(Number(e.target.value) * 0.8) === true ? 0 : Number(e.target.value) * 0.8;
-      obj = {realWithdrawAmt: number.toFixed(2)};
+      const number = isNaN(Number(e.target.value) * 0.9) === true ? 0 : Number(e.target.value) * 0.9
+      obj = {realWithdrawAmt: number.toFixed(2)}
     }
-    form = Object.assign(form, {[type]: e.target.value}, obj);
-    this.setState({form});
+    form = Object.assign(form, {[type]: e.target.value}, obj)
+    this.setState({form})
   }
   applyEvent = (e) => {
-    e.preventDefault();
+    e.preventDefault()
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        let {form, loginName} = this.state;
-        form = Object.assign(form, values, {loginName});
-        console.log(form);
-        this.setState({isDisabled: true});
+        let {form, loginName} = this.state
+        form = Object.assign(form, values, {loginName})
+        this.setState({isDisabled: true})
         applyWithdraw(form).then(rs => {
-          this.setState({isDisabled: false});
+          this.setState({isDisabled: false})
           if (rs.success) {
-            message.success(rs.message);
+            message.success(rs.message)
           } else {
-            message.error(rs.message);
+            message.error(rs.message)
           }
-          window.history.go(-1);
-        });
+          window.history.go(-1)
+        })
       }
-    });
+    })
   }
   render () {
-    const {getFieldDecorator} = this.props.form;
+    const {getFieldDecorator} = this.props.form
     const {
       form,
       withDrawData,
       pagination,
       isDisabled
-    } = this.state;
+    } = this.state
     const formItemLayout = {
       labelCol: {
         xs: {span: 2},
@@ -101,7 +100,7 @@ class GetCash extends Component{
         xs: {span: 5},
         sm: {span: 10},
       }
-    };
+    }
     const tailFormItemLayout = {
       wrapperCol: {
         xs: {
@@ -113,7 +112,7 @@ class GetCash extends Component{
           offset: 0,
         }
       },
-    };
+    }
     const columns = [
       {
         title: '银行卡号',
@@ -130,7 +129,7 @@ class GetCash extends Component{
         key: 'bankCardOwnerName',
         dataIndex: 'bankCardOwnerName'
       }
-    ];
+    ]
     return (
       <div className={style.arnings}>
         <h1 className="nav-title">我的收益 > 提现详情</h1>
@@ -138,7 +137,7 @@ class GetCash extends Component{
           <div className={style.notice}>
             <Alert
               message="提现服务费说明"
-              description={<div><p>针对您的每笔提现，平台将收取20%的提现服务费。</p></div>}
+              description={<div><p>针对您的每笔提现，平台将收取10%的提现服务费。</p></div>}
               type="warning"
               closable
             />
@@ -155,7 +154,7 @@ class GetCash extends Component{
                           initialValue: form.unitPrice || '',
                           rules: [
                             {required: true, message: '请输入提现金额'},
-                            {pattern: /^([1-9][0-9]*){1,3}|(^[0-9][.][0-9]{1}$)|(^[0-9][.][0-9]{2}$)$/, message: '请输入大于0的整数或小数(保留后两位)'}
+                            {pattern: /(^[1-9]{1}[0-9]*$)|(^[0-9]*\.[0-9]{2}$)/, message: '请输入大于0的整数或小数(保留后两位)'}
                           ]
                         }
                       )(<div><Input onChange={this.changeFormEvent.bind(this, 'orderAmt')} /></div>)
@@ -240,4 +239,4 @@ class GetCash extends Component{
     )
   }
 }
-export default Form.create()(GetCash);
+export default Form.create()(GetCash)

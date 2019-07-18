@@ -1,25 +1,25 @@
-import React, {Component} from 'react';
-import {Input, Button, message} from 'antd';
-import router from 'umi/router';
-import Link from 'umi/link';
-import {login} from '../api/api';
+import React, {Component} from 'react'
+import {Input, Button, message} from 'antd'
+import router from 'umi/router'
+import Link from 'umi/link'
+import {login} from '../api/api'
 class Login extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       loginName: 'ggz_10', //流量主：llz_10 //广告主：ggz_10 //管理员：SHcszfwx
       password: '111qqq'
     }
   }
   componentWillMount() {
-    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
-    if (!loginInfo) return false;
-    router.push('/main');
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'))
+    if (!loginInfo) return false
+    router.push('/main')
   }
   login = () => {
     login(this.state).then(rs => {
       if (rs.success) {
-        message.success(rs.message);
+        message.success(rs.message)
         const params = {
           data: {
             employeeId: rs.data.employeeId,
@@ -27,39 +27,39 @@ class Login extends Component {
             merchantType: rs.data.merchantType,
             merchantCode: rs.data.merchantCode
           }
-        };
-        window.localStorage.setItem('login_info', JSON.stringify(params));
-        router.push('/main');
+        }
+        window.localStorage.setItem('login_info', JSON.stringify(params))
+        router.push('/main')
       } else {
-        message.error(rs.message);
+        message.error(rs.message)
       }
-    });
+    })
   }
   ChangeFormEvent = (type, e) => {
-    let text = '';
-    if (e === undefined) return false;
+    let text = ''
+    if (e === undefined) return false
     switch(typeof e) {
       case 'object':
-        text = e.target.value;
-        this.setState({password: null});
-        break;
+        text = e.target.value
+        this.setState({password: null})
+        break
       case 'string':
-        text = e;
-        break;
+        text = e
+        break
       default:
-        text = e.target.value;
-        break;
+        text = e.target.value
+        break
     }
-    this.setState({[type]: text});
+    this.setState({[type]: text})
   }
   regEvent = () => {
-    router.push('/register');
+    router.push('/register')
   }
   render() {
     const {
       loginName,
       password
-    } = this.state;
+    } = this.state
     return(
       <div className="login-form">
         <div className="header">
@@ -85,7 +85,7 @@ class Login extends Component {
           </div>
         </div>
       </div>
-    );
+    )
   }
 }
-export default Login;
+export default Login

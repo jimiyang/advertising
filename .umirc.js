@@ -68,6 +68,7 @@ export default {
         {path: '/main/activitylist', component: './administrator/information/activitylist'}, // 活动管理（天目管理员)
         {path: '/main/viewdetail', component: './administrator/information/viewdetail'}, // 活动管理查看（天目管理员)
         {path: '/main/tasklist', component: './administrator/information/tasklist'}, // 任务管理（天目管理员)
+        {path: '/main/taskdetail', component: './administrator/information/taskdetail'}, // 任务管理查看（天目管理员)
         {path: '/main/msglist', component: './administrator/message/msglist'}, // 消息发布（天目管理员)
       ]
     },

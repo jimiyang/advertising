@@ -1,19 +1,17 @@
-import React, {Component} from 'react';
-import {DatePicker, Table, Select, Input, Button, message, Popconfirm} from 'antd';
-import Link from 'umi/link';
-import Redirect from 'umi/redirect';
+import React, {Component} from 'react'
+import {DatePicker, Table, Select, Input, Button, message, Popconfirm} from 'antd'
+import Link from 'umi/link'
 import {
   missionList
-} from '../../../api/api';//接口地址
-import style from './style.less';
-import moment from 'moment';
+} from '../../../api/api'//接口地址
+import style from './style.less'
+import moment from 'moment'
 
-const {Option} = Select;
+const {Option} = Select
 class HavedTask extends Component{
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
-      redirect: false,
       loginName: '',
       orderData: [],
       search: {
@@ -38,74 +36,74 @@ class HavedTask extends Component{
     }
   }
   async componentWillMount() {
-    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
-    if (!loginInfo) return false;
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'))
+    if (!loginInfo) return false
     //因为setState是异步的，他会在render后才生效,加入一个回调函数
-    await this.setState({loginName: loginInfo.data.loginName});
-    this.loadList();
+    await this.setState({loginName: loginInfo.data.loginName})
+    this.loadList()
   }
   loadList = () => {
-    const {pagination, search} = this.state;
+    const {pagination, search} = this.state
     const params = {
       loginName: this.state.loginName,
       currentPage: pagination.currentPage,
       limit: pagination.limit,
       ...search
-    };
+    }
     missionList(params).then(rs => {
-      const p = Object.assign(pagination, {total: rs.total});
-      this.setState({orderData: rs.data, pagination: p});
-    });
+      const p = Object.assign(pagination, {total: rs.total})
+      this.setState({orderData: rs.data, pagination: p})
+    })
   }
   changePage = (page) => {
-    page = page === 0 ? 1 : page;
-    const pagination = Object.assign(this.state.pagination, {currentPage: page});
-    this.setState({pagination});
-    this.loadList();
+    page = page === 0 ? 1 : page
+    const pagination = Object.assign(this.state.pagination, {currentPage: page, current: page})
+    this.setState({pagination})
+    this.loadList()
   }
   //改变每页条数事件
   onShowSizeChange = (current, size) => {
-    let p = this.state.pagination;
-    p = Object.assign(p, {currentPage: current, limit: size, pageSize: size});
-    this.setState({pagination: p});
-    this.loadList();
+    let p = this.state.pagination
+    p = Object.assign(p, {currentPage: current, current, limit: size, pageSize: size})
+    this.setState({pagination: p})
+    this.loadList()
   }
   changeFormEvent = (type, e, value2) => {
-    let search = this.state.search;
-    let obj = {};
+    let search = this.state.search
+    let obj = {}
     switch(type) {
       case 'dateStart':
-        obj = {[type]: value2};
-        break;
+        obj = {[type]: value2}
+        break
       case 'dateEnd':
-        obj = {[type]: value2};
-        break;
+        obj = {[type]: value2}
+        break
       case 'missionStatus':
-        obj = {[type]: e};
-        break;
+        obj = {[type]: e}
+        break
       case 'appArticlePosition':
-        obj = {[type]: e};
-        break;
+        obj = {[type]: e}
+        break
       case 'campaignName':
-        obj = {[type]: e.target.value};
-        break;
+        obj = {[type]: e.target.value}
+        break
       case 'missionId':
-        obj = {[type]: e.target.value};
-        break;
+        obj = {[type]: e.target.value}
+        break
       default:
-        break;
+        break
     }
-    search = Object.assign(search, obj);
-    this.setState({search});
+    search = Object.assign(search, obj)
+    this.setState({search})
   }
   //搜索
   searchEvent = () => {
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
-    this.setState({pagination});
-    this.loadList();
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1})
+    this.setState({pagination})
+    this.loadList()
   }
   clearEvent = () => {
-    let search = this.state.search;
+    let search = this.state.search
     search = Object.assign(
       search, {
         missionStatus: null,
@@ -115,18 +113,17 @@ class HavedTask extends Component{
         dateStart: null,
         dateEnd: null
       }
-    );
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
-    this.setState({pagination, search});
-    this.loadList();
+    )
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1})
+    this.setState({pagination, search})
+    this.loadList()
   }
   render() {
     const {
-      redirect,
       orderData,
       search,
       pagination
-    } = this.state;
+    } = this.state
     const columns = [
       {
         title: '任务ID',
@@ -155,25 +152,6 @@ class HavedTask extends Component{
         )
       },
       {
-        title: (<div><p>接单时间</p><p>预计发文时间</p><p>实际发文时间</p></div>),
-        key: 'planPostArticleTime',
-        render: (record) => (
-          <div>
-            <p>{window.common.getDate(record, true)}</p>
-            <p>{record.planPostArticleTime === undefined ? '--' : window.common.getDate(record.planPostArticleTime, true)}</p>
-            <p>{record.realPostArticleTime === undefined ? '--' : window.common.getDate(record.realPostArticleTime, true)}</p>
-          </div>
-        )
-      },
-      {
-        title: '广告位置',
-        key: 'appArticlePosition',
-        dataIndex: 'appArticlePosition',
-        render: (record) => (
-          <span>{window.common.advertLocal[record - 1]}</span>
-        )
-      },
-      {
         title: (<div><p>接单阅读量</p><p>实际阅读量</p></div>),
         key: 'missionReadCnt',
         render: (record) => (
@@ -194,28 +172,22 @@ class HavedTask extends Component{
         )
       },
       {
-        title: '任务状态',
+        title: (<div><p>任务状态</p><p>操作</p></div>),
         key: 'missionStatus',
-        dataIndex: 'missionStatus',
         render: (record) => (
-          <span>{window.common.orderStatus[record - 10]}</span>
-        )
-      },
-      {
-        title: '操作',
-        key: 'opeartion',
-        render: (record) => (
-          <div className="opeartion-items">
-            <Link className="blue-color" to={{pathname: '/main/advertdetail', state: {id: record.id, type: 0}}}>查看任务</Link>
-            {
-              record.missionStatus === 10 ? 
-                <Link className="blue-color ml10" to={{pathname: '/main/advertdetail', state: {id: record.id, type: 1}}}>审核接单</Link> : null
-            }
+          <div>
+            <span>{window.common.orderStatus[record.missionStatus - 10]}</span>
+            <div className="opeartion-items">
+              <Link className="blue-color" to={{pathname: '/main/advertdetail', state: {id: record.id, type: 1}}}>查看任务</Link>
+              {
+                record.missionStatus === 10 ? 
+                  <Link className="blue-color ml10" to={{pathname: '/main/advertdetail', state: {id: record.id, type: 1}}}>审核接单</Link> : null
+              }
+            </div>
           </div>
         )
       }
-    ];
-    if (redirect) return (<Redirect to="/relogin" />);
+    ]
     return(
       <div className={style.task}>
         <h1 className="nav-title">已接单任务</h1>
@@ -265,4 +237,4 @@ class HavedTask extends Component{
     )
   }
 }
-export default HavedTask;
+export default HavedTask

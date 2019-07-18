@@ -1,19 +1,19 @@
-import React, {Component} from 'react';
-import {DatePicker, Select, Input, Button, Table, message, Popconfirm} from 'antd';
-import style from './style.less';
-import Redirect from 'umi/redirect';
-import Link from 'umi/link';
-import router from 'umi/router';
-import moment from 'moment';
+import React, {Component} from 'react'
+import {DatePicker, Select, Input, Button, Table, message, Popconfirm} from 'antd'
+import style from './style.less'
+import Redirect from 'umi/redirect'
+import Link from 'umi/link'
+import router from 'umi/router'
+import moment from 'moment'
 import {
   list,
   getAdCampaignCountByPostStatus,
   updatePostStatusById
-} from '../../../api/api';//接口地址
-const {Option} = Select;
+} from '../../../api/api'//接口地址
+const {Option} = Select
 class MyActivity extends Component{
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       redirect: false,
       loginName: '',
@@ -40,88 +40,88 @@ class MyActivity extends Component{
     }
   }
   async componentWillMount() {
-    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
-    if (!loginInfo) return false;
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'))
+    if (!loginInfo) return false
     //因为setState是异步的，他会在render后才生效,加入一个回调函数
     await this.setState({
       loginName: loginInfo.data.loginName
-    });
-    this.loadList();
-    this.getCount(loginInfo.data.loginName);
+    })
+    this.loadList()
+    this.getCount(loginInfo.data.loginName)
   }
   loadList = () => {
-    const {pagination, search, loginName} = this.state;
+    const {pagination, search, loginName} = this.state
     const params = {
       ...search,
       loginName,
       currentPage: pagination.currentPage,
       limit: pagination.limit
-    };
+    }
     list(params).then(rs => {
-      const p = Object.assign(pagination, {total: rs.total});
-      this.setState({activityData: rs.data, pagination: p});
-    });
+      const p = Object.assign(pagination, {total: rs.total})
+      this.setState({activityData: rs.data, pagination: p})
+    })
   }
   //获取统计总数
   getCount = (loginName) => {
     getAdCampaignCountByPostStatus({loginName}).then(rs => {
-      this.setState({total: rs.data.total, draftTotal: rs.data.draftTotal});
-    });
+      this.setState({total: rs.data.total, draftTotal: rs.data.draftTotal})
+    })
   }
   changePage = (page) => {
-    page = page === 0 ? 1 : page;
-    const pagination = Object.assign(this.state.pagination, {currentPage: page});
-    this.setState({pagination});
-    this.loadList();
+    page = page === 0 ? 1 : page
+    const pagination = Object.assign(this.state.pagination, {currentPage: page, current: page})
+    this.setState({pagination})
+    this.loadList()
   }
   //改变每页条数事件
   onShowSizeChange = (current, size) => {
-    let p = this.state.pagination;
-    p = Object.assign(p, {currentPage: current, limit: size, pageSize: size});
-    this.setState({pagination: p});
-    this.loadList();
+    let p = this.state.pagination
+    p = Object.assign(p, {currentPage: current, current, limit: size, pageSize: size})
+    this.setState({pagination: p})
+    this.loadList()
   }
   cancelActivityEvent = (item) => {
     const params = {
       id: item.id,
       loginName: this.state.loginName,
       postStatus: 25
-    };
+    }
     updatePostStatusById(params).then(rs => {
-      message.success(rs.message);
-      this.loadList();
-    });
+      message.success(rs.message)
+      this.loadList()
+    })
   }
   changeFormEvent = (type, e, value) => {
-    let search = this.state.search;
-    let obj = {};
+    let search = this.state.search
+    let obj = {}
     switch (type) {
       case 'dateStart':
-        obj = {[type]: value};
-        break;
+        obj = {[type]: value}
+        break
       case 'dateEnd':
-        obj = {[type]: value};
-        break;
+        obj = {[type]: value}
+        break
       case 'postStatus':
-        obj = {[type]: e};
-        break;
+        obj = {[type]: e}
+        break
       case 'campaignName':
-        obj = {[type]: e.target.value};
-        break;
+        obj = {[type]: e.target.value}
+        break
       default:
-        break;
+        break
     }
-    search = Object.assign(search, obj);
-    this.setState({search});
+    search = Object.assign(search, obj)
+    this.setState({search})
   }
   searchEvent = () => {
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
-    this.setState({pagination});
-    this.loadList();
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1})
+    this.setState({pagination})
+    this.loadList()
   }
   //重置
   clearEvent = () => {
-    let search = this.state.search;
+    let search = this.state.search
     search = Object.assign(
       search, {
         campaignName: null,
@@ -129,14 +129,14 @@ class MyActivity extends Component{
         dateEnd: null,
         postStatus: null
       }
-    );
-    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1});
-    this.setState({pagination, search});
-    this.loadList();
+    )
+    const pagination = Object.assign(this.state.pagination, {currentPage: 1, current: 1})
+    this.setState({pagination, search})
+    this.loadList()
   }
   //创建活动
   createEvent = () => {
-    router.push('/main/createactivity');
+    router.push('/main/createactivity')
   }
   render() {
     const {
@@ -146,7 +146,7 @@ class MyActivity extends Component{
       total,
       draftTotal,
       search
-    } = this.state;
+    } = this.state
     const columns = [
       {
         title: '活动ID',
@@ -157,17 +157,9 @@ class MyActivity extends Component{
         title: (<div><p>活动名称</p><p>活动周期</p></div>),
         render: (record) => (
           <div>
-            <p>{record.campaignName}</p>
+            <p className="txthide">{record.campaignName}</p>
             <p>{window.common.getDate(record.dateStart, false)}-{window.common.getDate(record.dateEnd, false)}</p>
           </div>
-        )
-      },
-      {
-        title: '广告主账户',
-        key: 'advertiserName',
-        dataIndex: 'advertiserName',
-        render: (record) => (
-          <span>{record}</span>
         )
       },
       {
@@ -182,56 +174,50 @@ class MyActivity extends Component{
         )
       },
       {
-        title: '已消耗',
+        title: '已接任务',
         render: (record) => (
           <span>{window.common.formatNumber(Math.round(record.postAmtTotal / record.unitPrice) - record.availableCnt)}</span>
         )
       },
       {
-        title: '活动状态',
+        title: (<div><p>活动状态</p><p>操作</p></div>),
         key: 'postStatus',
-        dataIndex: 'postStatus',
         render: (record) => (
-          <span>{window.common.postStatus[record - 20]}</span>
-        )
-      },
-      {
-        title: '操作',
-        key: 'opeartion',
-        dataIndex: '',
-        render: (record) => (
-          <div className="opeartion-items">
-            <Link className="blue-color" to={{pathname: '/main/activitydetail', state: {id: record.id}}}>查看</Link>
-            {
-              //Number(record.postStatus) !== 20 ? null : <Link className="blue-color ml10" to={{pathname: '/main/editactivity', state: {id: record.id}}}>编辑</Link>
-              [20, 22].map((item, index) => (
-                record.postStatus === item ? 
-                <Link key={index} className="blue-color ml10" to={{pathname: '/main/editactivity', state: {id: record.id}}}>编辑</Link>
-                :
-                null
-              ))
-            }
-            {
-              [20, 21, 23].map((item, index) => (
-                record.postStatus === item ?
-                <Popconfirm
-                  key={index}
-                  title="是否要取消此活动?"
-                  onConfirm={this.cancelActivityEvent.bind(this, record)}
-                  okText="是"
-                  cancelText="否"
-                >
-                  <span >取消</span>
-                </Popconfirm>
-                :
-                null
-              ))
-            }
+          <div>
+            <span>{window.common.postStatus[record.postStatus - 20]}</span>
+            <div className="opeartion-items">
+              <Link className="blue-color" to={{pathname: '/main/activitydetail', state: {id: record.id}}}>查看</Link>
+              {
+                //Number(record.postStatus) !== 20 ? null : <Link className="blue-color ml10" to={{pathname: '/main/editactivity', state: {id: record.id}}}>编辑</Link>
+                [20, 22].map((item, index) => (
+                  record.postStatus === item ? 
+                  <Link key={index} className="blue-color ml10" to={{pathname: '/main/editactivity', state: {id: record.id}}}>编辑</Link>
+                  :
+                  null
+                ))
+              }
+              {
+                [20, 21, 23].map((item, index) => (
+                  record.postStatus === item ?
+                  <Popconfirm
+                    key={index}
+                    title="是否要取消此活动?"
+                    onConfirm={this.cancelActivityEvent.bind(this, record)}
+                    okText="是"
+                    cancelText="否"
+                  >
+                    <span >取消</span>
+                  </Popconfirm>
+                  :
+                  null
+                ))
+              }
+            </div>
           </div>
         )
       }
-    ];
-    if (redirect) return (<Redirect to="/relogin" />);
+    ]
+    if (redirect) return (<Redirect to="/relogin" />)
     return(
       <div className={style.mypromotion}>
         <h1 className="nav-title">我的推广活动<Button className="button" onClick={this.createEvent.bind(this)}>新建推广活动</Button></h1>
@@ -283,7 +269,7 @@ class MyActivity extends Component{
           className="table"
         />
       </div>
-    );
+    )
   }
 }
-export default MyActivity;
+export default MyActivity

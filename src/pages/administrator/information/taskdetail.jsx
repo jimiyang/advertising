@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import {Button, Radio, Input, message, Table} from 'antd'
+import {Button, Radio, Input, message} from 'antd'
 import style from '../style.less'
 import {
   updatePostStatusById,
@@ -7,7 +7,7 @@ import {
   getDictByType
 } from '../../../api/api'
 const {TextArea} = Input
-class ViewDetail extends Component {
+class TaskDetail extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -46,18 +46,7 @@ class ViewDetail extends Component {
       provinceTypeType: [],
       selmediaValData: [],
       selproviceValData: [],
-      type: 0,//判断是查看活动页面[0]还是审核接单页面[1]
-      missionData: [],
-      pagination: {
-        size: 'small',
-        showSizeChanger: true,
-        total: 0,
-        currentPage: 1,
-        limit: 10,
-        pageSize: 10,
-        onChange: this.changePage,
-        onShowSizeChange: this.onShowSizeChange
-      }
+      type: 0//判断是查看活动页面[0]还是审核接单页面[1]
     }
   }
   componentWillMount() {
@@ -119,19 +108,6 @@ class ViewDetail extends Component {
         break
     }
   }
-  changePage = (page) => {
-    page = page === 0 ? 1 : page
-    const pagination = Object.assign(this.state.pagination, {currentPage: page})
-    this.setState({pagination})
-    this.loadList()
-  }
-  //改变每页条数事件
-  onShowSizeChange = (current, size) => {
-    let p = this.state.pagination
-    p = Object.assign(p, {currentPage: current, limit: size, pageSize: size})
-    this.setState({pagination: p})
-    this.loadList()
-  }
   changeFormEvent = (type, e) => {
     const params = Object.assign(this.state.params, {[type]: e.target.value})
     this.setState({params})
@@ -157,59 +133,34 @@ class ViewDetail extends Component {
       type,
       params,
       selmediaValData,
-      selproviceValData,
-      missionData,
-      pagination
+      selproviceValData
     } = this.state
-    const columns = [
-      {
-        title: '任务ID',
-        key: 'missionId',
-        dataIndex: 'missionId'
-      },
-      {
-        title: '公众号',
-        key: 'appNickName',
-        dataIndex: 'appNickName'
-      },
-      {
-        title: '位置',
-        key: 'appArticlePosition',
-        dataIndex: 'appArticlePosition'
-      },
-      {
-        title: '接单阅读量',
-        key: 'missionReadCnt',
-        dataIndex: 'missionReadCnt'
-      },
-      {
-        title: '实际阅读量',
-        key: 'missionRealReadCnt',
-        dataIndex: 'missionRealReadCnt'
-      },
-      {
-        title: '活动cpc单价',
-        key: 'adUnitPrice',
-        dataIndex: 'adUnitPrice'
-      },
-      {
-        title: '预计指出',
-        key: 'adEstimateCost',
-        dataIndex: 'adEstimateCost'
-      },
-      {
-        title: '状态',
-        key: 'missionStatus',
-        dataIndex: 'missionStatus'
-      }
-    ]
     return (
       <div className={style.administrator}>
         <h1 className="nav-title">活动详情</h1>
-        <h2 className="small-title">基本信息</h2>
-        <ul className={style.detaillist}>
+        <div className={style.contentItems}>
+          <ul className={style.detaillist}>
+            <li>任务id：<div></div></li>
+            <li>接单公众号：<div></div></li>
+            <li>公众号id：<div></div></li>
+            <li>发文位置：<div></div></li>
+            <li>阅读单价：<div></div></li>
+            <li>接单数量（阅读）：<div></div></li>
+            <li>接单时间：<div></div></li>
+            <li>预计发文时间：<div></div></li>
+            <li>实际发文时间：<div></div></li>
+            <li>公众号标签：<div></div></li>
+            <li>
+              <div>
+                任务审核意见：
+                <div className={style.textarea}>
+                  dddd
+                </div>
+              </div>
+            </li>
+          </ul>
+          <ul className={style.detaillist}>
             <li>所属广告主：<div>{form.advertiserName}</div></li>
-            <li>活动id：<div>{form.campaignId}</div></li>
             <li>活动名称：<div>{form.campaignName}</div></li>
             <li>活动日期：<div>{window.common.getDate(form.dateStart, false)} 至 {window.common.getDate(form.dateEnd, false)}</div></li>
             <li>
@@ -270,28 +221,19 @@ class ViewDetail extends Component {
             }
             {
               type === 1 ? <li>活动审核意见：<div><TextArea rows={4} className={style.textarea} value={params.auditRemark} onChange={this.changeFormEvent.bind(this, 'auditRemark')} /></div></li> : null
-            }
-            <li style={{width: '100%'}} className={style.tableBox}>
-              <Table
-                dataSource={missionData}
-                columns={columns}
-                pagination={pagination}
-                className="table"
-              />
-            </li> 
-            <li>
-              <div className="mt30">
-                {
-                  type === 1 ?
-                    <Button type="primary" onClick={this.checkEvent.bind(this)}>提交</Button>
-                  : null
-                }
-                <Button onClick={this.goBackEvent.bind(this)}>返回</Button>
-              </div>
-            </li>
+            }  
+            {
+              type === 1 ?
+              <li className={style.btnitems}>
+                <Button type="primary" onClick={this.checkEvent.bind(this)}>提交</Button>
+              </li>
+              :
+              <li className="mt30"><Button onClick={this.goBackEvent.bind(this)}>返回</Button></li>
+            } 
           </ul>      
+        </div>
       </div>
     ) 
   }
 }
-export default ViewDetail
+export default TaskDetail

@@ -1,17 +1,17 @@
-import React, {Component} from "react";
-import {Input, Select, DatePicker, Button, Table} from 'antd';
-import moment from 'moment';
-import style from './style.less';
-import {historyList, caQuery} from '../../../api/api';
-import router from "umi/router";
-import Link from "umi/link";
-const Option = Select.Option;
+import React, {Component} from "react"
+import {Input, Select, DatePicker, Button, Table, Tooltip, message} from 'antd'
+import moment from 'moment'
+import style from './style.less'
+import {historyList, caQuery} from '../../../api/api'
+import router from "umi/router"
+const Option = Select.Option
 class PutList extends Component {
   constructor(props) {
-    super(props);
+    super(props)
     this.state = {
       withDrawData: [],
       loginName: null,
+      statusData: ['待审核', '驳回审核', '待支付', '成功'],
       isActive: 0,
       search: {
         dateStart: null,
@@ -31,76 +31,80 @@ class PutList extends Component {
         onShowSizeChange: this.onShowSizeChange
       },
       availableBalance: 0
-    };
+    }
   }
   async componentWillMount() {
-    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'));
-    await this.setState({loginName: loginInfo.data.loginName});
-    this.loadList();
-    this.getCaQuery();
+    const loginInfo = JSON.parse(window.localStorage.getItem('login_info'))
+    await this.setState({loginName: loginInfo.data.loginName})
+    this.loadList()
+    this.getCaQuery()
   }
   //获取可用余额和冻结余额
   getCaQuery = () => {
     caQuery({operatorLoginName: this.state.loginName}).then(rs => {
-      this.setState({availableBalance: rs.data.available_balance});
-    });
+      if (rs.success && rs.data !== undefined) {
+        this.setState({availableBalance: rs.data.available_balance})
+      } else {
+        message.error(rs.message)
+      }
+    })
   }
   loadList = () => {
-    const {loginName, search, pagination} = this.state;
+    const {loginName, search, pagination} = this.state
     const params = {
       loginName,
       ...search,
       currentPage: pagination.currentPage,
       limit: pagination.limit
-    };
+    }
     historyList(params).then(rs => {
-      const p = Object.assign(pagination, {total: rs.total});
-      this.setState({withDrawData: rs.data, pagination: p});
-    });
+      const p = Object.assign(pagination, {total: rs.total})
+      this.setState({withDrawData: rs.data, pagination: p})
+    })
   }
   changePage = (page) => {
-    page = page === 0 ? 1 : page;
-    const pagination = Object.assign(this.state.pagination, {currentPage: page});
-    this.setState({pagination});
-    this.loadList();
+    page = page === 0 ? 1 : page
+    const pagination = Object.assign(this.state.pagination, {currentPage: page, current: page})
+    this.setState({pagination})
+    this.loadList()
   }
   //改变每页条数事件
   onShowSizeChange = (current, size) => {
-    let p = this.state.pagination;
-    p = Object.assign(p, {currentPage: current, limit: size, pageSize: size});
-    this.setState({pagination: p});
-    this.loadList();
+    let p = this.state.pagination
+    p = Object.assign(p, {currentPage: current, current, limit: size, pageSize: size})
+    this.setState({pagination: p})
+    this.loadList()
   }
   changeFormEvent = (type, e, value) => {
-    let search = this.state.search;
-    let obj = {};
+    let search = this.state.search
+    let obj = {}
     switch(type) {
       case 'dateStart':
-        obj = {[type]: value};
-        break;
+        obj = {[type]: value}
+        break
       case 'dateEnd':
-        obj = {[type]: value};
-        break;
+        obj = {[type]: value}
+        break
       case 'orderNo':
-        obj = {[type]: e.target.value};
-        break;
+        obj = {[type]: e.target.value}
+        break
       case 'orderStatus':
-        obj = {[type]: e};
-        break;
+        obj = {[type]: e}
+        break
       default:
-        break;
+        break
     }
-    search = Object.assign(search, obj);
-    this.setState({search});
+    search = Object.assign(search, obj)
+    this.setState({search})
   }
   searchEvent = () => {
-    let p = this.state.pagination;
-    p = Object.assign(p, {currentPage: 1, current: 1});
-    this.setState({pagination: p});
-    this.loadList();
+    let p = this.state.pagination
+    p = Object.assign(p, {currentPage: 1, current: 1})
+    this.setState({pagination: p})
+    this.loadList()
   }
   clearEvent = () => {
-    let search = this.state.search;
+    let search = this.state.search
     search = Object.assign(
       search,
       {
@@ -110,13 +114,17 @@ class PutList extends Component {
         orderStatus: null
       }
     )
-    let p = this.state.pagination;
-    p = Object.assign(p, {currentPage: 1, current: 1});
-    this.setState({pagination: p, search});
-    this.loadList();
+    let p = this.state.pagination
+    p = Object.assign(p, {currentPage: 1, current: 1})
+    this.setState({pagination: p, search})
+    this.loadList()
   }
   widthdrawEvent = () => {
-    router.push('/main/getcash');
+    router.push('/main/getcash')
+  }
+  tapEvent = (index) => {
+    const url = index === 0 ? '/main/putlist' : '/main/arningslist'
+    router.push(url)
   }
   render() {
     const {
@@ -124,8 +132,9 @@ class PutList extends Component {
       search,
       pagination,
       availableBalance,
-      isActive
-    } = this.state;
+      isActive,
+      statusData
+    } = this.state
     const columns = [
       {
         title: '提现单号',
@@ -146,6 +155,16 @@ class PutList extends Component {
         dataIndex: 'orderAmt'
       },
       {
+        title: '到账金额',
+        key: 'realWithdrawAmt',
+        dataIndex: 'realWithdrawAmt'
+      },
+      {
+        title: '手续费',
+        key: 'feeAmt',
+        dataIndex: 'feeAmt'
+      },
+      {
         title: '申请时间',
         key: 'applyTime',
         dataIndex: 'applyTime',
@@ -154,19 +173,41 @@ class PutList extends Component {
         )
       },
       {
-        title: '提现状态',
-        key: 'orderStatus',
-        dataIndex: 'orderStatus'
-      },
-      {
         title: '提现成功时间',
         key: 'updateDate',
-        dataIndex: 'updateDate',
         render: (record) => (
-          <span>{record === undefined ? '--' : window.common.getDate(record, true)}</span>
+          <span>{record.orderStatus !== 4 ? '--' : window.common.getDate(record.updateDate, true)}</span>
         )
-      }
-    ];
+      },
+      {
+        title: '账户信息',
+        key: 'accountInfo',
+        render: (record) => (
+          <div>
+            <p>{record.bankCardNo}</p>
+            <p>{record.bankCardOwnerName}</p>
+            <p>{record.bankName}</p>
+          </div>
+        )
+      },
+      {
+        title: '汇款单号',
+        key: 'frozenOrderNo',
+        dataIndex: 'frozenOrderNo'
+      },
+      {
+        title: '状态',
+        key: 'orderStatus',
+        render: (record) => (
+          <div>
+            <span>{record === 5 ? '待支付' : statusData[record.orderStatus - 1]}</span>
+            <Tooltip placement="top" title={record.auditRemark} trigger="click">
+              <div className="blue-color">审核信息</div>
+            </Tooltip>
+          </div>
+        )
+      },
+    ]
     return (
       <div className={style.arnings}>
         <h1 className="nav-title">我的收益 > 提现记录</h1>
@@ -182,8 +223,8 @@ class PutList extends Component {
           </p>
         </div>
         <ul className={style.accountType}>
-          <li className={isActive === 0 ? style.active : null}><Link to="/main/putlist">提现记录</Link></li>
-          <li className={isActive === 1 ? style.active : null}><Link to="/main/arningslist">结算记录</Link></li>
+          <li className={isActive === 0 ? style.active : null} onClick={this.tapEvent.bind(this, 0)}><a href="javascript:">提现记录</a></li>
+          <li className={isActive === 1 ? style.active : null} onClick={this.tapEvent.bind(this, 1)}><a href="javascript:">结算记录</a></li>
         </ul>
         <ul className={style.search}>
           <li>申请时间：
@@ -215,4 +256,4 @@ class PutList extends Component {
     )
   }
 }
-export default PutList;
+export default PutList

@@ -1,16 +1,14 @@
-import axios from 'axios';
-import {message} from 'antd';
-import router from 'umi/router';
-import { RSA_NO_PADDING } from 'constants';
-let baserUrl;
+import axios from 'axios'
+import router from 'umi/router'
+let baserUrl
 if (window.location.hostname === 'localhost') {
-  baserUrl = ''; 
+  baserUrl = ''
 } else if (window.location.hostname === '192.168.19.173') {
-  baserUrl = 'http://192.168.19.173:8000';
+  baserUrl = 'http://192.168.19.173:8000'
 } else {
-  baserUrl = 'http://www.liantuotui.com';
+  baserUrl = 'http://www.liantuotui.com'
 }
-const url = window.location.hostname === 'localhost' ? `/base/` : '/';
+const url = window.location.hostname === 'localhost' ? `/base/` : '/'
 const instance = axios.create({
   baseURL: baserUrl,
   timeout: 50000,
@@ -19,10 +17,10 @@ const instance = axios.create({
 instance.interceptors.response.use(
   res => {
     if (res.data.code === 100000) {
-      router.push('/relogin');
-      window.localStorage.removeItem('login_info');
+      router.push('/relogin')
+      window.localStorage.removeItem('login_info')
     }
-    return res.data;
+    return res.data
   },
   err => {
     //const {data: {err: errnum, error}} = (err || {}).response;
@@ -33,4 +31,4 @@ instance.interceptors.response.use(
     }*/
   }
 );
-export default instance;
+export default instance
